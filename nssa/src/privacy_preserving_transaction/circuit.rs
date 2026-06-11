@@ -271,6 +271,250 @@ mod tests {
         assert_eq!(recipient_post, expected_recipient_post);
     }
 
+    /// LP-0002 (v0.1.2) anonymous M-of-N approval: a privacy-preserving transaction mutates a
+    /// PUBLIC ProposalState (mask 0) while the member secret + Merkle path + proposal_id travel as
+    /// a PRIVATE instruction witness (never committed). The guest verifies in-guest Merkle
+    /// membership against the snapshotted member_root, derives a proposal-bound vote nullifier,
+    /// rejects double-votes, and increments the count. A fresh private rider (mask 2) emits the
+    /// commitment/nullifier the privacy tx requires. The voter stays anonymous.
+    #[test]
+    fn msig_approve_anonymous_membership() {
+        use risc0_zkvm::sha::{Impl, Sha256 as _};
+
+        let program = Program::msig();
+        let voter_keys = test_private_account_keys_1();
+
+        const LEAF_DOMAIN: &[u8] = b"/lp0002/leaf/\x00";
+        const NULL_DOMAIN: &[u8] = b"/lp0002/null/\x00";
+        let sha256 = |b: &[u8]| -> [u8; 32] { Impl::hash_bytes(b).as_bytes().try_into().unwrap() };
+        let leaf_of = |s: &[u8; 32]| -> [u8; 32] { sha256(&[LEAF_DOMAIN, s.as_slice()].concat()) };
+
+        // Two-member set; approver holds secret_a (leaf index 0), leaf_b is the sibling.
+        let secret_a = [0xA7u8; 32];
+        let secret_b = [0x42u8; 32];
+        let leaf_a = leaf_of(&secret_a);
+        let leaf_b = leaf_of(&secret_b);
+        let member_root = sha256(&[leaf_a, leaf_b].concat());
+        let merkle_path: (u32, Vec<[u8; 32]>) = (0, vec![leaf_b]);
+        let proposal_id = [0x11u8; 32];
+
+        // Public ProposalState (program-owned): member_root || proposal_id || count(0).
+        let mut initial = Vec::with_capacity(68);
+        initial.extend_from_slice(&member_root);
+        initial.extend_from_slice(&proposal_id);
+        initial.extend_from_slice(&0_u32.to_le_bytes());
+        let proposal = AccountWithMetadata::new(
+            Account {
+                program_owner: program.id(),
+                balance: 0,
+                data: Data::try_from(initial).unwrap(),
+                ..Account::default()
+            },
+            true,
+            AccountId::new([9; 32]),
+        );
+
+        // Fresh private rider (mask 2) at the voter's npk — the "vote note" emitting the commitment.
+        let rider = AccountWithMetadata::new(
+            Account::default(),
+            false,
+            AccountId::from(&voter_keys.npk()),
+        );
+        let esk = [3u8; 32];
+        let rider_ssk = SharedSecretKey::new(&esk, &voter_keys.vpk());
+
+        let (output, proof) = execute_and_prove(
+            vec![proposal, rider],
+            Program::serialize_instruction(msig_core::MsigInstruction::Approve { secret: secret_a, merkle_path, proposal_id }).unwrap(),
+            vec![0, 2],
+            vec![(voter_keys.npk(), rider_ssk)],
+            vec![],
+            vec![None],
+            &program.clone().into(),
+        )
+        .unwrap();
+
+        assert!(proof.is_valid_for(&output));
+
+        // ProposalState: root + proposal id preserved, count incremented, vote nullifier recorded.
+        let [ps_post] = output.public_post_states.try_into().unwrap();
+        let d = ps_post.data.clone().into_inner();
+        assert_eq!(&d[..32], &member_root);
+        assert_eq!(&d[32..64], &proposal_id);
+        assert_eq!(u32::from_le_bytes(d[64..68].try_into().unwrap()), 1);
+        let expected_null =
+            sha256(&[NULL_DOMAIN, secret_a.as_slice(), proposal_id.as_slice()].concat());
+        assert_eq!(&d[68..100], &expected_null);
+
+        // Rider emitted the required commitment + nullifier (non-empty-output guard satisfied).
+        assert_eq!(output.new_commitments.len(), 1);
+        assert_eq!(output.new_nullifiers.len(), 1);
+    }
+
+    /// A secret whose leaf is not in member_root cannot approve (in-guest membership fails → no
+    /// valid proof). This is what makes it an M-of-N multisig, not a public counter.
+    #[test]
+    fn msig_approve_rejects_non_member() {
+        use risc0_zkvm::sha::{Impl, Sha256 as _};
+
+        let program = Program::msig();
+        let voter_keys = test_private_account_keys_1();
+        const LEAF_DOMAIN: &[u8] = b"/lp0002/leaf/\x00";
+        let sha256 = |b: &[u8]| -> [u8; 32] { Impl::hash_bytes(b).as_bytes().try_into().unwrap() };
+        let leaf_of = |s: &[u8; 32]| -> [u8; 32] { sha256(&[LEAF_DOMAIN, s.as_slice()].concat()) };
+
+        let leaf_a = leaf_of(&[0xA7u8; 32]);
+        let leaf_b = leaf_of(&[0x42u8; 32]);
+        let member_root = sha256(&[leaf_a, leaf_b].concat());
+        let proposal_id = [0x11u8; 32];
+
+        let mut initial = Vec::with_capacity(68);
+        initial.extend_from_slice(&member_root);
+        initial.extend_from_slice(&proposal_id);
+        initial.extend_from_slice(&0_u32.to_le_bytes());
+        let proposal = AccountWithMetadata::new(
+            Account {
+                program_owner: program.id(),
+                balance: 0,
+                data: Data::try_from(initial).unwrap(),
+                ..Account::default()
+            },
+            true,
+            AccountId::new([9; 32]),
+        );
+        let rider = AccountWithMetadata::new(
+            Account::default(),
+            false,
+            AccountId::from(&voter_keys.npk()),
+        );
+        let rider_ssk = SharedSecretKey::new(&[3u8; 32], &voter_keys.vpk());
+
+        // secret_x is not enrolled; presenting leaf_b as sibling cannot reproduce member_root.
+        let secret_x = [0xFFu8; 32];
+        let merkle_path: (u32, Vec<[u8; 32]>) = (0, vec![leaf_b]);
+
+        let result = execute_and_prove(
+            vec![proposal, rider],
+            Program::serialize_instruction(msig_core::MsigInstruction::Approve { secret: secret_x, merkle_path, proposal_id }).unwrap(),
+            vec![0, 2],
+            vec![(voter_keys.npk(), rider_ssk)],
+            vec![],
+            vec![None],
+            &program.clone().into(),
+        );
+        assert!(result.is_err(), "non-member approval must be rejected");
+    }
+
+    /// The same member cannot approve the same proposal twice: the proposal-bound nullifier is
+    /// already recorded, so the in-guest double-vote check fails.
+    #[test]
+    fn msig_approve_rejects_double_vote() {
+        use risc0_zkvm::sha::{Impl, Sha256 as _};
+
+        let program = Program::msig();
+        let voter_keys = test_private_account_keys_1();
+        const LEAF_DOMAIN: &[u8] = b"/lp0002/leaf/\x00";
+        const NULL_DOMAIN: &[u8] = b"/lp0002/null/\x00";
+        let sha256 = |b: &[u8]| -> [u8; 32] { Impl::hash_bytes(b).as_bytes().try_into().unwrap() };
+        let leaf_of = |s: &[u8; 32]| -> [u8; 32] { sha256(&[LEAF_DOMAIN, s.as_slice()].concat()) };
+
+        let secret_a = [0xA7u8; 32];
+        let leaf_a = leaf_of(&secret_a);
+        let leaf_b = leaf_of(&[0x42u8; 32]);
+        let member_root = sha256(&[leaf_a, leaf_b].concat());
+        let proposal_id = [0x11u8; 32];
+        let nullifier =
+            sha256(&[NULL_DOMAIN, secret_a.as_slice(), proposal_id.as_slice()].concat());
+
+        // ProposalState already records secret_a's nullifier (count = 1).
+        let mut initial = Vec::with_capacity(100);
+        initial.extend_from_slice(&member_root);
+        initial.extend_from_slice(&proposal_id);
+        initial.extend_from_slice(&1_u32.to_le_bytes());
+        initial.extend_from_slice(&nullifier);
+        let proposal = AccountWithMetadata::new(
+            Account {
+                program_owner: program.id(),
+                balance: 0,
+                data: Data::try_from(initial).unwrap(),
+                ..Account::default()
+            },
+            true,
+            AccountId::new([9; 32]),
+        );
+        let rider = AccountWithMetadata::new(
+            Account::default(),
+            false,
+            AccountId::from(&voter_keys.npk()),
+        );
+        let rider_ssk = SharedSecretKey::new(&[3u8; 32], &voter_keys.vpk());
+        let merkle_path: (u32, Vec<[u8; 32]>) = (0, vec![leaf_b]);
+
+        let result = execute_and_prove(
+            vec![proposal, rider],
+            Program::serialize_instruction(msig_core::MsigInstruction::Approve { secret: secret_a, merkle_path, proposal_id }).unwrap(),
+            vec![0, 2],
+            vec![(voter_keys.npk(), rider_ssk)],
+            vec![],
+            vec![None],
+            &program.clone().into(),
+        );
+        assert!(result.is_err(), "double vote must be rejected");
+    }
+
+    /// Members enroll by appending their public leaf to the registry; the program recomputes
+    /// member_root over all leaves. A plain public tx — only H(secret) is published.
+    #[test]
+    fn msig_enroll_appends_member() {
+        let program = Program::msig();
+        let leaf1 = msig_core::member_leaf(&[0xA7u8; 32]);
+        let leaf2 = msig_core::member_leaf(&[0x42u8; 32]);
+
+        // First enroll: registry starts as a fresh default public account.
+        let registry0 = AccountWithMetadata::new(Account::default(), true, AccountId::new([8; 32]));
+        let (out1, _proof) = execute_and_prove(
+            vec![registry0],
+            Program::serialize_instruction(msig_core::MsigInstruction::Enroll { leaf: leaf1 })
+                .unwrap(),
+            vec![0],
+            vec![],
+            vec![],
+            vec![],
+            &program.clone().into(),
+        )
+        .unwrap();
+        let [reg1] = out1.public_post_states.try_into().unwrap();
+        let d1 = reg1.data.clone().into_inner();
+        assert_eq!(u32::from_le_bytes(d1[32..36].try_into().unwrap()), 1);
+        assert_eq!(&d1[..32], &msig_core::merkle_root(&[leaf1]));
+
+        // Second enroll: registry is now program-owned and already holds leaf1.
+        let registry1 = AccountWithMetadata::new(
+            Account {
+                program_owner: program.id(),
+                data: Data::try_from(d1).unwrap(),
+                ..Account::default()
+            },
+            true,
+            AccountId::new([8; 32]),
+        );
+        let (out2, _proof) = execute_and_prove(
+            vec![registry1],
+            Program::serialize_instruction(msig_core::MsigInstruction::Enroll { leaf: leaf2 })
+                .unwrap(),
+            vec![0],
+            vec![],
+            vec![],
+            vec![],
+            &program.clone().into(),
+        )
+        .unwrap();
+        let [reg2] = out2.public_post_states.try_into().unwrap();
+        let d2 = reg2.data.clone().into_inner();
+        assert_eq!(u32::from_le_bytes(d2[32..36].try_into().unwrap()), 2);
+        assert_eq!(&d2[..32], &msig_core::merkle_root(&[leaf1, leaf2]));
+    }
+
     #[test]
     fn prove_privacy_preserving_execution_circuit_fully_private() {
         let program = Program::authenticated_transfer_program();
@@ -346,7 +590,7 @@ mod tests {
             ],
             vec![sender_keys.nsk],
             vec![commitment_set.get_proof_for(&commitment_sender), None],
-            &program.into(),
+            &program.clone().into(),
         )
         .unwrap();
 

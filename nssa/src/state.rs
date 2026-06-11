@@ -2881,6 +2881,368 @@ pub mod tests {
     }
 
     #[test]
+    fn msig_create_proposal_public_tx_claims_and_freezes() {
+        let program = Program::msig();
+        let proposal_key = PrivateKey::try_new([7; 32]).unwrap();
+        let proposal_id_acc = AccountId::from(&PublicKey::new_from_private_key(&proposal_key));
+        let mut state = V03State::new_with_genesis_accounts(&[], vec![], 0);
+        state.insert_program(Program::msig());
+
+        let member_root = [0xABu8; 32];
+        let proposal_id = [0x11u8; 32];
+        let instruction = msig_core::MsigInstruction::CreateProposal {
+            member_root,
+            proposal_id,
+        };
+
+        let message = public_transaction::Message::try_new(
+            program.id(),
+            vec![proposal_id_acc],
+            vec![Nonce(0)],
+            instruction,
+        )
+        .unwrap();
+        let witness_set =
+            public_transaction::WitnessSet::for_message(&message, &[&proposal_key]);
+        let tx = PublicTransaction::new(message, witness_set);
+        state.transition_from_public_transaction(&tx, 1, 0).unwrap();
+
+        let post = state.get_account_by_id(proposal_id_acc);
+        assert_eq!(post.program_owner, program.id());
+        let d = post.data.clone().into_inner();
+        assert_eq!(&d[..32], &member_root);
+        assert_eq!(&d[32..64], &proposal_id);
+        assert_eq!(u32::from_le_bytes(d[64..68].try_into().unwrap()), 0);
+    }
+
+    #[test]
+    fn msig_execute_releases_at_threshold() {
+        let msig = Program::msig();
+        let transfer = Program::authenticated_transfer_program();
+
+        let threshold: u32 = 2;
+        let count: u32 = 3;
+        let seed = [0u8; 32];
+
+        // Treasury: a public PDA of msig, owned by authenticated_transfer, funded.
+        let treasury_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new(seed));
+        let initial_balance: u128 = 1000;
+        let treasury_account = Account {
+            program_owner: transfer.id(),
+            balance: initial_balance,
+            ..Account::default()
+        };
+
+        // Recipient: payout target, owned by authenticated_transfer so it may be credited.
+        let recipient_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new([1u8; 32]));
+        let recipient_account = Account {
+            program_owner: transfer.id(),
+            balance: 0,
+            ..Account::default()
+        };
+
+        // Proposal: msig-owned ProposalState with approval_count = count (>= threshold).
+        let proposal_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new([2u8; 32]));
+        let member_root = [0xABu8; 32];
+        let proposal_bytes = [0x11u8; 32];
+        let mut data = Vec::new();
+        data.extend_from_slice(&member_root);
+        data.extend_from_slice(&proposal_bytes);
+        data.extend_from_slice(&count.to_le_bytes());
+        let proposal_account = Account {
+            program_owner: msig.id(),
+            data: data.try_into().unwrap(),
+            ..Account::default()
+        };
+
+        let mut state = V03State::new_with_genesis_accounts(&[], vec![], 0).with_test_programs();
+        state.insert_program(Program::msig());
+        state.force_insert_account(proposal_id, proposal_account);
+        state.force_insert_account(treasury_id, treasury_account);
+        state.force_insert_account(recipient_id, recipient_account);
+
+        let instruction = msig_core::MsigInstruction::Execute { threshold, seed };
+        let message = public_transaction::Message::try_new(
+            msig.id(),
+            vec![proposal_id, treasury_id, recipient_id],
+            vec![], // no signers — treasury is PDA-authorised
+            instruction,
+        )
+        .unwrap();
+        let witness_set = public_transaction::WitnessSet::for_message(&message, &[]);
+        let tx = PublicTransaction::new(message, witness_set);
+
+        let result = state.transition_from_public_transaction(&tx, 1, 0);
+        assert!(result.is_ok(), "execute should succeed: {result:?}");
+
+        assert_eq!(state.get_account_by_id(treasury_id).balance, 0);
+        assert_eq!(
+            state.get_account_by_id(recipient_id).balance,
+            initial_balance
+        );
+    }
+
+
+    /// Proves the reconciled demo fixture COMPOSES end-to-end against in-process state, on ONE
+    /// unified ProposalState account id (the bug-1 fix) with the depth-5 member_root (the bug-2 fix).
+    ///
+    /// DEMO values are hardcoded to match examples/program_deployment/src/msig_demo.rs (that crate
+    /// depends on nssa, so it cannot be imported here — keep the two in sync).
+    ///
+    /// Flow: (1) compute the depth-5 member_root from the 3 demo leaves and assert the approver's
+    /// path replays to it; (2) CreateProposal public tx (signed by the demo proposal keypair) freezes
+    /// that root into the keypair-derived account, count 0; (3) simulate the anonymous approval by
+    /// force-setting the SAME account's count to THRESHOLD (the membership step is proven separately —
+    /// by the invariant in (1) and by the live ZK approve proof); (4) Execute drains the treasury to
+    /// the recipient. create + execute are PUBLIC txs, so this composes with no proving.
+    #[test]
+    fn msig_full_flow_composes() {
+        // ── DEMO fixture (in sync with msig_demo.rs) ──
+        let member_secrets: [[u8; 32]; 3] = [[0xA7u8; 32], [0x42u8; 32], [0x5Cu8; 32]];
+        let approver_index: usize = 0;
+        let proposal_key_bytes = [7u8; 32];
+        let proposal_id_bytes = [0x11u8; 32];
+        let threshold: u32 = 1;
+        let treasury_seed = [0u8; 32];
+        let recipient_seed = [1u8; 32];
+
+        let msig = Program::msig();
+        let transfer = Program::authenticated_transfer_program();
+
+        // (1) Depth-5 member_root + approver-path consistency (the reconciliation invariant).
+        let leaves: Vec<[u8; 32]> = member_secrets.iter().map(msig_core::member_leaf).collect();
+        let member_root = msig_core::merkle_root(&leaves);
+        let approver_leaf = msig_core::member_leaf(&member_secrets[approver_index]);
+        let approver_path = msig_core::merkle_path(&leaves, approver_index);
+        assert_eq!(
+            msig_core::root_from_path(approver_leaf, &approver_path),
+            member_root,
+            "approver depth-5 path must reproduce the enrolled member_root"
+        );
+
+        // The unified ProposalState account = the demo proposal keypair's derived id.
+        let proposal_key = PrivateKey::try_new(proposal_key_bytes).unwrap();
+        let proposal_id = AccountId::from(&PublicKey::new_from_private_key(&proposal_key));
+
+        let mut state = V03State::new_with_genesis_accounts(&[], vec![], 0).with_test_programs();
+        state.insert_program(Program::msig());
+
+        // (2) CreateProposal public tx: claim + freeze member_root (count 0).
+        let create_ix = msig_core::MsigInstruction::CreateProposal {
+            member_root,
+            proposal_id: proposal_id_bytes,
+        };
+        let create_msg = public_transaction::Message::try_new(
+            msig.id(),
+            vec![proposal_id],
+            vec![Nonce(0)],
+            create_ix,
+        )
+        .unwrap();
+        let create_ws = public_transaction::WitnessSet::for_message(&create_msg, &[&proposal_key]);
+        let create_tx = PublicTransaction::new(create_msg, create_ws);
+        state
+            .transition_from_public_transaction(&create_tx, 1, 0)
+            .unwrap();
+
+        let frozen = state.get_account_by_id(proposal_id);
+        assert_eq!(frozen.program_owner, msig.id());
+        let fd = frozen.data.clone().into_inner();
+        assert_eq!(&fd[..32], &member_root, "frozen root must equal depth-5 member_root");
+        assert_eq!(&fd[32..64], &proposal_id_bytes);
+        assert_eq!(u32::from_le_bytes(fd[64..68].try_into().unwrap()), 0);
+
+        // (3) Simulate the anonymous approval reaching THRESHOLD on the SAME account.
+        // (The live approve proof + the (1) invariant cover membership; here we advance state.)
+        let mut approved_data = Vec::new();
+        approved_data.extend_from_slice(&member_root);
+        approved_data.extend_from_slice(&proposal_id_bytes);
+        approved_data.extend_from_slice(&threshold.to_le_bytes());
+        let approved_proposal = Account {
+            program_owner: msig.id(),
+            data: approved_data.try_into().unwrap(),
+            ..Account::default()
+        };
+        state.force_insert_account(proposal_id, approved_proposal);
+
+        // Treasury (funded, owned by authenticated_transfer) + recipient, both public PDAs of msig.
+        let treasury_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new(treasury_seed));
+        let initial_balance: u128 = 1000;
+        state.force_insert_account(
+            treasury_id,
+            Account {
+                program_owner: transfer.id(),
+                balance: initial_balance,
+                ..Account::default()
+            },
+        );
+        let recipient_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new(recipient_seed));
+        state.force_insert_account(
+            recipient_id,
+            Account {
+                program_owner: transfer.id(),
+                balance: 0,
+                ..Account::default()
+            },
+        );
+
+        // (4) Execute at threshold drains the treasury to the recipient.
+        let exec_ix = msig_core::MsigInstruction::Execute {
+            threshold,
+            seed: treasury_seed,
+        };
+        let exec_msg = public_transaction::Message::try_new(
+            msig.id(),
+            vec![proposal_id, treasury_id, recipient_id],
+            vec![],
+            exec_ix,
+        )
+        .unwrap();
+        let exec_ws = public_transaction::WitnessSet::for_message(&exec_msg, &[]);
+        let exec_tx = PublicTransaction::new(exec_msg, exec_ws);
+        let result = state.transition_from_public_transaction(&exec_tx, 1, 0);
+        assert!(result.is_ok(), "execute should succeed: {result:?}");
+
+        assert_eq!(state.get_account_by_id(treasury_id).balance, 0);
+        assert_eq!(
+            state.get_account_by_id(recipient_id).balance,
+            initial_balance
+        );
+    }
+
+    /// Live-apply de-risk for run_approve: the anonymous approval privacy tx must pass the FULL
+    /// `transition_from_privacy_preserving_transaction` path (which reconstructs the proposal's
+    /// `is_authorized` as `signer_account_ids.contains(..)` = false for the program-owned PDA),
+    /// NOT just the isolated `proof.is_valid_for`. Mirrors run_approve exactly: real create_proposal
+    /// first (so the proposal lands at nonce 1), then approve with is_authorized=false on the proposal.
+    #[test]
+    fn msig_approve_live_apply_is_authorized_false() {
+        use risc0_zkvm::sha::{Impl, Sha256 as _};
+        let sha256 = |b: &[u8]| -> [u8; 32] { Impl::hash_bytes(b).as_bytes().try_into().unwrap() };
+
+        let msig = Program::msig();
+        let voter = test_private_account_keys_1();
+
+        // Fixture (== msig_demo.rs): 3 members, depth-5 root, approver index 0, proposal_id 0x11.
+        let member_secrets: [[u8; 32]; 3] = [[0xA7u8; 32], [0x42u8; 32], [0x5Cu8; 32]];
+        let leaves: Vec<[u8; 32]> = member_secrets.iter().map(msig_core::member_leaf).collect();
+        let member_root = msig_core::merkle_root(&leaves);
+        let merkle_path = msig_core::merkle_path(&leaves, 0);
+        let approver_secret = member_secrets[0];
+        let proposal_id_bytes = [0x11u8; 32];
+        let _ = sha256;
+
+        // Unified proposal account = demo proposal keypair's derived id.
+        let proposal_key = PrivateKey::try_new([7u8; 32]).unwrap();
+        let proposal_id_acc = AccountId::from(&PublicKey::new_from_private_key(&proposal_key));
+
+        let mut state = V03State::new_with_genesis_accounts(&[], vec![], 0).with_test_programs();
+        state.insert_program(Program::msig());
+
+        // (1) Real CreateProposal public tx → proposal lands owned by msig, count 0, nonce bumped.
+        let create_ix = msig_core::MsigInstruction::CreateProposal {
+            member_root,
+            proposal_id: proposal_id_bytes,
+        };
+        let create_msg = public_transaction::Message::try_new(
+            msig.id(),
+            vec![proposal_id_acc],
+            vec![Nonce(0)],
+            create_ix,
+        )
+        .unwrap();
+        let create_ws = public_transaction::WitnessSet::for_message(&create_msg, &[&proposal_key]);
+        let create_tx = PublicTransaction::new(create_msg, create_ws);
+        state
+            .transition_from_public_transaction(&create_tx, 1, 0)
+            .unwrap();
+
+        let live = state.get_account_by_id(proposal_id_acc);
+        assert_eq!(live.nonce, Nonce(1), "post-create nonce must be 1 (matches live testnet)");
+
+        // (2) Build approve EXACTLY like the hardened run_approve: proposal pre_state from the live
+        // account, is_authorized = FALSE (program-owned, no signer).
+        let npk = voter.npk();
+        let vpk = voter.vpk();
+        let proposal = AccountWithMetadata::new(live.clone(), false, proposal_id_acc);
+        let rider = AccountWithMetadata::new(Account::default(), false, AccountId::from(&npk));
+        let esk = [3u8; 32];
+        let rider_ssk = SharedSecretKey::new(&esk, &vpk);
+        let epk = EphemeralPublicKey::from_scalar(esk);
+
+        let instruction = Program::serialize_instruction(msig_core::MsigInstruction::Approve {
+            secret: approver_secret,
+            merkle_path,
+            proposal_id: proposal_id_bytes,
+        })
+        .unwrap();
+
+        let (output, proof) = circuit::execute_and_prove(
+            vec![proposal, rider],
+            instruction,
+            vec![0, 2],
+            vec![(npk, rider_ssk)],
+            vec![],
+            vec![None],
+            &msig.clone().into(),
+        )
+        .unwrap();
+        assert!(proof.is_valid_for(&output), "guest must accept is_authorized=false");
+
+        let message = Message::try_from_circuit_output(
+            vec![proposal_id_acc],
+            vec![],
+            vec![(npk, vpk, epk)],
+            output,
+        )
+        .unwrap();
+        let witness_set = WitnessSet::for_message(&message, proof, &[]);
+        let tx = PrivacyPreservingTransaction::new(message, witness_set);
+
+        // (3) FULL apply path — this is what the live sequencer runs.
+        let result = state.transition_from_privacy_preserving_transaction(&tx, 2, 0);
+        assert!(result.is_ok(), "approve must pass live apply with is_authorized=false: {result:?}");
+
+        // count 0 -> 1, nonce 1 -> 2.
+        let post = state.get_account_by_id(proposal_id_acc);
+        let pd = post.data.clone().into_inner();
+        assert_eq!(u32::from_le_bytes(pd[64..68].try_into().unwrap()), 1, "count must be 1");
+        assert_eq!(post.nonce, Nonce(1), "unsigned program-owned proposal nonce unchanged");
+    }
+
+    /// Captures the exact apply-time rejection for the enroll PUBLIC tx as built by run_enroll
+    /// (registry referenced with no signer, no nonce, no PDA seed). The msig guest's enroll claims
+    /// the registry `Authorized`, but the public-tx apply path computes the registry's authorization
+    /// as `signer_account_ids.contains(..) || authorized_pdas.contains(..)` = false (no signer; and
+    /// authorized_pdas is empty because the top-level call has caller_program_id=None and the public
+    /// Message carries no pda_seeds). So the program's claimed `Authorized` post-state is inconsistent
+    /// with the apply-reconstructed authorization → rejection. This test records that Err string.
+    #[test]
+    fn msig_enroll_public_tx_apply_rejection() {
+        let msig = Program::msig();
+        let registry_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new([0xCCu8; 32]));
+
+        let mut state = V03State::new_with_genesis_accounts(&[], vec![], 0).with_test_programs();
+        state.insert_program(Program::msig());
+
+        let leaf = msig_core::member_leaf(&[0xA7u8; 32]);
+        let instruction = msig_core::MsigInstruction::Enroll { leaf };
+        let message = public_transaction::Message::try_new(
+            msig.id(),
+            vec![registry_id],
+            vec![], // no signer, no nonce — exactly as run_enroll builds it
+            instruction,
+        )
+        .unwrap();
+        let witness_set = public_transaction::WitnessSet::for_message(&message, &[]);
+        let tx = PublicTransaction::new(message, witness_set);
+
+        let result = state.transition_from_public_transaction(&tx, 1, 0);
+        // Record the exact failure for the write-up.
+        println!("ENROLL_APPLY_RESULT: {result:?}");
+        assert!(result.is_err(), "expected enroll to reject at apply (PDA not authorized)");
+    }
+    #[test]
     fn public_chained_call() {
         let program = Program::chain_caller();
         let key = PrivateKey::try_new([1; 32]).unwrap();

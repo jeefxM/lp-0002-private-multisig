@@ -5203,6 +5203,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "msig_core"
+version = "0.1.0"
+dependencies = [
+ "risc0-zkvm",
+ "serde",
+]
+
+[[package]]
 name = "multer"
 version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5362,6 +5370,7 @@ dependencies = [
  "hex-literal 1.1.0",
  "k256",
  "log",
+ "msig_core",
  "nssa_core",
  "rand 0.8.5",
  "risc0-binfmt",
@@ -6072,8 +6081,12 @@ dependencies = [
 name = "program_deployment"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "clap",
  "common",
+ "hex",
+ "key_protocol",
+ "msig_core",
  "nssa",
  "nssa_core",
  "sequencer_service_rpc",
@@ -8066,6 +8079,7 @@ name = "test_programs"
 version = "0.1.0"
 dependencies = [
  "clock_core",
+ "msig_core",
  "nssa_core",
  "risc0-zkvm",
  "serde",

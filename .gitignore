@@ -12,3 +12,6 @@ result
 wallet-ffi/wallet_ffi.h
 bedrock_signing_key
 integration_tests/configs/debug/
+
+# LP-0002 wallet homes (contain private keys) - never commit
+wallet-home-*/

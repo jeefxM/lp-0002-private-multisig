@@ -250,6 +250,17 @@ mod tests {
             }
         }
 
+        /// LP-0002 unified multisig program (CreateProposal + Approve).
+        #[must_use]
+        pub fn msig() -> Self {
+            use test_program_methods::{MSIG_ELF, MSIG_ID};
+
+            Self {
+                id: MSIG_ID,
+                elf: MSIG_ELF.to_vec(),
+            }
+        }
+
         /// A program that mints balance.
         #[must_use]
         pub fn minter() -> Self {

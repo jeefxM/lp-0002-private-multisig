@@ -13,6 +13,10 @@ nssa.workspace = true
 nssa_core.workspace = true
 sequencer_service_rpc = { workspace = true, features = ["client"] }
 wallet.workspace = true
+msig_core.workspace = true
+key_protocol.workspace = true
 
+anyhow.workspace = true
+hex.workspace = true
 tokio = { workspace = true, features = ["macros"] }
 clap.workspace = true

@@ -16,6 +16,7 @@ members = [
   "programs/amm/core",
   "programs/amm",
   "programs/clock/core",
+  "programs/msig/core",
   "programs/token/core",
   "programs/token",
   "programs/associated_token_account/core",
@@ -60,6 +61,7 @@ wallet = { path = "wallet" }
 wallet-ffi = { path = "wallet-ffi", default-features = false }
 indexer_ffi = { path = "indexer_ffi" }
 clock_core = { path = "programs/clock/core" }
+msig_core = { path = "programs/msig/core" }
 token_core = { path = "programs/token/core" }
 token_program = { path = "programs/token" }
 amm_core = { path = "programs/amm/core" }
