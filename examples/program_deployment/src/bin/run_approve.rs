@@ -43,17 +43,27 @@ use wallet::WalletCore;
 
 const TESTNET_ENDPOINT: &str = "https://testnet.lez.logos.co";
 
-// DEMO VOTER KEYS — fresh random throwaways (NOT test_private_account_keys_1, which is a canonical
-// key other demos on this shared testnet may have already initialized a rider at, which would
-// collide the rider's commitment/init-nullifier). The voter is anonymous and arbitrary; no later
-// step references these keys, so freshness only guarantees a novel rider note.
-/// Voter private nullifier key (fresh random throwaway).
-const DEMO_NSK: NullifierSecretKey = [
-    0x5a, 0x4c, 0xa3, 0x8d, 0x84, 0x90, 0xd7, 0xaa, 0xc6, 0x6e, 0xd1, 0xa5, 0x3f, 0xd8, 0x2d, 0x88, 0x72, 0x3c, 0x10, 0x2a, 0x8e, 0x79, 0x9d, 0x29, 0xab, 0x5a, 0xd5, 0x40, 0x78, 0xed, 0x08, 0xaf,
+// DEMO VOTER KEYS — one DISTINCT (nsk, vsk) rider pair per member index. Each rider note's
+// commitment/init-nullifier is deterministic from npk, so two approves in the SAME run MUST use
+// DISTINCT npks or the second rider collides on-chain. These are brand-new throwaways, NOT the
+// prior run's pair (now spent) and NOT test_private_account_keys_*. High bytes kept small so the
+// viewing scalar stays under the curve order. The voter is anonymous; no later step references
+// these keys.
+/// Voter #0 private nullifier key (fresh throwaway).
+const DEMO_NSK_0: NullifierSecretKey = [
+    0x0c, 0x71, 0xa4, 0x3e, 0x95, 0x18, 0xbd, 0x27, 0x6a, 0xc1, 0x04, 0x8f, 0x32, 0xe6, 0x5b, 0x90, 0x47, 0x1c, 0x88, 0x2a, 0x0d, 0xf3, 0x59, 0xb4, 0x66, 0x21, 0x7e, 0xd5, 0x39, 0xaa, 0x0b, 0x12,
 ];
-/// Voter private viewing key (fresh random throwaway).
-const DEMO_VSK: Scalar = [
-    0x10, 0xe8, 0xb1, 0xc6, 0x41, 0xb9, 0x4e, 0x65, 0xfd, 0x4e, 0x53, 0xec, 0x13, 0xc7, 0x2e, 0x65, 0xab, 0x53, 0xf5, 0xb2, 0x93, 0x9d, 0x82, 0xae, 0xfd, 0xbe, 0x55, 0x67, 0xe2, 0xdb, 0x72, 0x36,
+/// Voter #0 private viewing key (fresh throwaway, top byte small).
+const DEMO_VSK_0: Scalar = [
+    0x0e, 0x53, 0xc7, 0x21, 0x8a, 0x46, 0x1f, 0xb9, 0x05, 0x6d, 0xe2, 0x33, 0x9c, 0x40, 0x7a, 0x18, 0xcc, 0x2b, 0x65, 0x91, 0x04, 0xd8, 0x57, 0xba, 0x3e, 0x09, 0x6f, 0xa1, 0x12, 0xe4, 0x4d, 0x08,
+];
+/// Voter #1 private nullifier key (fresh throwaway, DISTINCT from #0).
+const DEMO_NSK_1: NullifierSecretKey = [
+    0x0a, 0x38, 0xd6, 0x14, 0x7f, 0xb2, 0x29, 0x5c, 0x81, 0x03, 0xe9, 0x46, 0x1b, 0xc7, 0x50, 0x8d, 0x32, 0xa4, 0x69, 0x15, 0xde, 0x07, 0xb8, 0x4f, 0x21, 0x9a, 0x63, 0x0c, 0xf5, 0x38, 0xab, 0x11,
+];
+/// Voter #1 private viewing key (fresh throwaway, DISTINCT from #0, top byte small).
+const DEMO_VSK_1: Scalar = [
+    0x07, 0x4a, 0xb1, 0x2f, 0x96, 0x53, 0x1d, 0xc8, 0x60, 0x0b, 0xe5, 0x37, 0x9f, 0x42, 0x71, 0x1a, 0xd3, 0x28, 0x5b, 0x0c, 0x6e, 0xa9, 0x14, 0xf7, 0x30, 0x8d, 0x52, 0xb6, 0x09, 0xe1, 0x47, 0x0a,
 ];
 
 #[tokio::main]
@@ -65,9 +75,17 @@ async fn main() -> anyhow::Result<()> {
     let program = msig_demo::msig_program()?;
     let _program_id = program.id();
 
-    // Voter keys.
-    let npk = NullifierPublicKey::from(&DEMO_NSK);
-    let vpk = ViewingPublicKey::from_scalar(DEMO_VSK);
+    // Voter keys — one DISTINCT rider pair per member index (so the two approves in this run do
+    // not collide their rider commitment/init-nullifier on-chain).
+    let approver_index = msig_demo::approver_index();
+    let (nsk, vsk): (NullifierSecretKey, Scalar) = match approver_index {
+        0 => (DEMO_NSK_0, DEMO_VSK_0),
+        1 => (DEMO_NSK_1, DEMO_VSK_1),
+        other => anyhow::bail!("APPROVER_INDEX {other} has no dedicated rider key pair (only 0,1 wired)"),
+    };
+    println!("approving as member index {approver_index}");
+    let npk = NullifierPublicKey::from(&nsk);
+    let vpk = ViewingPublicKey::from_scalar(vsk);
 
     // Shared depth-5 member set: root + approver membership path from the fixture.
     let member_root = msig_demo::member_root();

@@ -34,7 +34,7 @@ pub const MEMBER_SECRETS: [[u8; 32]; 3] = [[0xA7u8; 32], [0x42u8; 32], [0x5Cu8; 
 pub const APPROVER_INDEX: usize = 0;
 
 /// DEMO private key whose public-key-derived account becomes the ProposalState.
-pub const PROPOSAL_KEY: [u8; 32] = [0xd7, 0xd1, 0xfa, 0x65, 0xa6, 0xa0, 0x99, 0x51, 0x84, 0xbe, 0x69, 0x65, 0x16, 0x56, 0x10, 0x49, 0x96, 0xc5, 0x99, 0x65, 0x9c, 0x36, 0xbd, 0x42, 0xf0, 0x7c, 0x56, 0xca, 0xca, 0xbd, 0x0d, 0x09];
+pub const PROPOSAL_KEY: [u8; 32] = [0x2b, 0x91, 0x07, 0x3e, 0xd4, 0x6a, 0x18, 0xc2, 0x55, 0x7f, 0x0b, 0xa9, 0x3c, 0x61, 0x82, 0x4d, 0x10, 0xe7, 0x39, 0x5a, 0x8c, 0x24, 0xbb, 0x47, 0x06, 0x9d, 0x51, 0xf2, 0x33, 0xaa, 0x18, 0x07];
 
 /// DEMO private key whose public-key-derived account becomes the MembersRegistry.
 ///
@@ -44,10 +44,10 @@ pub const PROPOSAL_KEY: [u8; 32] = [0xd7, 0xd1, 0xfa, 0x65, 0xa6, 0xa0, 0x99, 0x
 pub const REGISTRY_KEY: [u8; 32] = [0xCCu8; 32];
 
 /// Unique proposal identifier frozen into the ProposalState.
-pub const PROPOSAL_ID: [u8; 32] = [0x32, 0xc3, 0x88, 0x2b, 0x1e, 0x00, 0xbf, 0x3f, 0xdc, 0x86, 0xbd, 0x64, 0xe6, 0xf1, 0x8d, 0xde, 0x0a, 0xe0, 0x55, 0x59, 0xe4, 0xcd, 0x8b, 0x06, 0xfb, 0x3f, 0xb4, 0x14, 0x24, 0x9c, 0xff, 0x9a];
+pub const PROPOSAL_ID: [u8; 32] = [0x9f, 0x1c, 0x47, 0xa2, 0x6b, 0xd8, 0x03, 0x55, 0xe1, 0x2a, 0x7c, 0x90, 0x4f, 0xb6, 0x18, 0x33, 0xcc, 0x05, 0x6e, 0x21, 0x88, 0xda, 0x47, 0x19, 0x02, 0xf3, 0x5b, 0xa0, 0x6d, 0xe4, 0x11, 0x72];
 
-/// Approvals required before the treasury releases. 1 → a single demo approval meets it.
-pub const THRESHOLD: u32 = 1;
+/// Approvals required before the treasury releases. 2 → a genuine M-of-N (>=2 distinct members).
+pub const THRESHOLD: u32 = 2;
 
 /// Treasury PDA seed. Also passed as `Execute.seed` so the chained drain authorises the PDA.
 pub const TREASURY_SEED: [u8; 32] = [0u8; 32];
@@ -67,16 +67,31 @@ pub fn member_root() -> [u8; 32] {
     msig_core::merkle_root(&member_leaves())
 }
 
-/// The approving member's secret.
+/// The index of the approving member for THIS approve run.
+///
+/// Reads the `APPROVER_INDEX` env var when set (so one `run_approve` bin can vote as member 0
+/// AND member 1 across two invocations); falls back to the compile-time [`APPROVER_INDEX`] const.
+/// Each index yields a DISTINCT member secret + a DISTINCT merkle_path against the SAME frozen
+/// member_root, hence a DISTINCT proposal-bound vote nullifier per member.
 #[must_use]
-pub fn approver_secret() -> [u8; 32] {
-    MEMBER_SECRETS[APPROVER_INDEX]
+pub fn approver_index() -> usize {
+    std::env::var("APPROVER_INDEX")
+        .ok()
+        .and_then(|v| v.trim().parse::<usize>().ok())
+        .filter(|i| *i < MEMBER_SECRETS.len())
+        .unwrap_or(APPROVER_INDEX)
 }
 
-/// The approving member's depth-5 membership path against [`member_leaves`].
+/// The approving member's secret (for [`approver_index`]).
+#[must_use]
+pub fn approver_secret() -> [u8; 32] {
+    MEMBER_SECRETS[approver_index()]
+}
+
+/// The approving member's depth-5 membership path against [`member_leaves`] (for [`approver_index`]).
 #[must_use]
 pub fn approver_path() -> MerkleProof {
-    msig_core::merkle_path(&member_leaves(), APPROVER_INDEX)
+    msig_core::merkle_path(&member_leaves(), approver_index())
 }
 
 /// The DEMO proposal signing keypair (claims the ProposalState in `create_proposal`).
