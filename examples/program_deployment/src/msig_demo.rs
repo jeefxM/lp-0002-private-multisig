@@ -36,6 +36,13 @@ pub const APPROVER_INDEX: usize = 0;
 /// DEMO private key whose public-key-derived account becomes the ProposalState.
 pub const PROPOSAL_KEY: [u8; 32] = [7u8; 32];
 
+/// DEMO private key whose public-key-derived account becomes the MembersRegistry.
+///
+/// BUG-1 FIX: the registry is a SIGNER-OWNED account (not a PDA). Each `Enroll` tx is signed by
+/// this key so the guest's `Claim::Authorized` of the registry passes apply (the registry is a
+/// signer). The guest does NOT require the registry to live at any specific PDA address.
+pub const REGISTRY_KEY: [u8; 32] = [0xCCu8; 32];
+
 /// Unique proposal identifier frozen into the ProposalState.
 pub const PROPOSAL_ID: [u8; 32] = [0x11u8; 32];
 
@@ -47,9 +54,6 @@ pub const TREASURY_SEED: [u8; 32] = [0u8; 32];
 
 /// Recipient PDA seed (payout target).
 pub const RECIPIENT_SEED: [u8; 32] = [1u8; 32];
-
-/// Shared MembersRegistry PDA seed. Every enroller targets the same registry.
-pub const REGISTRY_SEED: [u8; 32] = [0xCCu8; 32];
 
 /// The DEMO member leaves = `member_leaf(secret)` for each secret in [`MEMBER_SECRETS`].
 #[must_use]
@@ -95,10 +99,31 @@ pub fn proposal_account_id() -> anyhow::Result<AccountId> {
     )))
 }
 
-/// The MembersRegistry account id (a public PDA of msig), shared by all enrollers.
+/// The DEMO registry signing keypair (signs every `Enroll`, so the guest's `Claim::Authorized`
+/// of the registry passes apply).
+///
+/// # Errors
+/// Fails if [`REGISTRY_KEY`] is not a valid private key scalar.
+pub fn registry_keypair() -> anyhow::Result<PrivateKey> {
+    PrivateKey::try_new(REGISTRY_KEY).map_err(|e| anyhow::anyhow!("invalid demo registry key: {e}"))
+}
+
+/// The MembersRegistry account id = the registry keypair's public-key-derived id (BUG-1 FIX:
+/// signer-owned, NOT a PDA). Shared by all enrollers; each `Enroll` signs with [`registry_keypair`].
+///
+/// # Errors
+/// Fails if [`registry_keypair`] fails.
+pub fn registry_account_id() -> anyhow::Result<AccountId> {
+    Ok(AccountId::from(&PublicKey::new_from_private_key(
+        &registry_keypair()?,
+    )))
+}
+
+/// The on-chain `authenticated_transfer` program id — the treasury's eventual owner. Passed to
+/// `InitTreasury` so the chained init claims the treasury PDA under that program.
 #[must_use]
-pub fn registry_account_id(program_id: &nssa_core::program::ProgramId) -> AccountId {
-    AccountId::for_public_pda(program_id, &PdaSeed::new(REGISTRY_SEED))
+pub fn transfer_program_id() -> nssa_core::program::ProgramId {
+    nssa::program_methods::AUTHENTICATED_TRANSFER_ID
 }
 
 /// The treasury account id (a public PDA of msig); funds drain from here on execute.

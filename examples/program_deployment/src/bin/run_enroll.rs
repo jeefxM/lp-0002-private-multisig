@@ -6,8 +6,11 @@
 //! registry's `member_root` equals [`msig_demo::member_root`] — the exact root that
 //! `create_proposal` freezes and `approve` proves membership against.
 //!
-//! The registry is a program-owned public PDA of msig, so the tx needs no signer (the guest
-//! claims/authorizes it).
+//! BUG-1 FIX: the registry is a SIGNER-OWNED account (the demo registry keypair), NOT a PDA. Each
+//! enroll is signed by [`msig_demo::registry_keypair`] so the guest's `Claim::Authorized` of the
+//! registry passes apply (the registry is a signer). The guest does not require the registry at any
+//! specific PDA address. Nonces advance 0,1,2 as each enroll lands (the registry's first claim and
+//! every subsequent signed enroll bumps its public-account nonce); submit them in order.
 //!
 //! NOTE: ON-CHAIN when run. Build-only is safe. To fire it:
 //!   NSSA_WALLET_HOME_DIR=/root/lez-v012/wallet-home-lp0002 \
@@ -16,6 +19,7 @@
 use common::transaction::NSSATransaction;
 use nssa::public_transaction::{Message, WitnessSet};
 use nssa::PublicTransaction;
+use nssa_core::account::Nonce;
 use program_deployment::msig_demo;
 use sequencer_service_rpc::RpcClient as _;
 use wallet::WalletCore;
@@ -31,20 +35,27 @@ async fn main() -> anyhow::Result<()> {
     let program = msig_demo::msig_program()?;
     let program_id = program.id();
 
-    // Shared registry: a public PDA of msig (program-owned/PDA-authorised → no signer, no nonce).
-    let registry_id = msig_demo::registry_account_id(&program_id);
-    println!("registry account: {registry_id}");
+    // Signer-owned registry = the registry keypair's derived id; signed every enroll.
+    let registry_key = msig_demo::registry_keypair()?;
+    let registry_id = msig_demo::registry_account_id()?;
+    println!("registry account (signer-owned): {registry_id}");
     println!(
         "target member_root after all enrolls: {}",
         hex::encode(msig_demo::member_root())
     );
 
-    // One enroll tx per demo member leaf; submit them in sequence.
+    // One enroll tx per demo member leaf; nonce advances 0,1,2. Submit in order (each must land
+    // before the next, since the signed registry's nonce increments per applied enroll).
     for (i, leaf) in msig_demo::member_leaves().into_iter().enumerate() {
         println!("enrolling leaf {i}: {}", hex::encode(leaf));
         let instruction = msig_core::MsigInstruction::Enroll { leaf };
-        let message = Message::try_new(program_id, vec![registry_id], vec![], instruction)?;
-        let witness_set = WitnessSet::for_message(&message, &[]);
+        let message = Message::try_new(
+            program_id,
+            vec![registry_id],
+            vec![Nonce(i as u128)],
+            instruction,
+        )?;
+        let witness_set = WitnessSet::for_message(&message, &[&registry_key]);
         let tx = PublicTransaction::new(message, witness_set);
 
         let tx_hash = wallet

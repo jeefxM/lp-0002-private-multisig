@@ -48,6 +48,19 @@ pub enum MsigInstruction {
     },
     /// Append a member's public leaf to the MembersRegistry and recompute `member_root`.
     Enroll { leaf: [u8; 32] },
+    /// Bootstrap the treasury PDA on-chain. The treasury at `for_public_pda(msig_id, seed)` is a
+    /// fresh (uninitialized) account; a plain top-level transfer to it is rejected because
+    /// `authenticated_transfer` would `Claim::Authorized` it and the PDA can never sign (see the
+    /// `msig_fund_treasury_pda_rejected` write-up). InitTreasury chains to `authenticated_transfer`
+    /// with an amount-0 initialize and `pda_seeds = [seed]`, so the callee claims the treasury PDA
+    /// under msig's PDA authorization, leaving it `authenticated_transfer`-owned with balance 0.
+    /// A subsequent plain transfer (no claim, owner is now non-default) funds it, and `Execute`
+    /// later drains it. `transfer_program_id` is the on-chain `authenticated_transfer` program id
+    /// (the treasury's eventual owner); the client supplies it from `AUTHENTICATED_TRANSFER_ID`.
+    InitTreasury {
+        seed: [u8; 32],
+        transfer_program_id: [u32; 8],
+    },
     /// Threshold-gated treasury release: once approval_count >= threshold, drain the proposal's
     /// treasury (a PDA of this program owned by authenticated_transfer, authorized by `seed`) to
     /// the recipient via a chained call.

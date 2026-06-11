@@ -169,6 +169,32 @@ fn execute(
     (post, vec![chained_call])
 }
 
+/// Bootstrap the treasury PDA. pre_states = [treasury], where `treasury` is the fresh
+/// `for_public_pda(self_program_id, seed)` account (default-owned, balance 0). We authorize it via
+/// `pda_seeds = [seed]` and chain to `authenticated_transfer`'s amount-0 initialize, which claims
+/// it `Authorized` — leaving the treasury `authenticated_transfer`-owned (balance 0). msig itself
+/// mutates nothing; the chained call performs the claim.
+fn init_treasury(
+    treasury: AccountWithMetadata,
+    seed: [u8; 32],
+    transfer_program_id: [u32; 8],
+) -> (Vec<AccountPostState>, Vec<ChainedCall>) {
+    let mut treasury_authorized = treasury.clone();
+    treasury_authorized.is_authorized = true;
+
+    let chained_call = ChainedCall {
+        program_id: transfer_program_id,
+        pre_states: vec![treasury_authorized],
+        // amount-0 → authenticated_transfer's `initialize_account` path.
+        instruction_data: risc0_zkvm::serde::to_vec(&0_u128).unwrap(),
+        pda_seeds: vec![PdaSeed::new(seed)],
+    };
+
+    // msig mutates none of its own accounts; the chained call claims/initializes the treasury.
+    let post = vec![AccountPostState::new(treasury.account)];
+    (post, vec![chained_call])
+}
+
 fn main() {
     let (
         ProgramInput {
@@ -205,6 +231,26 @@ fn main() {
                 return;
             };
             enroll(registry, leaf)
+        }
+        MsigInstruction::InitTreasury {
+            seed,
+            transfer_program_id,
+        } => {
+            let Ok([treasury]) = <[_; 1]>::try_from(pre_states.clone()) else {
+                return;
+            };
+            let (post_states, chained_calls) =
+                init_treasury(treasury, seed, transfer_program_id);
+            ProgramOutput::new(
+                self_program_id,
+                caller_program_id,
+                instruction_words,
+                pre_states,
+                post_states,
+            )
+            .with_chained_calls(chained_calls)
+            .write();
+            return;
         }
         MsigInstruction::Execute { threshold, seed } => {
             let Ok([proposal, treasury, recipient]) = <[_; 3]>::try_from(pre_states.clone()) else {

@@ -3242,6 +3242,317 @@ pub mod tests {
         println!("ENROLL_APPLY_RESULT: {result:?}");
         assert!(result.is_err(), "expected enroll to reject at apply (PDA not authorized)");
     }
+
+    /// BUG-2 ROOT CAUSE (kept regression, was the Task-1 probe) — why the on-chain treasury-fund (a plain
+    /// authenticated_transfer public tx to the uninitialized treasury PDA) was silently dropped at
+    /// block-build. Builds the EXACT tx the dropped fund used and applies it in-process, testing
+    /// THREE recipient arms to isolate the rule:
+    ///   (a) fresh keypair recipient that does NOT co-sign → must fail,
+    ///   (b) fresh keypair recipient that DOES co-sign      → must succeed,
+    ///   (c) the msig treasury PDA (can never co-sign)      → must fail with the same error as (a).
+    /// Conclusion: there is NO PDA-specific rule. authenticated_transfer's credit-of-a-fresh
+    /// recipient emits `Claim::Authorized` (recipient.program_owner == DEFAULT), which apply only
+    /// accepts when `is_authorized(recipient)` = signer || authorized_pda. Top-level public txs have
+    /// empty authorized_pdas, so the recipient must be a SIGNER. A PDA address holds no key and can
+    /// never sign, so a plain transfer can never bootstrap a fresh PDA treasury → the fund dropped
+    /// with InvalidProgramBehavior(ClaimedUnauthorizedAccount).
+    #[test]
+    fn msig_fund_treasury_pda_rejected() {
+        let transfer = Program::authenticated_transfer_program();
+        let msig = Program::msig();
+        let amount: u128 = 50;
+
+        // Sender mirrors the live payer 5BbQE3: authenticated_transfer-owned with balance.
+        let sender_key = PrivateKey::try_new([99u8; 32]).unwrap();
+        let sender_id = AccountId::from(&PublicKey::new_from_private_key(&sender_key));
+
+        // Helper: seed a fresh state with the funded auth-transfer-owned sender and apply a
+        // 2-account transfer tx (sender -> recipient, `amount`), signed by `signers`.
+        let run = |recipient_id: AccountId, signers: &[&PrivateKey], nonces: Vec<Nonce>| {
+            let mut state = V03State::new_with_genesis_accounts(
+                &[(sender_id, 150u128)],
+                vec![],
+                0,
+            )
+            .with_test_programs();
+            state.insert_program(Program::msig());
+
+            let message = public_transaction::Message::try_new(
+                transfer.id(),
+                vec![sender_id, recipient_id],
+                nonces,
+                amount,
+            )
+            .unwrap();
+            let witness_set = public_transaction::WitnessSet::for_message(&message, signers);
+            let tx = PublicTransaction::new(message, witness_set);
+            (state.transition_from_public_transaction(&tx, 1, 0), state)
+        };
+
+        // (a) fresh keypair recipient, NOT co-signing → reject (recipient claim unauthorized).
+        let plain_key = PrivateKey::try_new([77u8; 32]).unwrap();
+        let plain_id = AccountId::from(&PublicKey::new_from_private_key(&plain_key));
+        let (res_a, _) = run(plain_id, &[&sender_key], vec![Nonce(0)]);
+        println!("PROBE_A (plain recipient, no co-sign): {res_a:?}");
+        assert!(res_a.is_err(), "plain non-signing recipient must fail");
+
+        // (b) fresh keypair recipient, DOES co-sign → succeeds (recipient is now a signer).
+        let (res_b, state_b) = run(plain_id, &[&sender_key, &plain_key], vec![Nonce(0), Nonce(0)]);
+        println!("PROBE_B (plain recipient, co-signed): {res_b:?}");
+        assert!(res_b.is_ok(), "co-signed plain recipient must succeed: {res_b:?}");
+        assert_eq!(state_b.get_account_by_id(plain_id).balance, amount);
+        assert_eq!(state_b.get_account_by_id(plain_id).program_owner, transfer.id());
+
+        // (c) the msig treasury PDA (the dropped on-chain fund) — can NEVER co-sign → reject.
+        let treasury_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new([0u8; 32]));
+        let (res_c, _) = run(treasury_id, &[&sender_key], vec![Nonce(0)]);
+        println!("PROBE_C (treasury PDA, the dropped fund): {res_c:?}");
+        assert!(res_c.is_err(), "fresh treasury PDA fund must fail");
+
+        // (a) and (c) fail for the IDENTICAL reason: claimed-unauthorized recipient. No PDA rule.
+        assert!(
+            matches!(
+                res_a,
+                Err(NssaError::InvalidProgramBehavior(
+                    InvalidProgramBehaviorError::ClaimedUnauthorizedAccount { .. }
+                ))
+            ),
+            "arm (a) must be ClaimedUnauthorizedAccount, got {res_a:?}"
+        );
+        assert!(
+            matches!(
+                res_c,
+                Err(NssaError::InvalidProgramBehavior(
+                    InvalidProgramBehaviorError::ClaimedUnauthorizedAccount { .. }
+                ))
+            ),
+            "arm (c) must be ClaimedUnauthorizedAccount, got {res_c:?}"
+        );
+    }
+
+    /// TASK 2 — the on-chain-reproducible treasury bootstrap, end to end.
+    ///
+    /// Proves the WHOLE real-tx sequence (no genesis seeding of the treasury/recipient): each step
+    /// is a public tx applied through `transition_from_public_transaction`, exactly as the runners
+    /// fire it on-chain.
+    ///   (1) InitTreasury(treasury_seed): msig chains to authenticated_transfer's amount-0 init with
+    ///       pda_seeds=[treasury_seed] → treasury PDA becomes authenticated_transfer-owned, bal 0.
+    ///   (2) plain authenticated_transfer (sender → treasury): treasury now non-default-owned, so
+    ///       the credit takes the no-claim branch and funds it WITHOUT a signer for the PDA.
+    ///   (3) InitTreasury(recipient_seed): same mechanism initializes the recipient PDA so the
+    ///       execute credit lands.
+    ///   (4) CreateProposal (signed by the demo proposal keypair) freezes the member_root, count 0.
+    ///   (5) approval reaching THRESHOLD is simulated by advancing the proposal's count (membership
+    ///       is proven by the live ZK approve + circuit tests; create/init/execute are public).
+    ///   (6) Execute drains the treasury to the recipient.
+    /// Asserts the final balances. DEV_MODE=1.
+    #[test]
+    fn msig_treasury_bootstrap_then_execute() {
+        let msig = Program::msig();
+        let transfer = Program::authenticated_transfer_program();
+        let transfer_id_words: [u32; 8] = transfer.id();
+
+        // Demo fixture (== msig_demo.rs).
+        let member_secrets: [[u8; 32]; 3] = [[0xA7u8; 32], [0x42u8; 32], [0x5Cu8; 32]];
+        let proposal_key_bytes = [7u8; 32];
+        let proposal_id_bytes = [0x11u8; 32];
+        let threshold: u32 = 1;
+        let treasury_seed = [0u8; 32];
+        let recipient_seed = [1u8; 32];
+        let fund_amount: u128 = 1000;
+
+        let leaves: Vec<[u8; 32]> = member_secrets.iter().map(msig_core::member_leaf).collect();
+        let member_root = msig_core::merkle_root(&leaves);
+
+        let treasury_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new(treasury_seed));
+        let recipient_id = AccountId::for_public_pda(&msig.id(), &PdaSeed::new(recipient_seed));
+
+        // Funder mirrors the live payer 5BbQE3: authenticated_transfer-owned, funded.
+        let funder_key = PrivateKey::try_new([99u8; 32]).unwrap();
+        let funder_id = AccountId::from(&PublicKey::new_from_private_key(&funder_key));
+
+        let mut state =
+            V03State::new_with_genesis_accounts(&[(funder_id, 5000u128)], vec![], 0)
+                .with_test_programs();
+        state.insert_program(Program::msig());
+
+        // Both PDAs start fresh (uninitialized).
+        assert_eq!(state.get_account_by_id(treasury_id), Account::default());
+        assert_eq!(state.get_account_by_id(recipient_id), Account::default());
+
+        // ── (1) InitTreasury(treasury) ──
+        let init_treasury_ix = msig_core::MsigInstruction::InitTreasury {
+            seed: treasury_seed,
+            transfer_program_id: transfer_id_words,
+        };
+        let init_treasury_msg = public_transaction::Message::try_new(
+            msig.id(),
+            vec![treasury_id],
+            vec![], // no signer — PDA is authorized via the chained pda_seeds
+            init_treasury_ix,
+        )
+        .unwrap();
+        let init_treasury_ws =
+            public_transaction::WitnessSet::for_message(&init_treasury_msg, &[]);
+        let init_treasury_tx = PublicTransaction::new(init_treasury_msg, init_treasury_ws);
+        state
+            .transition_from_public_transaction(&init_treasury_tx, 1, 0)
+            .expect("InitTreasury(treasury) must succeed");
+
+        let t = state.get_account_by_id(treasury_id);
+        assert_eq!(t.program_owner, transfer.id(), "treasury now auth-transfer-owned");
+        assert_eq!(t.balance, 0, "treasury initialized at balance 0");
+
+        // ── (2) plain transfer funds the (now-owned) treasury — no signer for the PDA ──
+        let fund_msg = public_transaction::Message::try_new(
+            transfer.id(),
+            vec![funder_id, treasury_id],
+            vec![Nonce(0)], // only the funder signs
+            fund_amount,
+        )
+        .unwrap();
+        let fund_ws = public_transaction::WitnessSet::for_message(&fund_msg, &[&funder_key]);
+        let fund_tx = PublicTransaction::new(fund_msg, fund_ws);
+        state
+            .transition_from_public_transaction(&fund_tx, 2, 0)
+            .expect("funding the owned treasury must succeed");
+        assert_eq!(
+            state.get_account_by_id(treasury_id).balance,
+            fund_amount,
+            "treasury funded"
+        );
+
+        // ── (3) InitTreasury(recipient) so the execute credit lands ──
+        let init_recip_ix = msig_core::MsigInstruction::InitTreasury {
+            seed: recipient_seed,
+            transfer_program_id: transfer_id_words,
+        };
+        let init_recip_msg = public_transaction::Message::try_new(
+            msig.id(),
+            vec![recipient_id],
+            vec![],
+            init_recip_ix,
+        )
+        .unwrap();
+        let init_recip_ws = public_transaction::WitnessSet::for_message(&init_recip_msg, &[]);
+        let init_recip_tx = PublicTransaction::new(init_recip_msg, init_recip_ws);
+        state
+            .transition_from_public_transaction(&init_recip_tx, 3, 0)
+            .expect("InitTreasury(recipient) must succeed");
+        assert_eq!(
+            state.get_account_by_id(recipient_id).program_owner,
+            transfer.id(),
+            "recipient now auth-transfer-owned"
+        );
+
+        // ── (4) CreateProposal (signed) ──
+        let proposal_key = PrivateKey::try_new(proposal_key_bytes).unwrap();
+        let proposal_id = AccountId::from(&PublicKey::new_from_private_key(&proposal_key));
+        let create_ix = msig_core::MsigInstruction::CreateProposal {
+            member_root,
+            proposal_id: proposal_id_bytes,
+        };
+        let create_msg = public_transaction::Message::try_new(
+            msig.id(),
+            vec![proposal_id],
+            vec![Nonce(0)],
+            create_ix,
+        )
+        .unwrap();
+        let create_ws = public_transaction::WitnessSet::for_message(&create_msg, &[&proposal_key]);
+        let create_tx = PublicTransaction::new(create_msg, create_ws);
+        state
+            .transition_from_public_transaction(&create_tx, 4, 0)
+            .expect("CreateProposal must succeed");
+
+        // ── (5) simulate approval reaching THRESHOLD on the same account ──
+        let mut approved_data = Vec::new();
+        approved_data.extend_from_slice(&member_root);
+        approved_data.extend_from_slice(&proposal_id_bytes);
+        approved_data.extend_from_slice(&threshold.to_le_bytes());
+        state.force_insert_account(
+            proposal_id,
+            Account {
+                program_owner: msig.id(),
+                data: approved_data.try_into().unwrap(),
+                ..Account::default()
+            },
+        );
+
+        // ── (6) Execute drains the treasury to the recipient ──
+        let exec_ix = msig_core::MsigInstruction::Execute {
+            threshold,
+            seed: treasury_seed,
+        };
+        let exec_msg = public_transaction::Message::try_new(
+            msig.id(),
+            vec![proposal_id, treasury_id, recipient_id],
+            vec![],
+            exec_ix,
+        )
+        .unwrap();
+        let exec_ws = public_transaction::WitnessSet::for_message(&exec_msg, &[]);
+        let exec_tx = PublicTransaction::new(exec_msg, exec_ws);
+        state
+            .transition_from_public_transaction(&exec_tx, 5, 0)
+            .expect("Execute must drain the bootstrapped treasury");
+
+        assert_eq!(state.get_account_by_id(treasury_id).balance, 0, "treasury drained");
+        assert_eq!(
+            state.get_account_by_id(recipient_id).balance,
+            fund_amount,
+            "recipient received the full treasury"
+        );
+    }
+
+    /// TASK 3 — the enroll BUG-1 fix, client-side. The registry is a SIGNER-OWNED account (a
+    /// dedicated registry keypair), not a PDA. Each enroll tx is signed by that key, so the guest's
+    /// `Claim::Authorized` of the registry passes apply (the registry is a signer). Drives 3 Enroll
+    /// public txs and asserts the registry root == merkle_root(demo leaves) and leaf_count == 3.
+    #[test]
+    fn msig_enroll_signer_owned_appends() {
+        let msig = Program::msig();
+        let member_secrets: [[u8; 32]; 3] = [[0xA7u8; 32], [0x42u8; 32], [0x5Cu8; 32]];
+        let leaves: Vec<[u8; 32]> = member_secrets.iter().map(msig_core::member_leaf).collect();
+        let expected_root = msig_core::merkle_root(&leaves);
+
+        // Dedicated registry keypair — the registry account is its derived id, signed each enroll.
+        let registry_key = PrivateKey::try_new([0xCCu8; 32]).unwrap();
+        let registry_id = AccountId::from(&PublicKey::new_from_private_key(&registry_key));
+
+        let mut state =
+            V03State::new_with_genesis_accounts(&[], vec![], 0).with_test_programs();
+        state.insert_program(Program::msig());
+
+        for (i, leaf) in leaves.iter().enumerate() {
+            let nonce = Nonce(i as u128);
+            let instruction = msig_core::MsigInstruction::Enroll { leaf: *leaf };
+            let message = public_transaction::Message::try_new(
+                msig.id(),
+                vec![registry_id],
+                vec![nonce],
+                instruction,
+            )
+            .unwrap();
+            let witness_set =
+                public_transaction::WitnessSet::for_message(&message, &[&registry_key]);
+            let tx = PublicTransaction::new(message, witness_set);
+            state
+                .transition_from_public_transaction(&tx, (i + 1) as u64, 0)
+                .unwrap_or_else(|e| panic!("enroll {i} (signer-owned registry) must succeed: {e:?}"));
+        }
+
+        let reg = state.get_account_by_id(registry_id);
+        assert_eq!(reg.program_owner, msig.id(), "registry is msig-owned after first claim");
+        let d = reg.data.clone().into_inner();
+        assert_eq!(&d[..32], &expected_root, "registry root == demo member_root");
+        assert_eq!(
+            u32::from_le_bytes(d[32..36].try_into().unwrap()),
+            3,
+            "leaf_count == 3"
+        );
+    }
+
     #[test]
     fn public_chained_call() {
         let program = Program::chain_caller();
