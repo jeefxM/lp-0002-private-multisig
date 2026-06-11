@@ -1,0 +1,62 @@
+on:
+  push:
+    branches:
+      - main
+      - lp0002-v012
+    paths:
+      - "programs/msig/**"
+      - "test_program_methods/guest/src/bin/msig.rs"
+      - "examples/program_deployment/**"
+      - "nssa/src/state.rs"
+      - "nssa/src/privacy_preserving_transaction/circuit.rs"
+      - ".github/workflows/lp0002-ci.yml"
+
+  pull_request:
+    paths:
+      - "programs/msig/**"
+      - "test_program_methods/guest/src/bin/msig.rs"
+      - "examples/program_deployment/**"
+      - "nssa/src/state.rs"
+      - "nssa/src/privacy_preserving_transaction/circuit.rs"
+      - ".github/workflows/lp0002-ci.yml"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+name: LP-0002 msig
+
+jobs:
+  msig-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Logic coverage runs under RISC0_DEV_MODE=1 (fake receipts). ZK soundness
+    # evidence is the separate real RISC0_DEV_MODE=0 approve STARK plus its
+    # landing on the live sequencer (see docs/LP-0002-solution.md). The runners
+    # that touch the live testnet are build-only here.
+    env:
+      RISC0_DEV_MODE: "1"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.head_ref }}
+
+      - uses: ./.github/actions/install-system-deps
+
+      - uses: ./.github/actions/install-risc0
+
+      - uses: ./.github/actions/install-logos-blockchain-circuits
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install active toolchain
+        run: rustup install
+
+      - name: msig core unit tests
+        run: cargo test -p msig_core
+
+      - name: msig state + circuit tests (RISC0_DEV_MODE=1)
+        run: cargo test -p nssa msig_
+
+      - name: Build the LP-0002 client runners
+        run: cargo build --release -p program_deployment --bins

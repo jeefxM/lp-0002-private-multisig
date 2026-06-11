@@ -1,0 +1,61 @@
+NOTICE
+======
+
+This repository is an LP-0002 solution built as a fork of the Logos nssa project,
+version 0.1.2 (the Logos Execution Zone, "LEZ").
+
+Upstream
+--------
+The bulk of this repository is upstream Logos nssa v0.1.2, including the Logos Execution
+Environment, the sequencer, wallet, indexer, explorer, privacy-preserving transaction
+machinery, and the existing programs and tooling. All of that is the work of the Logos
+project and is distributed under the terms in the LICENSE file in this repository.
+
+Project: Logos nssa (Logos Execution Zone)
+Version forked: v0.1.2
+Upstream README: README.md
+
+Our contribution (LP-0002 anonymous M-of-N multisig)
+----------------------------------------------------
+The following paths are authored as part of this LP-0002 submission and are NOT part of
+upstream nssa v0.1.2. They add an anonymous M-of-N multisig program to LEZ:
+
+  programs/msig/core/src/lib.rs
+      msig_core: depth-5 Merkle member scheme, MsigInstruction
+      (CreateProposal, Approve, Enroll, Execute, InitTreasury), domain-separated
+      leaf/nullifier hashing, account layouts.
+
+  test_program_methods/guest/src/bin/msig.rs
+      the on-chain msig guest.
+
+  examples/program_deployment/src/msig_demo.rs
+      shared LP-0002 demo fixture.
+
+  examples/program_deployment/src/bin/run_deploy.rs
+  examples/program_deployment/src/bin/run_enroll.rs
+  examples/program_deployment/src/bin/run_init_treasury.rs
+  examples/program_deployment/src/bin/run_create_proposal.rs
+  examples/program_deployment/src/bin/run_approve.rs
+  examples/program_deployment/src/bin/run_execute.rs
+  examples/program_deployment/src/bin/run_assert_state.rs
+      LP-0002 client runners (run_assert_state is the demo's read-only green/red gate).
+
+  msig tests in nssa/src/state.rs and
+  nssa/src/privacy_preserving_transaction/circuit.rs
+      added msig public-path / bootstrap / compose / approve tests.
+
+  LP-0002 packaging:
+      README-LP0002.md
+      NOTICE
+      scripts/lp0002-demo.sh
+      docs/LP-0002-solution.md
+      docs/lp0002-benchmarks.md
+      docs/lp0002-reliability.md
+      idl/lp0002-msig.idl.json
+      .github/workflows/lp0002-ci.yml
+
+These additions are licensed on the same terms as the upstream LICENSE file.
+
+The Cargo.toml workspace member entry "programs/msig/core" and the dependency line
+msig_core = { path = "programs/msig/core" } were added to wire the contribution into the
+upstream workspace.

@@ -1,3 +1,10 @@
+> **LP-0002 fork.** This repository is a fork of Logos nssa v0.1.2 that adds an
+> **anonymous M-of-N multisig** to LEZ (the member set is public; an individual
+> approval is anonymous among that set via a zero-knowledge membership proof). For
+> the LP-0002 contribution, how to run it, the deployed program id, and the live
+> on-chain evidence, see **[README-LP0002.md](README-LP0002.md)**. Everything below
+> is the upstream nssa README, unchanged. See [NOTICE](NOTICE) for attribution.
+
 # Logos Execution Zone (LEZ)
 
 Logos Execution Zone (LEZ) is a programmable blockchain that cleanly separates public and private state while keeping them fully interoperable. Developers can build apps that operate across transparent and privacy-preserving accounts without changing their logic. Privacy is enforced by the protocol itself through zero-knowledge proofs (ZKPs), so it is always available and automatic.

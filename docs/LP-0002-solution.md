@@ -1,0 +1,506 @@
+# Solution: LP-0002 Private M-of-N Multisig
+
+**Submitted by:** Davit Maisuradze ([@jeefxM](https://github.com/jeefxM))
+
+## Summary
+
+A private M-of-N multisig primitive for the Logos Execution Zone (LEZ). Members
+enroll a public leaf into an on-chain registry, a proposal freezes the member
+set, and each approval is a privacy-preserving (ZK) transaction that proves
+membership in the frozen member set and records a proposal-bound nullifier. The
+on-chain ProposalState records only the member root, the proposal id, a public
+approval count, and an opaque list of vote nullifiers. It does not record which
+member approved. Once the count reaches the threshold, an Execute instruction
+fires a treasury release through a chained call to the `authenticated_transfer`
+builtin.
+
+The design gives approver anonymity within the enrolled set of N public members;
+the approval count is public, which specific member approved is hidden.
+
+- **Per-member ZK membership proofs.** Each approval is a RISC0 zkVM
+  privacy-preserving transaction proving a depth-5 Merkle membership path against
+  the proposal's frozen `member_root`, with the member secret carried as a
+  private witness. The threshold is enforced by a public approval count, not by
+  signature aggregation. This is NOT FROST signature aggregation.
+- **Proposal-bound nullifiers** prevent a member from approving the same
+  proposal twice, while leaving the same member free to approve a different
+  proposal.
+- **Threshold-gated treasury release.** Execute checks `count >= M` and chains a
+  debit of the treasury PDA to the recipient via `authenticated_transfer`.
+- **Live on LEZ testnet** (`testnet.lez.logos.co`) under deployed program id
+  `HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`, with a full 1-of-N end-to-end
+  run and a 2-of-3 threshold run (the M-of-N proof). One approval was generated
+  by a local `RISC0_DEV_MODE=0` run and landed on chain as a real STARK.
+
+## Repository + how to run
+
+- **Repo:** the nssa v0.1.2 fork on branch `lp0002-v012`. Our LP-0002
+  contribution lives under `programs/msig/`, the guest at
+  `test_program_methods/guest/src/bin/msig.rs`, the client runners at
+  `examples/program_deployment/src/`, and the tests in `nssa/src/state.rs` and
+  `nssa/src/privacy_preserving_transaction/circuit.rs`.
+- **End-to-end demo script:** `scripts/lp0002-demo.sh`. It drives the 2-of-3
+  threshold flow against the sequencer the wallet config points at: enroll three
+  members, bootstrap the treasury, fund it (a wallet `auth-transfer` to the
+  treasury PDA captured from `run_init_treasury`'s output, gated on a `PAYER`
+  account id), create the proposal, approve as member 0 and member 1 (each a real
+  `RISC0_DEV_MODE=0` proof, about 133 s each), execute at threshold 2, and assert
+  the on-chain outcome via `run_assert_state` (the green/red gate). The 1-of-N run
+  is earlier historical evidence on the same program id; the script drives the
+  2-of-3 path, which is the M-of-N proof. The individual steps are the same
+  runners that produced the live 2-of-3 ledger below; the script orchestrates
+  them but has not yet been executed start-to-finish as a single invocation.
+- **Local logic tests** (fast, fake-receipt logic coverage):
+
+  ```
+  cargo test -p nssa msig_
+  ```
+
+  This runs the 8 public-tx / state tests in `nssa/src/state.rs` and the 4
+  circuit tests in `nssa/src/privacy_preserving_transaction/circuit.rs`. The
+  functional tests run under `RISC0_DEV_MODE=1` (fake receipts) for logic
+  coverage.
+- **Real proof + on-chain approve** (about 133 s per proof):
+
+  ```
+  NSSA_WALLET_HOME_DIR=/root/lez-v012/wallet-home-lp0002 \
+    RISC0_DEV_MODE=0 APPROVER_INDEX=0 \
+    cargo run --release -p program_deployment --bin run_approve
+  ```
+
+- **Live evidence:** see Supporting Materials below for the canonical on-chain
+  ledger (both the 1-of-N end-to-end run and the 2-of-3 threshold run) with all
+  tx hashes and block numbers.
+
+## Approach
+
+The design is convergent with two well-known specification resources named in
+the prize: Semaphore (anonymous signalling via a membership Merkle tree plus a
+per-action nullifier) and MACI (anti-collusion vote accounting). We did not port
+either codebase. We took the structural pattern those designs settled on (a
+public leaf commitment in a Merkle set, an in-circuit membership proof, and a
+domain-separated nullifier bound to the action) and implemented it natively for
+the LEZ privacy-preserving transaction model and the RISC0 zkVM.
+
+**Our authorship** is scoped to:
+
+- `programs/msig/core/src/lib.rs` (`msig_core`): the shared types and the
+  Semaphore-style member Merkle scheme. Depth-5 Merkle member scheme,
+  `MsigInstruction { CreateProposal, Approve, Enroll, Execute, InitTreasury }`,
+  domain-separated leaf hashing (`H(LEAF_DOMAIN || secret)`) and nullifier
+  hashing (`H(NULL_DOMAIN || secret || proposal_id)`), and the error / assert
+  strings. Hashing uses `risc0_zkvm::sha` so it is byte-identical in-guest and
+  host-side.
+- `test_program_methods/guest/src/bin/msig.rs`: the on-chain guest that runs all
+  five instructions inside the zkVM.
+- `examples/program_deployment/src/msig_demo.rs` and
+  `examples/program_deployment/src/bin/run_*.rs`: the client runners and the
+  shared demo fixture.
+- The tests in `nssa/src/state.rs` (the `msig_*` public-tx, bootstrap, and
+  compose tests) and `nssa/src/privacy_preserving_transaction/circuit.rs` (the
+  approve tests, including one real `RISC0_DEV_MODE=0` STARK and two negatives).
+
+Everything else (the privacy-preserving transaction circuit, the public-tx apply
+path, the `authenticated_transfer` builtin, the wallet, the sequencer) is
+upstream **nssa v0.1.2**, which we credit and build on.
+
+### How a member enrolls and approves
+
+1. A member picks a secret and publishes only the leaf `H(LEAF_DOMAIN || secret)`
+   into the MembersRegistry via `Enroll`. The registry recomputes
+   `member_root` over the padded depth-5 tree.
+2. `CreateProposal` claims a fresh ProposalState account and freezes
+   `member_root` and `proposal_id` into it with `approval_count = 0`.
+3. `Approve` is a privacy-preserving transaction. It proves, in-circuit, that the
+   approver's leaf is in the frozen `member_root` (without revealing which leaf),
+   derives the proposal-bound nullifier, rejects a double vote, and increments
+   the public count.
+4. Once `approval_count >= threshold`, `Execute` drains the treasury to the
+   recipient via a chained `authenticated_transfer` call.
+
+## Write-up
+
+### 1. Threshold scheme
+
+The threshold is enforced by **per-member ZK membership proofs plus a public
+approval count**, not by signature aggregation. This is NOT FROST signature
+aggregation, and there is no aggregate signature or interactive signing round.
+
+Each approval is an independent privacy-preserving transaction. Inside the
+RISC0 zkVM the `approve` guest:
+
+- recomputes the approver's leaf `H(LEAF_DOMAIN || secret)` from the private
+  witness secret,
+- replays the depth-5 Merkle path (`root_from_path`) and asserts it reproduces
+  the proposal's frozen `member_root` (assert string: "approver is not an
+  enrolled member"),
+- derives the proposal-bound vote nullifier and asserts it is not already
+  present (no double vote),
+- increments `approval_count` by 1 and appends the nullifier.
+
+The threshold gate lives in `Execute`: it reads `approval_count` from the
+ProposalState and asserts `count >= threshold` (assert string: "approval count
+below threshold") before chaining the treasury debit. M is supplied as the
+`Execute.threshold` argument, so one deployed program supports any M-of-N up to
+the depth-5 capacity of 32 members.
+
+The member root is a depth-5 binary Merkle tree (`TREE_DEPTH = 5`, 32 slots,
+unused slots padded with `EMPTY_LEAF`). `merkle_root`, `merkle_path`, and
+`root_from_path` in `msig_core` are the single source of truth used in-guest, in
+the circuit tests, and by the client runners, so every party computes the root
+and paths identically.
+
+The 2-of-3 live run is the M-of-N proof: two distinct members (member 0 and
+member 1) each submitted an independent approval against the same frozen
+`member_root`, the count advanced 0 -> 1 -> 2, and Execute released the treasury
+at threshold 2. The two vote nullifiers are distinct because they come from two
+different member secrets, and the proposal state stores only root + id + count +
+opaque nullifiers, with no member identity.
+
+### 2. Nullifier design
+
+A vote nullifier is `H(NULL_DOMAIN || secret || proposal_id)`, where
+`NULL_DOMAIN = b"/lp0002/null/\x00"` is a domain separator distinct from the leaf
+domain `b"/lp0002/leaf/\x00"`.
+
+Binding the nullifier to `proposal_id` gives exactly the property a multisig
+needs:
+
+- **Double-vote prevention within a proposal.** The `approve` guest reads the
+  existing nullifier list from the ProposalState and asserts the new nullifier is
+  not already present (assert string: "approval nullifier already recorded
+  (double vote)"). Because the nullifier is deterministic in `(secret,
+  proposal_id)`, a member who tries to approve the same proposal twice produces
+  the same nullifier and is rejected.
+- **Independence across proposals.** The same member approving a different
+  proposal produces a different nullifier (different `proposal_id`), so the
+  member is not blocked across proposals, and the two nullifiers are unlinkable
+  to each other as belonging to the same member.
+
+The nullifier reveals nothing about which leaf it came from: it is a SHA-256 hash
+of a private secret. The on-chain ProposalState holds the list of recorded
+nullifiers as opaque 32-byte values. The domain separation between leaf and
+nullifier hashing prevents a leaf value from being reinterpreted as a nullifier
+or vice versa.
+
+### 3. LEZ account model compatibility (nonce and `program_owner`)
+
+This design handles both LEZ account constraints explicitly: the per-account
+**nonce** and the **`program_owner`** rule.
+
+**Nonce.** Fresh signer-claimed accounts (the ProposalState and the
+MembersRegistry) start at nonce 0, and the wallet / runner sets nonces in order
+as it submits each transaction. The privacy approve reads the proposal's live
+nonce. After `CreateProposal` claims the ProposalState by signature, its
+on-chain nonce is incremented at apply, so the `run_approve` runner fetches the
+live account (owner, balance, data, nonce) from the sequencer rather than
+fabricating a `Nonce(0)`. A hardcoded nonce would mismatch the landed state and
+waste the long proof; reading the live nonce makes the proof and the message
+match whatever state actually landed.
+
+**`program_owner`.** A balance may only be decreased by the account's owning
+program. This is the reason the treasury must be `authenticated_transfer`-owned:
+only `authenticated_transfer` can debit it, so the multisig releases funds by
+chaining a call into that program rather than by mutating the balance itself.
+
+Claiming a PDA requires the owning program's PDA authorization. A plain top-level
+transfer to a fresh PDA is rejected: `authenticated_transfer` would
+`Claim::Authorized` the fresh recipient, and the apply path only accepts that
+claim when the recipient is a signer or an authorized PDA. A PDA address holds no
+key and can never sign, so a plain transfer can never bootstrap a fresh PDA
+treasury (this is verified by the `msig_fund_treasury_pda_rejected` test, which
+fails with `ClaimedUnauthorizedAccount`). This is exactly why `InitTreasury`
+exists: it claims the treasury PDA under msig's PDA authorization (chaining to
+`authenticated_transfer`'s amount-0 initialize with `pda_seeds = [seed]`),
+leaving the treasury `authenticated_transfer`-owned with balance 0. A subsequent
+plain transfer then funds it (the credit takes the no-claim branch because the
+treasury is no longer default-owned), and `Execute` later debits it.
+
+The MembersRegistry is a **signer-owned** account rather than a PDA for the same
+reason: an unsigned PDA claim is rejected by the public-tx apply path, so each
+`Enroll` is signed by the registry keypair, which lets the guest's
+`Claim::Authorized` of the registry pass apply. The
+`msig_enroll_public_tx_apply_rejection` and `msig_enroll_signer_owned_appends`
+tests pin down both halves of this.
+
+### 4. Security assumptions
+
+- **Anonymity set is the enrolled member set.** Anonymity is among a public
+  enrolled set. Members' leaves `H(secret)` are public in the registry. The
+  scheme provides approver anonymity within the enrolled set of N public members;
+  the approval count is public, which specific member approved is hidden. The
+  anonymity set is therefore exactly the set of enrolled members, and it shrinks
+  as the member set shrinks. With N = 1 there is no anonymity by definition; the
+  1-of-N run is an end-to-end functional proof, not an anonymity claim.
+- **Witness privacy is structural, not test-backed.** The member secret is
+  carried as a private witness, committed only to an inner program-execution
+  journal that the outer succinct proof folds in and never publishes; the only
+  thing committed on-chain is `PrivacyPreservingCircuitOutput`, which contains no
+  secret and no `instruction_data`. We do not claim a test asserts the secret is
+  never revealed (no such test exists). The privacy property rests on the nssa
+  v0.1.2 privacy-preserving transaction construction, which we rely on as a
+  trusted dependency.
+- **Proof realness.** The on-chain receipt deserializes to
+  `InnerReceipt::Succinct` (a real STARK, about 224 KB), which is categorically
+  not a `Fake` receipt; and it was generated by a local `RISC0_DEV_MODE=0` run
+  (about 134 s, a local timing observation). We do not argue that landing on
+  chain proves the proof is real, because a dev-mode verifier accepts fake
+  receipts. The realness evidence is the succinct receipt itself plus the local
+  non-dev-mode generation.
+- **Soundness of the membership proof** depends on the collision resistance of
+  SHA-256 (used for leaves, nullifiers, and the Merkle tree) and on the soundness
+  of the RISC0 STARK proving system and its recursion. A SHA-256 collision would
+  let a non-member forge a membership path; a break in the proving system would
+  let a non-member produce an accepted approval.
+- **No trusted setup.** The proving stack is RISC0 (STARK-based), so there is no
+  per-circuit trusted setup ceremony to trust.
+- **Threshold integrity** assumes honest enrollment: whoever controls
+  enrollment controls the member set, so an adversary who can enroll arbitrary
+  leaves can manufacture approvals. In this rev the registry is signer-owned by a
+  single demo key; a production deployment would gate enrollment behind a
+  governance program or a fixed genesis member set.
+- **Liveness** of Execute depends on the treasury being funded and the proposal
+  reaching the threshold; nothing in the design forces members to approve.
+
+### 5. Known limitations
+
+- **32-member cap.** `TREE_DEPTH = 5` gives 32 member slots. Larger member sets
+  need a deeper tree (a one-line constant change plus a larger membership path,
+  at proportionally higher proof cost). No deeper tree is shipped.
+- **The member set is public.** Members' leaves `H(secret)` are public in the
+  registry, so the size and the leaf commitments of the member set are on-chain.
+  The hidden quantity is which member approved, not who the members are. This is
+  the standard Semaphore anonymity model (anonymity within a public set), and it
+  is consistent with the prize's "only member identity and vote are private"
+  scope.
+- **No compute-unit / gas surface on this rev.** This nssa v0.1.2 rev exposes no
+  compute-unit / gas / fee field (verified absent in the wallet CLI, in chain-info
+  tx/block output, and in `common/transaction.rs`). The Performance section
+  documents the absence honestly with proxies (proof-generation time, receipt
+  size, approve-tx block size) rather than a fabricated CU number.
+- **Partial-approval resume is not implemented.** Approvals are durable on-chain
+  in the ProposalState (the count and the nullifier list persist), so a partial
+  set of approvals survives across client restarts in that sense. But the client
+  runner does not yet ship a resume/recovery UX that re-discovers a member's prior
+  unfinished approval session and continues it. This success-criterion gate is
+  marked open below.
+- **The demo amounts and keys are throwaway.** Every secret and key in
+  `msig_demo.rs` and the runners is an obvious demo constant, and the treasury
+  amounts are tiny test values. Do not reuse any of them in production.
+- **Single-signer enrollment.** The demo registry is owned by one key; there is
+  no enrollment governance program in this rev (see Security assumptions).
+
+### 6. Integration guide
+
+The pieces are designed to be reused independently of the demo fixture.
+
+- **`msig_core` as a reusable module.** `programs/msig/core/src/lib.rs` is a
+  no-std-friendly crate that any guest, circuit, or client can depend on to get
+  byte-identical hashing and Merkle math. The public surface is `MsigInstruction`
+  (the instruction set), `member_leaf`, `vote_nullifier`, `merkle_root`,
+  `merkle_path`, `root_from_path`, the domain separators, and the
+  `PROPOSAL_HEADER_LEN` / `REGISTRY_HEADER_LEN` layout constants. Because the
+  same crate is used in-guest and host-side, an integrator cannot accidentally
+  diverge the root or nullifier computation.
+- **The guest** (`test_program_methods/guest/src/bin/msig.rs`) is the on-chain
+  program. Build it the way the rest of the test programs build (the deployable
+  ELF lands at the `MSIG_BIN` path the demo fixture points to), then deploy it;
+  its program id equals the on-chain id
+  `HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`
+  (words `[1270190072, 1732754497, 1638297940, 148100642, 720938562, 338217588,
+  1328278959, 865789199]`).
+- **The runners** (`examples/program_deployment/src/bin/run_*.rs`) are worked
+  examples of assembling each transaction: `run_enroll`, `run_init_treasury`,
+  `run_create_proposal`, `run_approve` (the privacy tx, the hard one), and
+  `run_execute`. `run_approve` shows the full privacy-preserving-transaction
+  assembly (live nonce fetch, witness construction, proof generation, tx
+  submission) and is the reference for any client building approvals. The shared
+  fixture `msig_demo.rs` is the single source of truth the runners read, so the
+  steps compose into one valid on-chain chain.
+- **The IDL.** The instruction-level interface is the `MsigInstruction` enum in
+  `msig_core` (the five instructions and their fields). A SPEL-framework IDL
+  artifact is not yet generated from it; see the Success-Criteria checklist.
+
+## Success-Criteria checklist
+
+### Functionality
+
+- [x] Any M-of-N member holding a shielded LEZ account can submit an approval
+  without revealing their identity to on-chain observers or other members.
+  The approval is a privacy-preserving (ZK) transaction; the ProposalState
+  records only root + id + count + opaque nullifiers, with no member identity.
+  Anonymity is among the public enrolled set of N members (approver anonymity
+  within the enrolled set; the count is public, which member approved is hidden).
+- [x] The on-chain verifier confirms a threshold of M approvals was reached
+  without recording which members approved. Execute asserts `count >= threshold`;
+  the recorded nullifiers are opaque.
+- [x] A member cannot approve the same proposal twice. Proposal-bound nullifier
+  `H(NULL_DOMAIN || secret || proposal_id)` with an in-guest
+  already-recorded check.
+- [x] A completed execution is unlinkable to any individual member's shielded
+  account. Execute reads only the public count; it references no member secret or
+  leaf, and the treasury debit goes through `authenticated_transfer`.
+- [x] Proof generation runs client-side on a standard laptop. The approve proof
+  runs locally; on this build host a real `RISC0_DEV_MODE=0` approve proof takes
+  about 133 s.
+- [x] A reference integration: a threshold-gated treasury transfer on LEZ
+  testnet using the privacy approve path. The 2-of-3 run releases a treasury to a
+  recipient at threshold 2 (see Supporting Materials).
+- [x] At least one multisig instance on LEZ testnet with a proposal submitted,
+  approved by threshold, and executed; reproducible with evidence. The 2-of-3 run
+  on program id `HjHCub28...` with tx hashes and blocks in Supporting Materials;
+  `scripts/lp0002-demo.sh` replays it.
+- [~] Full documentation and a clean public repository. This write-up plus the
+  in-source documentation are delivered; the public repository packaging (the
+  lambda-prize fork PR) is in progress.
+
+### Usability
+
+- [~] Provide a module/SDK to build Logos modules. `msig_core` is a reusable
+  module and the `run_*` bins are a worked client; a packaged stand-alone SDK
+  crate is not yet split out. Partial.
+- [ ] Provide a Logos Basecamp app GUI. Open. No Basecamp module is shipped for
+  LP-0002 in this rev.
+- [~] Provide a SPEL-framework IDL. The instruction interface is the
+  `MsigInstruction` enum; a SPEL-format IDL artifact is not yet generated. Open.
+
+### Reliability
+
+- [~] Proof-generation failures surface a clear error. The runner propagates
+  proving errors, but a polished member-facing error UX is not built. Partial.
+- [ ] A partial set of approvals (fewer than M) is preserved and resumable across
+  client restarts. The count and nullifier list persist on-chain, but a client
+  resume flow is not implemented. Open (limitation).
+- [x] The verifier returns deterministic, documented error conditions for
+  invalid-proof and double-vote scenarios. The guest asserts carry stable strings
+  ("approver is not an enrolled member", "approval nullifier already recorded
+  (double vote)", "approval count below threshold", "proposal id mismatch");
+  the two negative circuit tests pin non-member and double-vote rejection.
+
+### Performance
+
+- [ ] Document the compute-unit (CU) cost of each on-chain operation. Open. This
+  nssa v0.1.2 rev exposes no compute-unit / gas / fee field (verified absent in
+  the wallet CLI, chain-info tx/block, and `common/transaction.rs`). Documented
+  with defensible proxies in the FURPS Performance section instead of a
+  fabricated CU number.
+
+### Supportability
+
+- [x] The program is deployed and tested on LEZ testnet. Program id
+  `HjHCub28...`, with the 1-of-N and 2-of-3 runs.
+- [~] End-to-end integration tests run against a LEZ sequencer (standalone mode)
+  and are included in CI. The 8 state tests + 4 circuit tests exercise the full
+  flow in-process; `lp0002-ci.yml` runs them under `RISC0_DEV_MODE=1`. A
+  standalone-sequencer end-to-end job in CI is not wired. Partial.
+- [~] CI green on the default branch. The LP-0002 workflow
+  (`.github/workflows/lp0002-ci.yml`) runs the msig core, state, and circuit
+  tests under `RISC0_DEV_MODE=1`; green status on the contribution branch is not
+  yet observed in GitHub Actions. The lambda-prize fork PR is in progress.
+- [~] A README documents end-to-end usage. This write-up plus a README LP-0002
+  section cover deployment, the program address, and the run commands; the CLI /
+  Basecamp step-by-step is partial.
+- [~] A reproducible end-to-end demo script that works with `RISC0_DEV_MODE=0`.
+  `scripts/lp0002-demo.sh` orchestrates the same runners that produced the live
+  2-of-3 ledger and runs the approves at `RISC0_DEV_MODE=0`; the fund step is a
+  wallet `auth-transfer` gated on a `PAYER` account id. The individual steps are
+  proven on chain, but the script has not yet been executed start-to-finish as a
+  single invocation. Partial.
+- [ ] A recorded video demo showing terminal output confirming
+  `RISC0_DEV_MODE=0`. Open. Not yet recorded.
+
+## FURPS Self-Assessment
+
+### Functionality
+
+A working private M-of-N multisig: enroll, create-proposal, anonymous threshold
+approval (privacy-preserving ZK tx), and threshold-gated treasury release through
+`authenticated_transfer`. The 2-of-3 live run is the M-of-N proof. The threshold
+is a public count over per-member ZK membership proofs; it is NOT FROST signature
+aggregation. M-of-N is demonstrated live (the 2-of-3 run). The functional tests
+run under `RISC0_DEV_MODE=1` (fake receipts) for logic coverage; the ZK soundness
+evidence is the real `RISC0_DEV_MODE=0` approve STARK plus its landing and
+applying on the live sequencer.
+
+### Usability
+
+- `msig_core` gives integrators byte-identical hashing and Merkle math, so a
+  client cannot diverge the root or nullifier computation from the guest.
+- The `run_*` bins are copy-able worked examples for each instruction, including
+  the hard privacy approve (live nonce fetch, witness assembly, proof, submit).
+- Limitation: no Basecamp GUI and no packaged stand-alone SDK crate in this rev.
+
+### Reliability
+
+- The verifier's failure modes are deterministic and carry stable assert strings,
+  re-checked by the negative circuit tests (non-member, double vote) and the
+  apply-rejection state tests.
+- Approvals are durable on-chain (the count and nullifier list persist), so a
+  partial approval set survives client restarts at the state layer.
+- Limitation: a client-side resume/recovery UX over that durable state is not
+  implemented; proof-failure surfacing is functional but not polished.
+
+### Performance
+
+This rev exposes no CU / gas / fee surface, so we document defensible proxies
+instead of fabricating a CU number:
+
+- **Proof generation time:** a real `RISC0_DEV_MODE=0` approve proof takes about
+  133 to 134 s on the build host (member-0 approve 133.49 s, member-1 approve
+  133.60 s in the 2-of-3 run).
+- **Proof / receipt size:** the on-chain receipt is an `InnerReceipt::Succinct`
+  STARK of about 224 KB.
+- **Block-size proxy:** the approve transaction (carrying the succinct receipt)
+  is substantially larger on-chain than a tiny Execute transaction, which carries
+  no proof. This relative size is the closest available stand-in for per-op cost
+  on a chain with no exposed gas meter.
+- A RISC0 cycle count would be a finer proxy if obtainable from the prover; it is
+  not surfaced by this rev's tooling.
+
+### Supportability
+
+- This write-up documents the cryptographic approach, the nullifier scheme, the
+  LEZ account model (both nonce and `program_owner`), the security assumptions,
+  the known limitations, and the integration guide.
+- `programs/msig/core/src/lib.rs` and the guest carry module-level docs
+  explaining the scheme and the treasury-bootstrap rationale.
+- The LP-0002 CI workflow (`.github/workflows/lp0002-ci.yml`) runs the msig
+  state and circuit tests under `RISC0_DEV_MODE=1` for logic coverage.
+- A standalone-sequencer end-to-end CI job and a recorded `RISC0_DEV_MODE=0`
+  video are open items (see the checklist).
+
+## Supporting Materials
+
+All evidence is on `testnet.lez.logos.co` under program id
+`HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`.
+
+### 1-of-N full end-to-end (functional proof)
+
+- Deploy: `fc796c20`
+- Enroll x3: `e93b6aaf`, `1039c55a`, `bc5b7821` (registry root `d0404df3`,
+  3 members)
+- InitTreasury: `60844fb7` and `a01d2dd1`
+- Fund: `38342f27`
+- CreateProposal: `03fd28a9`
+- Approve: `13f1f0c2` (real `RISC0_DEV_MODE=0` STARK, about 134 s, block 49316,
+  count 0 -> 1)
+- Execute: `2d07a56a` (block 49319, treasury 100 -> 0, recipient 0 -> 100)
+
+### 2-of-3 threshold run (the M-of-N proof)
+
+- Proposal: `BZ182CU` (proposal_id `9f1c47a2`)
+- Approve #1, member 0: `1bef810a` (block 49442, count 0 -> 1, vote nullifier
+  `cdda374f`, 133.49 s)
+- Approve #2, member 1: `05a784ea` (block 49456, count 1 -> 2, vote nullifier
+  `3979979b`, 133.60 s)
+- Fund: `4df4c10d`
+- Execute (threshold 2): `81c7e42c` (block 49458, treasury 20 -> 0, recipient
+  100 -> 120)
+
+The two vote nullifiers are distinct (two different members). The proposal state
+stores only root + id + count + opaque nullifiers, with no member identity.
+
+## Terms & Conditions
+
+By submitting this solution, I confirm that I have read and agree to the
+[Terms & Conditions](../TERMS.md).

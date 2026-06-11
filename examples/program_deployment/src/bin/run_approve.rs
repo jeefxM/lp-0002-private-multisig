@@ -171,7 +171,23 @@ async fn main() -> anyhow::Result<()> {
         vec![None],                  // private_account_membership_proofs
         &program_with_deps,
     )
-    .map_err(|e| anyhow::anyhow!("execute_and_prove failed: {e}"))?;
+    .map_err(|e| {
+        // REL-1: the inner-guest prove fails (panics) on every approve-side rejection, so
+        // the raw RISC0 error is an opaque panic dump (e.g. a 32-byte hash mismatch for a
+        // non-member, or "approval nullifier already recorded" for a double vote). We cannot
+        // reliably classify WHICH guest assert fired from that string, so we surface a single
+        // clear member-facing message that enumerates the only conditions that can reject an
+        // approve, then attach the raw error for operators. The on-chain proposal count is
+        // unchanged by a failed prove (nothing was submitted), so a fixed approve can be re-run.
+        anyhow::anyhow!(
+            "approval proof could not be generated. The approve guest rejected this attempt; \
+             the cause is one of: (1) you are not an enrolled member of this proposal\u{2019}s frozen \
+             member set, (2) you have already approved this proposal (your proposal-bound vote \
+             nullifier is already recorded \u{2014} no double votes), or (3) the proposal id / member \
+             root you supplied does not match the live ProposalState. Nothing was submitted, so the \
+             on-chain approval count is unchanged; fix the input and re-run. Raw prover error: {e}"
+        )
+    })?;
     println!(
         "Proved in {:?}: commitments={}, nullifiers={}, ciphertexts={}",
         prove_start.elapsed(),

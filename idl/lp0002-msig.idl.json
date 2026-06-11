@@ -1,0 +1,131 @@
+{
+  "version": "0.1.0",
+  "name": "msig",
+  "spec": "spel-0.1",
+  "instruction_type": "msig_core::MsigInstruction",
+  "metadata": {
+    "name": "msig",
+    "version": "0.1.2",
+    "address": "HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn",
+    "program_id_words": [
+      1270190072,
+      1732754497,
+      1638297940,
+      148100642,
+      720938562,
+      338217588,
+      1328278959,
+      865789199
+    ]
+  },
+  "instructions": [
+    {
+      "name": "CreateProposal",
+      "variant": "CreateProposal",
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true,
+          "signer": true,
+          "init": true,
+          "visibility": ["public"]
+        }
+      ],
+      "args": [
+        { "name": "member_root", "type": { "array": ["u8", 32] } },
+        { "name": "proposal_id", "type": { "array": ["u8", 32] } }
+      ]
+    },
+    {
+      "name": "Approve",
+      "variant": "Approve",
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true,
+          "visibility": ["public"]
+        },
+        {
+          "name": "rider",
+          "writable": true,
+          "init": true,
+          "visibility": ["private"]
+        }
+      ],
+      "args": [
+        { "name": "secret", "type": { "array": ["u8", 32] } },
+        { "name": "merkle_path", "type": { "defined": "MerkleProof" } },
+        { "name": "proposal_id", "type": { "array": ["u8", 32] } }
+      ]
+    },
+    {
+      "name": "Enroll",
+      "variant": "Enroll",
+      "accounts": [
+        {
+          "name": "registry",
+          "writable": true,
+          "signer": true,
+          "visibility": ["public"]
+        }
+      ],
+      "args": [
+        { "name": "leaf", "type": { "array": ["u8", 32] } }
+      ]
+    },
+    {
+      "name": "InitTreasury",
+      "variant": "InitTreasury",
+      "accounts": [
+        {
+          "name": "treasury",
+          "writable": true,
+          "init": true,
+          "pda": { "seeds": [{ "kind": "arg", "path": "seed" }] },
+          "visibility": ["public"]
+        }
+      ],
+      "args": [
+        { "name": "seed", "type": { "array": ["u8", 32] } },
+        { "name": "transfer_program_id", "type": { "array": ["u32", 8] } }
+      ]
+    },
+    {
+      "name": "Execute",
+      "variant": "Execute",
+      "accounts": [
+        {
+          "name": "proposal",
+          "visibility": ["public"]
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "pda": { "seeds": [{ "kind": "arg", "path": "seed" }] },
+          "visibility": ["public"]
+        },
+        {
+          "name": "recipient",
+          "writable": true,
+          "visibility": ["public"]
+        }
+      ],
+      "args": [
+        { "name": "threshold", "type": "u32" },
+        { "name": "seed", "type": { "array": ["u8", 32] } }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "MerkleProof",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "leaf_index", "type": "u32" },
+          { "name": "siblings", "type": { "vec": { "array": ["u8", 32] } } }
+        ]
+      }
+    }
+  ]
+}
