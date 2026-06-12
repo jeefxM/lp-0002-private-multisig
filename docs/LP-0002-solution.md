@@ -330,12 +330,15 @@ The pieces are designed to be reused independently of the demo fixture.
 
 ### Functionality
 
-- [x] Any M-of-N member holding a shielded LEZ account can submit an approval
-  without revealing their identity to on-chain observers or other members.
-  The approval is a privacy-preserving (ZK) transaction; the ProposalState
-  records only root + id + count + opaque nullifiers, with no member identity.
-  Anonymity is among the public enrolled set of N members (approver anonymity
-  within the enrolled set; the count is public, which member approved is hidden).
+- [~] An M-of-N member can submit an approval without revealing their identity to
+  on-chain observers or other members. The approval is a privacy-preserving (ZK)
+  transaction; the ProposalState records only root + id + count + opaque
+  nullifiers, with no member identity. Partial on the literal "shielded account":
+  members enroll a public commitment (leaf) rather than each holding a per-member
+  shielded LEZ account, so anonymity is among the public enrolled set of N members
+  (the member list is public; which member approved is hidden). The per-member
+  private-account enrollment path was not a proven primitive for a custom program
+  on this testnet rev; see Approach for the tradeoff.
 - [x] The on-chain verifier confirms a threshold of M approvals was reached
   without recording which members approved. Execute asserts `count >= threshold`;
   the recorded nullifiers are opaque.
