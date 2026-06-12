@@ -1,9 +1,9 @@
-// LP-0002 anonymous multisig voting — Basecamp module UI. Binds to the `backend`
+// LP-0002 anonymous multisig voting. Basecamp module UI. Binds to the `backend`
 // context property (MsigBackend), which drives the localhost Node sidecar
 // (msig-sidecar.mjs) over HTTP. Three sections:
-//   1. Derive my leaf   — local SHA256("/lp0002/leaf/\x00"||secret); secret stays local.
-//   2. Proposal status  — sidecar /status -> proposal_id, member_root, count/threshold.
-//   3. Cast anonymous vote — sidecar /approve spawns run_approve_secret (~134s prove),
+//   1. Derive my leaf   (local SHA256("/lp0002/leaf/\x00"||secret); secret stays local).
+//   2. Proposal status  (sidecar /status -> proposal_id, member_root, count/threshold).
+//   3. Cast anonymous vote: sidecar /approve spawns run_approve_secret (~134s prove),
 //      returns the real tx hash + updated count; rejects non-members / double votes.
 import QtQuick 2.15
 import QtQuick.Controls 2.15
@@ -41,7 +41,7 @@ Item {
             // ── Header ───────────────────────────────────────────────────
             RowLayout {
                 Layout.fillWidth: true
-                Text { text: "Private Multisig — anonymous M-of-N vote"; color: root.colText; font.pixelSize: 19; font.bold: true }
+                Text { text: "Private Multisig: anonymous M-of-N vote"; color: root.colText; font.pixelSize: 19; font.bold: true }
                 Item { Layout.fillWidth: true }
                 BusyIndicator { running: backend.busy; visible: backend.busy; implicitWidth: 22; implicitHeight: 22 }
             }
@@ -62,7 +62,7 @@ Item {
                 }
             }
 
-            // ════ SECTION 1 — Derive my leaf (local) ═════════════════════
+            // ════ SECTION 1: Derive my leaf (local) ═════════════════════
             Rectangle {
                 Layout.fillWidth: true
                 color: root.colSurface; border.color: root.colBorder; radius: 8
@@ -79,7 +79,7 @@ Item {
                         Layout.fillWidth: true; spacing: 8
                         TextField {
                             id: secretField; Layout.fillWidth: true; color: root.colText
-                            placeholderText: "member secret — 64 hex chars (e.g. a7a7…a7)"
+                            placeholderText: "member secret, 64 hex chars (e.g. a7a7…a7)"
                             echoMode: TextInput.Normal
                             background: Rectangle { color: root.colBg; border.color: root.colBorder; radius: 6 }
                         }
@@ -103,7 +103,7 @@ Item {
                 }
             }
 
-            // ════ SECTION 2 — Proposal status ════════════════════════════
+            // ════ SECTION 2: Proposal status ════════════════════════════
             Rectangle {
                 Layout.fillWidth: true
                 color: root.colSurface; border.color: root.colBorder; radius: 8
@@ -165,7 +165,7 @@ Item {
                 }
             }
 
-            // ════ SECTION 3 — Cast anonymous vote ════════════════════════
+            // ════ SECTION 3: Cast anonymous vote ════════════════════════
             Rectangle {
                 Layout.fillWidth: true; Layout.fillHeight: true
                 color: root.colSurface; border.color: root.colBorder; radius: 8
@@ -174,7 +174,7 @@ Item {
                     Text { text: "3 · Cast anonymous vote"; color: root.colText; font.pixelSize: 14; font.bold: true }
                     Text {
                         Layout.fillWidth: true; color: root.colMuted; font.pixelSize: 11; wrapMode: Text.Wrap
-                        text: "Votes with the secret entered above. The sidecar spawns run_approve_secret — a real Merkle-membership proof + proposal-bound nullifier, submitted on-chain. Non-members are rejected before any proof; a second vote with the same secret is rejected as a double vote."
+                        text: "Votes with the secret entered above. The sidecar spawns run_approve_secret, a real Merkle-membership proof + proposal-bound nullifier, submitted on-chain. Non-members are rejected before any proof; a second vote with the same secret is rejected as a double vote."
                     }
                     FButton {
                         text: backend.busy ? "Proving & submitting… (~134s)" : "Cast anonymous vote"

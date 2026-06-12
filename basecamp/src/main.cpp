@@ -1,4 +1,4 @@
-// Standalone preview app — loads the QML UI without Basecamp (same backend the
+// Standalone preview app, loads the QML UI without Basecamp (same backend the
 // Basecamp plugin uses). Build: cmake -B build && cmake --build build
 // Run: DISPLAY=:1 QT_QPA_PLATFORM=xcb MSIG_SIDECAR_URL=http://127.0.0.1:8799 ./build/MsigApp
 #include "MsigBackend.h"

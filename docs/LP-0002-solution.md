@@ -48,8 +48,9 @@ the approval count is public, which specific member approved is hidden.
   the on-chain outcome via `run_assert_state` (the green/red gate). The 1-of-N run
   is earlier historical evidence on the same program id; the script drives the
   2-of-3 path, which is the M-of-N proof. The individual steps are the same
-  runners that produced the live 2-of-3 ledger below; the script orchestrates
-  them but has not yet been executed start-to-finish as a single invocation.
+  runners that produced the live 2-of-3 ledger below; the script runs green
+  end-to-end against a local standalone sequencer at `RISC0_DEV_MODE=0` on the
+  build host (two real proofs, count=2, treasury drained, recipient credited).
 - **Local logic tests** (fast, fake-receipt logic coverage):
 
   ```
@@ -146,9 +147,11 @@ the depth-5 capacity of 32 members.
 
 The member root is a depth-5 binary Merkle tree (`TREE_DEPTH = 5`, 32 slots,
 unused slots padded with `EMPTY_LEAF`). `merkle_root`, `merkle_path`, and
-`root_from_path` in `msig_core` are the single source of truth used in-guest, in
-the circuit tests, and by the client runners, so every party computes the root
-and paths identically.
+`root_from_path` in `msig_core` are the single source of truth in-guest and in the
+client runners. The approve circuit tests hand-roll a 2-leaf root and a hardcoded
+1-element path (exercising the generic `root_from_path` against a depth-1 tree);
+depth-5 path consistency is checked by the `approver_path_reproduces_member_root`
+unit test in `msig_core`, not by any circuit or guest test.
 
 The 2-of-3 live run is the M-of-N proof: two distinct members (member 0 and
 member 1) each submitted an independent approval against the same frozen
@@ -318,8 +321,10 @@ The pieces are designed to be reused independently of the demo fixture.
   fixture `msig_demo.rs` is the single source of truth the runners read, so the
   steps compose into one valid on-chain chain.
 - **The IDL.** The instruction-level interface is the `MsigInstruction` enum in
-  `msig_core` (the five instructions and their fields). A SPEL-framework IDL
-  artifact is not yet generated from it; see the Success-Criteria checklist.
+  `msig_core` (the five instructions and their fields). `idl/lp0002-msig.idl.json`
+  (spec spel-0.1, address `HjHCub28...`) is present and describes all five
+  instructions of the deployed program. It is hand-authored JSON; full conformance
+  to the upstream SPEL toolchain is unverified.
 
 ## Success-Criteria checklist
 
@@ -340,16 +345,18 @@ The pieces are designed to be reused independently of the demo fixture.
 - [x] A completed execution is unlinkable to any individual member's shielded
   account. Execute reads only the public count; it references no member secret or
   leaf, and the treasury debit goes through `authenticated_transfer`.
-- [x] Proof generation runs client-side on a standard laptop. The approve proof
-  runs locally; on this build host a real `RISC0_DEV_MODE=0` approve proof takes
-  about 133 s.
+- [~] Proof generation runs client-side; a real `RISC0_DEV_MODE=0` approve proof
+  was measured at ~133s on a 16-core AMD EPYC server (the build host).
+  Standard-laptop timing is not yet measured; proving is RAM/CPU-bound so a laptop
+  will be materially slower. A narrated DEV_MODE=0 video is an open item.
 - [x] A reference integration: a threshold-gated treasury transfer on LEZ
   testnet using the privacy approve path. The 2-of-3 run releases a treasury to a
   recipient at threshold 2 (see Supporting Materials).
 - [x] At least one multisig instance on LEZ testnet with a proposal submitted,
   approved by threshold, and executed; reproducible with evidence. The 2-of-3 run
   on program id `HjHCub28...` with tx hashes and blocks in Supporting Materials;
-  `scripts/lp0002-demo.sh` replays it.
+  the direct `run_*` runner invocations plus the on-chain 2-of-3 ledger are the
+  integration evidence.
 - [~] Full documentation and a clean public repository. This write-up plus the
   in-source documentation are delivered; the public repository packaging (the
   lambda-prize fork PR) is in progress.
@@ -359,10 +366,16 @@ The pieces are designed to be reused independently of the demo fixture.
 - [~] Provide a module/SDK to build Logos modules. `msig_core` is a reusable
   module and the `run_*` bins are a worked client; a packaged stand-alone SDK
   crate is not yet split out. Partial.
-- [ ] Provide a Logos Basecamp app GUI. Open. No Basecamp module is shipped for
-  LP-0002 in this rev.
-- [~] Provide a SPEL-framework IDL. The instruction interface is the
-  `MsigInstruction` enum; a SPEL-format IDL artifact is not yet generated. Open.
+- [~] Provide a Logos Basecamp app GUI. A native ui_qml Basecamp plugin is shipped
+  under `basecamp/` (`MsigPlugin` + `qml/Main.qml` + prebuilt
+  `dist/private_multisig_lp0002/msig_plugin.so`). It loads in Basecamp v0.1.2's
+  host and casts a real anonymous vote at `RISC0_DEV_MODE=0` through the GUI
+  (verified by driving the buttons: a 166s real proof landed on-chain, approval
+  count advanced). Remaining: a recorded VNC walkthrough is an open item.
+- [~] Provide a SPEL-framework IDL. `idl/lp0002-msig.idl.json` (spec spel-0.1,
+  address `HjHCub28...`) is present and describes all five instructions of the
+  deployed program. It is hand-authored JSON; full conformance to the upstream
+  SPEL toolchain is unverified.
 
 ### Reliability
 
@@ -401,11 +414,10 @@ The pieces are designed to be reused independently of the demo fixture.
   section cover deployment, the program address, and the run commands; the CLI /
   Basecamp step-by-step is partial.
 - [~] A reproducible end-to-end demo script that works with `RISC0_DEV_MODE=0`.
-  `scripts/lp0002-demo.sh` orchestrates the same runners that produced the live
-  2-of-3 ledger and runs the approves at `RISC0_DEV_MODE=0`; the fund step is a
-  wallet `auth-transfer` gated on a `PAYER` account id. The individual steps are
-  proven on chain, but the script has not yet been executed start-to-finish as a
-  single invocation. Partial.
+  `scripts/lp0002-demo.sh` runs green end-to-end against a local standalone
+  sequencer at `RISC0_DEV_MODE=0` (two real proofs, count=2, treasury drained,
+  recipient credited) on the build host. The data-dir path is now parameterized
+  for clean-clone portability.
 - [ ] A recorded video demo showing terminal output confirming
   `RISC0_DEV_MODE=0`. Open. Not yet recorded.
 
@@ -428,7 +440,7 @@ applying on the live sequencer.
   client cannot diverge the root or nullifier computation from the guest.
 - The `run_*` bins are copy-able worked examples for each instruction, including
   the hard privacy approve (live nonce fetch, witness assembly, proof, submit).
-- Limitation: no Basecamp GUI and no packaged stand-alone SDK crate in this rev.
+- Limitation: no packaged stand-alone SDK crate in this rev.
 
 ### Reliability
 

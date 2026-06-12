@@ -12,7 +12,7 @@
 #                the recordable GUI path LP-0016 uses: it execs ForumApp).
 #   basecamp  -> install our module into the EXTRACTED Basecamp tree's
 #                usr/plugins/ and launch Basecamp via its AppRun (so the on-disk
-#                plugin dir is actually discovered — the raw .AppImage mounts its
+#                plugin dir is actually discovered, the raw .AppImage mounts its
 #                OWN read-only squashfs and would NOT see an on-disk install).
 #
 # Prereqs (over VNC, DISPLAY :1):
@@ -75,7 +75,7 @@ if [ "$MODE" = "basecamp" ]; then
   # Install our packaged module into the EXTRACTED tree's plugin path (the same
   # place the bundled forum/ and counter_qml/ live) and launch via AppRun so the
   # on-disk install is discovered. The .AppImage itself mounts its own read-only
-  # squashfs and would NOT see this install — AppRun runs the extracted tree.
+  # squashfs and would NOT see this install, AppRun runs the extracted tree.
   [ -f "$PLUGIN_DIR/build/libmsig_plugin.so" ] || { echo "ERROR: plugin .so not built; run: (cd $PLUGIN_DIR && cmake -B build && cmake --build build)" >&2; exit 1; }
   DEST="$BC_ROOT/usr/plugins/private_multisig_lp0002"
   echo "Installing module -> $DEST"
@@ -85,7 +85,7 @@ if [ "$MODE" = "basecamp" ]; then
   exec "$BC_ROOT/AppRun"
 else
   # Standalone GUI: same QML + MsigBackend as the Basecamp plugin (LP-0016 uses
-  # this exact pattern — its run script execs the standalone ForumApp).
+  # this exact pattern, its run script execs the standalone ForumApp).
   [ -x "$PLUGIN_DIR/build/MsigApp" ] || { echo "ERROR: MsigApp not built; run: (cd $PLUGIN_DIR && cmake -B build && cmake --build build)" >&2; exit 1; }
   # Load qml/Main.qml from disk so edits are picked up without a rebuild (the
   # Basecamp plugin uses its embedded qrc copy instead).

@@ -29,7 +29,9 @@ FUND_AMOUNT="${FUND_AMOUNT:-500}"         # non-zero treasury funding -> observa
 BLOCK_WAIT="${BLOCK_WAIT:-18}"            # seconds to wait per public tx (~15s block cadence)
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VOL="/mnt/HC_Volume_105854327/lp0002-localnet"
+# Data dir defaults to a tmp path for clean-clone portability; set LP0002_DATA_DIR
+# to override (e.g. point at an attached volume when / is tight).
+VOL="${LP0002_DATA_DIR:-${TMPDIR:-/tmp}/lp0002-localnet}"
 RUN_TS="$(date +%s)"
 DATADIR="$VOL/demo-dev${DEV_MODE}-${RUN_TS}"             # FRESH rocksdb dir per run+mode (volume)
 WALLET_HOME="$VOL/wallet-home-dev${DEV_MODE}-${RUN_TS}"  # FRESH wallet home per run (volume)

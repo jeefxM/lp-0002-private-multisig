@@ -1,7 +1,7 @@
 // LP-0002 msig sidecar: a localhost-only HTTP server that fronts the proven Rust
 // runners for the Basecamp plugin (MsigBackend talks to it over HTTP, mirroring
 // how the LP-0016 forum-sidecar fronts the SDK). It does NOT re-implement any
-// proving or chain logic — it spawns the already-verified binaries:
+// proving or chain logic, it spawns the already-verified binaries:
 //
 //   GET  /status          -> spawn run_read_status, return its JSON line
 //                            {ready, proposal_id, member_root, approval_count, threshold}
@@ -144,7 +144,7 @@ const server = createServer(async (req, res) => {
         return sendJson(res, 200, { success: false, error: reason, exit_code: r.code });
       }
       const txHash = m[1];
-      log(`POST /approve tx_hash=${txHash} — polling for count to advance (budget ${BLOCK_WAIT_MS}ms)`);
+      log(`POST /approve tx_hash=${txHash}, polling for count to advance (budget ${BLOCK_WAIT_MS}ms)`);
 
       // Poll run_read_status until the count advances past beforeCount (the tx
       // is only reflected once a block lands). Return the fresh count.

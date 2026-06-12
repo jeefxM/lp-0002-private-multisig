@@ -1,15 +1,15 @@
-# LP-0002 msig — Reliability & Error Codes
+# LP-0002 msig: Reliability & Error Codes
 
 This document covers the reliability surface of the LP-0002 anonymous M-of-N
 multisig (`msig`) on nssa v0.1.2 (`testnet.lez.logos.co`, program
 `HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`):
 
-- **REL-3** — an enumerated error-code / failure table covering every reject,
+- **REL-3**, an enumerated error-code / failure table covering every reject,
   panic, and silent no-op path in the program, with each trigger and its
   member-facing meaning.
-- **REL-1** — how proof generation / verification failures are handled and what a
+- **REL-1**, how proof generation / verification failures are handled and what a
   member sees, including a small code improvement to the approve runner.
-- **REL-2** — partial-approval resumability, stated honestly.
+- **REL-2**, partial-approval resumability, stated honestly.
 
 There is no native error-code numbering in this nssa rev; the `LPxx` codes below
 are assigned by this document for reference, scoped to the msig program's own
@@ -33,19 +33,19 @@ The msig program rejects bad input through three distinct mechanisms, and a
 fourth lives in the chain's apply layer. Understanding which mechanism fires is
 the key to reading a failure:
 
-1. **Guest `assert!` panic** — a logical precondition is violated. The guest
+1. **Guest `assert!` panic**, a logical precondition is violated. The guest
    panics; for a privacy (ZK) op this means the **proof cannot be generated** (the
    prove step fails); for a public op this means the **transaction is rejected at
    execution**. The assert message is the diagnostic.
-2. **Guest `.expect()` panic** — a data-sizing invariant is violated (an account's
+2. **Guest `.expect()` panic**, a data-sizing invariant is violated (an account's
    `data` field would exceed its limit, or stored bytes are truncated). Same
    failure mode as an assert (panic during prove/exec), but indicates malformed or
    over-large state rather than a member mistake.
-3. **Guest silent no-op (wrong arity)** — the instruction was handed the wrong
+3. **Guest silent no-op (wrong arity)**, the instruction was handed the wrong
    number of pre-state accounts. The guest returns **without writing any
    `ProgramOutput`**. There is no panic and no state change; the transaction
    simply does nothing useful.
-4. **Apply-layer rejection** — the guest produced a valid output, but the chain's
+4. **Apply-layer rejection**, the guest produced a valid output, but the chain's
    state-transition validation rejects it (unauthorized claim, unauthorized
    balance decrease, stale pre-state, etc.). These are `InvalidProgramBehaviorError`
    / `ExecutionValidationError` variants raised at apply, not by the guest.
@@ -82,8 +82,8 @@ msig's bootstrap design exists specifically to avoid the first one.
 
 | Code | Trigger | Variant | Member-facing meaning | Evidence |
 |------|---------|---------|-----------------------|----------|
-| LP20 | A fresh (default-owned) account is `Claim::Authorized` without a signer or caller-authorized PDA — e.g. a plain transfer to an uninitialized treasury PDA, which can never sign | `InvalidProgramBehaviorError::ClaimedUnauthorizedAccount` | You cannot fund a fresh treasury PDA with a plain transfer; the PDA holds no key and can never authorize its own claim. Use `InitTreasury` first (it claims the PDA under msig's PDA authorization), then a plain transfer funds the now-owned account. | Reproduced in-process by `msig_fund_treasury_pda_rejected` (nssa/src/state.rs): arms (a) and (c) both fail with `ClaimedUnauthorizedAccount`; this is also why `run_init_treasury` exists. |
-| LP21 | A signer-required claim is attempted with no signer — e.g. enroll built with an empty signer list against an unsigned registry | `InvalidProgramBehaviorError::ClaimedUnauthorizedAccount` | The registry claim needs the registry keypair's signature. An enroll with no signer is rejected; sign each `Enroll` with the registry key. | Reproduced in-process by `msig_enroll_public_tx_apply_rejection` (nssa/src/state.rs): a no-signer enroll rejects at apply; the working path signs with the registry keypair (`msig_enroll_signer_owned_appends`). |
+| LP20 | A fresh (default-owned) account is `Claim::Authorized` without a signer or caller-authorized PDA, e.g. a plain transfer to an uninitialized treasury PDA, which can never sign | `InvalidProgramBehaviorError::ClaimedUnauthorizedAccount` | You cannot fund a fresh treasury PDA with a plain transfer; the PDA holds no key and can never authorize its own claim. Use `InitTreasury` first (it claims the PDA under msig's PDA authorization), then a plain transfer funds the now-owned account. | Reproduced in-process by `msig_fund_treasury_pda_rejected` (nssa/src/state.rs): arms (a) and (c) both fail with `ClaimedUnauthorizedAccount`; this is also why `run_init_treasury` exists. |
+| LP21 | A signer-required claim is attempted with no signer, e.g. enroll built with an empty signer list against an unsigned registry | `InvalidProgramBehaviorError::ClaimedUnauthorizedAccount` | The registry claim needs the registry keypair's signature. An enroll with no signer is rejected; sign each `Enroll` with the registry key. | Reproduced in-process by `msig_enroll_public_tx_apply_rejection` (nssa/src/state.rs): a no-signer enroll rejects at apply; the working path signs with the registry keypair (`msig_enroll_signer_owned_appends`). |
 | LP22 | Claiming an account that is not default (already initialized) | `InvalidProgramBehaviorError::ClaimedNonDefaultAccount` | You tried to create/claim a proposal (or treasury) account id that already exists. Use a fresh id, or reference the existing one instead of re-creating it. | `create_proposal` claims a fresh account; re-running it on the same id rejects. |
 | LP23 | The pre-state fed into the proof/exec does not match live on-chain state (e.g. a stale nonce, or `is_authorized` mismatched against the live reconstruction) | `InvalidProgramBehaviorError::InconsistentAccountPreState` / `InconsistentAccountAuthorization` | The proposal state changed (or your `is_authorized` flag was wrong) between reading it and submitting; re-read the live account and rebuild. This is exactly why `run_approve` reads the live ProposalState (owner/balance/data/nonce) before proving. | The `is_authorized = false` requirement is validated by `msig_approve_live_apply_is_authorized_false` (nssa/src/state.rs). |
 | LP24 | A program tries to decrease the balance of an account it does not own | `ExecutionValidationError::UnauthorizedBalanceDecrease` | A balance can only be debited by its owning program. The treasury must be `authenticated_transfer`-owned (via `InitTreasury`) so the chained `Execute` drain is authorized. | `ExecutionValidationError::UnauthorizedBalanceDecrease` (nssa/core/src/program.rs); covered by the program-owner balance tests in nssa/src/state.rs. |
@@ -116,7 +116,7 @@ The raw string is an opaque RISC0 panic dump. Concretely, a non-member approval
 surfaces as a 32-byte hash mismatch dump
 (`assertion left == right failed: approver is not an enrolled member`, with both
 roots printed) and a double vote surfaces as
-`approval nullifier already recorded (double vote)` — both buried in a prover
+`approval nullifier already recorded (double vote)`, both buried in a prover
 backtrace. A member cannot reasonably read that.
 
 **Code improvement made (small, REL-1):** `examples/program_deployment/src/bin/run_approve.rs`
@@ -128,7 +128,7 @@ approve, then attaches the raw prover error for operators:
 > approval proof could not be generated. The approve guest rejected this attempt;
 > the cause is one of: (1) you are not an enrolled member of this proposal's
 > frozen member set, (2) you have already approved this proposal (your
-> proposal-bound vote nullifier is already recorded — no double votes), or (3) the
+> proposal-bound vote nullifier is already recorded, no double votes), or (3) the
 > proposal id / member root you supplied does not match the live ProposalState.
 > Nothing was submitted, so the on-chain approval count is unchanged; fix the
 > input and re-run. Raw prover error: {e}
@@ -141,11 +141,11 @@ of approve-side rejects rather than guessing. The original file is backed up to
 
 ### Surface (b): proof verifies locally but the tx is rejected at apply
 
-A proof can generate fine yet still be rejected when the sequencer applies it —
+A proof can generate fine yet still be rejected when the sequencer applies it,
 the apply-layer codes LP23 (stale pre-state / `is_authorized` mismatch), LP22, or
 a malformed message. Today the runner gets a `tx_hash` back from
 `send_transaction` and exits successfully; if the chain later drops the tx at
-apply, the **approval count never increments and the member sees no error** —
+apply, the **approval count never increments and the member sees no error**,
 they have a tx hash but no effect. `run_approve` already mitigates the most common
 cause (it reads the live ProposalState so the proof's pre-state and nonce match
 what landed), but it does not confirm the effect.
@@ -154,7 +154,7 @@ what landed), but it does not confirm the effect.
 `send_transaction` returns, poll the live ProposalState and confirm
 `approval_count` increased (and that your vote nullifier is now present). If it did
 not increase within a few blocks, report "approval was submitted but did not
-apply — re-read the proposal and retry" rather than treating the returned
+apply, re-read the proposal and retry" rather than treating the returned
 `tx_hash` as success. This is a post-submit verification step, beyond the scope of
 the small message change above, so it is recommended here rather than coded.
 

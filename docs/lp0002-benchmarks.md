@@ -1,4 +1,4 @@
-# LP-0002 msig — Benchmarks (compute, cost, performance)
+# LP-0002 msig: Benchmarks (compute, cost, performance)
 
 This document reports the performance and cost profile of the LP-0002 anonymous
 M-of-N multisig (`msig`) program on the nssa v0.1.2 testnet rev
@@ -19,7 +19,7 @@ CPU, core count, and load; treat the figures as order-of-magnitude, not a spec.
 here is approver anonymity *within the enrolled set of N public members*: each
 member enrolls a public leaf `H(secret)` into the registry, so the member set
 itself is public. When a member approves, the approval **count is public**, but
-**which specific member approved is hidden** — the proposal state records only
+**which specific member approved is hidden**, the proposal state records only
 `root + id + count + opaque proposal-bound nullifiers`, never any member identity.
 This is anonymity among public members, not hidden or anonymous membership.
 Wherever this document says "anonymous approval," it means exactly this. Witness
@@ -39,17 +39,17 @@ either valid (it applies) or it is not; there is no metered price.
 
 Verified absent in:
 
-- **`common/src/transaction.rs`** — the `NSSATransaction` enum and its
+- **`common/src/transaction.rs`**, the `NSSATransaction` enum and its
   `transaction_stateless_check` / `validate_on_state` / `execute_check_on_state`
   paths contain no gas, fee, compute-unit, or priority field. A transaction is a
   `Public`, `PrivacyPreserving`, or `ProgramDeployment` variant; none carries a
   cost field.
-- **Wallet chain CLI (`wallet/src/cli/chain.rs`)** — the `ChainSubcommand` set is
+- **Wallet chain CLI (`wallet/src/cli/chain.rs`)**, the `ChainSubcommand` set is
   exactly `block-id`, `block`, and `tx`. Querying a transaction prints the full
   transaction via `{tx:#?}` (debug), which would surface any fee/gas field if one
   existed; there is none. Querying a block likewise prints the full block with no
   cost accounting.
-- **Wallet account CLI (`wallet/src/cli/account.rs`)** — account state is
+- **Wallet account CLI (`wallet/src/cli/account.rs`)**, account state is
   `program_owner`, `balance`, `data`, `nonce`. No fee/gas balance, no compute
   budget.
 
@@ -75,14 +75,14 @@ public transactions:
 
 The five public ops are ordinary RISC-V execution on the sequencer. On this rev
 they carry **no fee** and complete in the time it takes the sequencer to execute
-the guest and apply the post-state — sub-second, dominated by block cadence, not
+the guest and apply the post-state, sub-second, dominated by block cadence, not
 by any compute the client does. They are not the cost story.
 
 **`Approve` is the entire cost story.** It is a privacy-preserving transaction:
 the member's secret, Merkle membership path, and proposal id travel as a private
 witness, and the client must locally generate a real STARK proving in-guest
 Merkle membership against the frozen `member_root`, deriving a proposal-bound
-vote nullifier, and rejecting double-votes — all before anything is submitted.
+vote nullifier, and rejecting double-votes, all before anything is submitted.
 Everything below profiles `Approve`.
 
 ---
@@ -99,21 +99,21 @@ chain-reported figure.
 This is corroborated by the canonical on-chain runs, each of which required a
 local DEV_MODE=0 prove before the resulting tx landed:
 
-- 1-of-N e2e: approve `13f1f0c2` — real DEV_MODE=0 STARK, ~134 s, landed at block
+- 1-of-N e2e: approve `13f1f0c2`, real DEV_MODE=0 STARK, ~134 s, landed at block
   49316 (count 0 -> 1).
 - 2-of-3 threshold demo (the M-of-N proof):
-  - approve #1 (member 0) `1bef810a` — 133.49 s, block 49442, count 0 -> 1.
-  - approve #2 (member 1) `05a784ea` — 133.60 s, block 49456, count 1 -> 2.
+  - approve #1 (member 0) `1bef810a`, 133.49 s, block 49442, count 0 -> 1.
+  - approve #2 (member 1) `05a784ea`, 133.60 s, block 49456, count 1 -> 2.
 
 The two threshold approvals are separate ~133 s proves by two different members;
 their vote nullifiers (`cdda374f`, `3979979b`) are distinct, and the proposal
-state stores only `root + id + count + opaque nullifiers` — no member identity. So
+state stores only `root + id + count + opaque nullifiers`, no member identity. So
 the per-approval cost scales linearly in the number of approvers (one ~133 s prove
 each), and that linear cost is **serial, not parallel**: each approve commits the
 full live ProposalState (count + nullifier set) into its proof, and apply rejects
 a proof built against a now-stale snapshot (see reliability doc LP23,
 `InconsistentAccountPreState`). Members may prove on independent machines, but only
-one approval per proposal-state-version can land — a proof built before another
+one approval per proposal-state-version can land, a proof built before another
 approval landed must be re-run against the updated state. In the canonical 2-of-3
 demo the two approvals landed sequentially (block 49442, count 0 -> 1; then block
 49456, count 1 -> 2), 14 blocks apart; approve #2 was necessarily proved against
@@ -128,7 +128,7 @@ the ~133 s is entirely the STARK.
 
 The second defensible proxy is the proof artifact size.
 
-The on-chain approve receipt deserializes to `InnerReceipt::Succinct` — a real
+The on-chain approve receipt deserializes to `InnerReceipt::Succinct`, a real
 succinct STARK, **~224 KB**. This is categorically not a `Fake` receipt (a
 dev-mode placeholder), and it is the object the privacy tx carries and the
 sequencer folds in. The succinct receipt size is essentially constant in the
@@ -139,7 +139,7 @@ Block-size contrast (qualitative, since no byte-cost field exists): the
 `Approve` privacy transaction carries this ~224 KB succinct proof plus the
 private rider's commitment/nullifier/ciphertext, whereas the public `Execute` tx
 (`2d07a56a` in the 1-of-N run; `81c7e42c` in the 2-of-3 run) carries only an
-instruction (`Execute { threshold, seed }`), an account-id list, and no proof —
+instruction (`Execute { threshold, seed }`), an account-id list, and no proof,
 it is a tiny message by comparison. The privacy approve is the only "heavy" block
 contributor in the whole flow; every other op is a small public message.
 
@@ -160,7 +160,7 @@ reasons:
 
 Important integrity note: an unrelated guest from a different program happens to
 have a logged cycle count on this host. **It is NOT the msig approve guest and is
-not cited here** — any cycle figure on this box belongs to other work and must not
+not cited here**, any cycle figure on this box belongs to other work and must not
 be read as an approve metric. The msig approve cycle count is simply not measured;
 the time (~133 s) and size (~224 KB) proxies above stand in for it.
 
@@ -188,7 +188,7 @@ chained call per op, well within that bound.
 
 | Metric | Value | Source / caveat |
 |--------|-------|-----------------|
-| CU / gas / fee per tx | **none exists** | `common/src/transaction.rs`, wallet chain/account CLI — verified absent |
+| CU / gas / fee per tx | **none exists** | `common/src/transaction.rs`, wallet chain/account CLI, verified absent |
 | Approve real-proof time | ~133–134 s | local DEV_MODE=0 on AMD EPYC-Genoa, 16c; on-chain approves 13f1f0c2 / 1bef810a (133.49s) / 05a784ea (133.60s) |
 | Approve receipt size | ~224 KB | on-chain receipt deserializes to `InnerReceipt::Succinct`; constant in member-set size at depth-5 |
 | Approve cost scaling | linear, one ~133 s prove per approver; serialized through on-chain state (one approval per state-version lands) | 2-of-3 demo = two distinct-member proves landing sequentially (blocks 49442 -> 49456) |
@@ -197,7 +197,7 @@ chained call per op, well within that bound.
 
 Bottom line: the only expensive thing in an LP-0002 multisig is generating each
 member's anonymous-approval STARK (~133 s, ~224 KB, one per approver), and those
-approvals are serialized through the proposal's on-chain state — one lands per
+approvals are serialized through the proposal's on-chain state, one lands per
 state-version, the next is proved against the updated count. Everything else is a
 sub-second, fee-free public transaction. There is no gas or compute-unit price to
 optimize on this rev because the rev does not have one.

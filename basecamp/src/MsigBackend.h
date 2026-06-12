@@ -3,12 +3,12 @@
 // Drives a localhost-only Node sidecar (basecamp/msig-sidecar.mjs) over HTTP via
 // QNetworkAccessManager. The sidecar in turn shells out to the proven Rust
 // runners (run_read_status for /status, run_approve_secret for /approve) so the
-// sandboxed QML/plugin never does the proving or the on-chain submit itself —
+// sandboxed QML/plugin never does the proving or the on-chain submit itself,
 // the real ~134s Groth/STARK prove + tx happen in the spawned runner.
 //
 // deriveLeaf() is the ONE thing computed locally in C++ (QCryptographicHash):
 // the member leaf SHA256("/lp0002/leaf/\x00" || secret). The 32-byte secret is
-// hashed in-process and only the leaf hash leaves this widget — the secret stays
+// hashed in-process and only the leaf hash leaves this widget, the secret stays
 // on the local machine.
 #pragma once
 

@@ -22,14 +22,14 @@ for attribution.
 
 Our LP-0002 contribution:
 
-- `programs/msig/core/src/lib.rs` — the `msig_core` shared scheme: depth-5 Merkle member
+- `programs/msig/core/src/lib.rs`, the `msig_core` shared scheme: depth-5 Merkle member
   set, `MsigInstruction` (`CreateProposal`, `Approve`, `Enroll`, `Execute`, `InitTreasury`),
   domain-separated leaf/nullifier hashing, account layouts.
-- `test_program_methods/guest/src/bin/msig.rs` — the on-chain `msig` guest.
-- `examples/program_deployment/src/msig_demo.rs` — the shared demo fixture (single source of
+- `test_program_methods/guest/src/bin/msig.rs`, the on-chain `msig` guest.
+- `examples/program_deployment/src/msig_demo.rs`, the shared demo fixture (single source of
   truth for every runner).
-- `examples/program_deployment/src/bin/run_{deploy,enroll,init_treasury,create_proposal,approve,execute}.rs`
-  — the client runners.
+- `examples/program_deployment/src/bin/run_{deploy,enroll,init_treasury,create_proposal,approve,execute}.rs`,
+  the client runners.
 - msig tests in `nssa/src/state.rs` (public-tx + bootstrap + compose) and
   `nssa/src/privacy_preserving_transaction/circuit.rs` (approve tests, including one real
   `RISC0_DEV_MODE=0` STARK plus negatives).

@@ -12,7 +12,7 @@
 #include <QUrl>
 
 namespace {
-// LEAF_DOMAIN = b"/lp0002/leaf/\x00" — 14 bytes (13 ASCII + one trailing NUL).
+// LEAF_DOMAIN = b"/lp0002/leaf/\x00", 14 bytes (13 ASCII + one trailing NUL).
 // A bare const char* would truncate at the NUL, so build it explicitly.
 QByteArray leafDomain() {
 	QByteArray d("/lp0002/leaf/"); // 13 bytes
