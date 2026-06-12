@@ -23,9 +23,18 @@ use nssa::program::Program;
 use nssa::{AccountId, PrivateKey, PublicKey};
 use nssa_core::program::PdaSeed;
 
-/// Deployable `msig` ELF produced by `cargo test -p nssa --release --no-run`.
-pub const MSIG_BIN: &str =
-    "/root/lez-v012/target/riscv-guest/test_program_methods/test_programs/riscv32im-risc0-zkvm-elf/release/msig.bin";
+/// Path to the deployable `msig` ELF produced by `cargo test -p nssa --release --no-run`.
+///
+/// Resolves the `MSIG_BIN` env var first (override for non-standard layouts), else a path
+/// relative to this crate's manifest dir, so a fresh clone at ANY location works unedited.
+#[must_use]
+pub fn msig_bin() -> std::path::PathBuf {
+    if let Ok(p) = std::env::var("MSIG_BIN") {
+        return std::path::PathBuf::from(p);
+    }
+    std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../target/riscv-guest/test_program_methods/test_programs/riscv32im-risc0-zkvm-elf/release/msig.bin")
+}
 
 /// Three distinct DEMO member secrets. Only their leaves are ever published.
 pub const MEMBER_SECRETS: [[u8; 32]; 3] = [[0xA7_u8; 32], [0x42_u8; 32], [0x5C_u8; 32]];
@@ -153,11 +162,11 @@ pub fn recipient_account_id(program_id: &nssa_core::program::ProgramId) -> Accou
     AccountId::for_public_pda(program_id, &PdaSeed::new(RECIPIENT_SEED))
 }
 
-/// Loads the deployable `msig` program from [`MSIG_BIN`]; its id equals the on-chain `MSIG_ID`.
+/// Loads the deployable `msig` program from [`msig_bin`]; its id equals the on-chain `MSIG_ID`.
 ///
 /// # Errors
-/// Fails if [`MSIG_BIN`] cannot be read or is not a valid program ELF.
+/// Fails if [`msig_bin`] cannot be read or is not a valid program ELF.
 pub fn msig_program() -> anyhow::Result<Program> {
-    let bytecode = std::fs::read(MSIG_BIN)?;
+    let bytecode = std::fs::read(msig_bin())?;
     Program::new(bytecode).map_err(|e| anyhow::anyhow!("load msig program: {e}"))
 }
