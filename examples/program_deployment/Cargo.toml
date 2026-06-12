@@ -18,5 +18,6 @@ key_protocol.workspace = true
 
 anyhow.workspace = true
 hex.workspace = true
+rand.workspace = true
 tokio = { workspace = true, features = ["macros"] }
 clap.workspace = true

@@ -6089,6 +6089,7 @@ dependencies = [
  "msig_core",
  "nssa",
  "nssa_core",
+ "rand 0.8.5",
  "sequencer_service_rpc",
  "tokio",
  "wallet",

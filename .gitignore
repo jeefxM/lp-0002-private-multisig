@@ -15,3 +15,6 @@ integration_tests/configs/debug/
 
 # LP-0002 wallet homes (contain private keys) - never commit
 wallet-home-*/
+
+# Basecamp plugin intermediate build dir (regenerable)
+basecamp/build/
