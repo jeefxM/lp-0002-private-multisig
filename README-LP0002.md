@@ -78,6 +78,7 @@ The full evidence record, with transaction hashes, block numbers, and proving ti
 
 ## Further reading
 
+- Architecture map (component map + flow diagram): [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Instruction layout / IDL: [`idl/lp0002-msig.idl.json`](idl/lp0002-msig.idl.json)
 - Benchmarks (proving times): [`docs/lp0002-benchmarks.md`](docs/lp0002-benchmarks.md)
 - Reliability / failure modes: [`docs/lp0002-reliability.md`](docs/lp0002-reliability.md)
