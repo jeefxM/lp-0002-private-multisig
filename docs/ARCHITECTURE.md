@@ -23,6 +23,10 @@ upstream nssa v0.1.2, which we build on and credit.
 
 ## Flow
 
+![LP-0002 flow: enroll to threshold-gated execute](lp0002-architecture.png)
+
+*(Editable source: [`lp0002-architecture.excalidraw`](lp0002-architecture.excalidraw), open at excalidraw.com.)*
+
 ```
 Enroll (public leaf) xN  -->  MembersRegistry  -->  member_root
                                                       |  frozen into the proposal by
