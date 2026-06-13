@@ -61,8 +61,8 @@ cd /root/lez-v012 && cargo build --release -p program_deployment --bin run_read_
      /root/lez-v012/basecamp/build/MsigApp 2>&1 | grep -iE "\.qml:|qml .*error"
    # (only connection-refused noise from the startup getStatus() is expected; no .qml: lines = clean)
    ```
-4. **deriveLeaf is byte-exact**: C++ `QCryptographicHash` on `"/lp0002/leaf/\x00"||0xA7*32`
-   == `bde7026d…2fa`, matching `msig_core::member_leaf` and the on-chain enrolled leaf 0.
+4. **deriveLeaf is byte-exact**: C++ `QCryptographicHash` on `"/lp0002/leaf/\x00"||<member 0 nsk>`
+   == `50811a77…66a7`, matching `msig_core::member_leaf` and the on-chain enrolled leaf 0.
 5. **Sidecar + runner path end to end** (`/tmp/msig_sidecar_smoke.sh`, DEV_MODE=1):
    - `GET /status` → `{ready:true, …, approval_count:0, threshold:2}`
    - `POST /approve` member 0 (`a7..a7`) → `{success:true, tx_hash:…, approval_count:1}` (real on-chain vote, 0→1)
@@ -136,26 +136,26 @@ MODE=basecamp /root/lez-v012/basecamp/run-basecamp-lp0002.sh
    **private_multisig_lp0002** (category: governance).
 2. **Section 2, Proposal status:** auto-loads on open; press **Refresh status**
    if needed. You should see the proposal id, member root, and `approvals 0 / 2`.
-3. **Section 1, Derive my leaf:** paste a member secret (e.g. `a7a7…a7` =
-   member 0, 64 hex chars) and press **Derive leaf**. The leaf hash appears
-   (`bde7026d…` for member 0), computed locally; the secret never leaves the
+3. **Section 1, Derive my leaf:** paste a member secret (e.g. member 0 =
+   `72d2833e…dc65`, 64 hex chars) and press **Derive leaf**. The leaf hash appears
+   (`50811a77…` for member 0), computed locally; the secret never leaves the
    widget for derivation.
 4. **Section 3, Cast anonymous vote:** with the same secret still in the field,
    press **Cast anonymous vote**. The button shows *"Proving & submitting…
    (~134s)"* with a busy/progress bar (on testnet/`RISC0_DEV_MODE=0`; ~instant on
    a DEV_MODE=1 local sequencer). On success the result panel shows the **tx
    hash** and **approval_count now 1 / 2**.
-5. (Optional) Repeat with member 1's secret (`4242…42`) to reach the threshold
+5. (Optional) Repeat with member 1's secret (`eee2d6cf…720a`) to reach the threshold
    (`approvals 2 / 2 · THRESHOLD MET`). A non-member secret (`deadbeef…`) shows
    the red error *"not an enrolled member"*; voting twice with the same member's
    secret shows a double-vote rejection (proposal-bound nullifier already spent,
    both confirmed in the headless smoke tests).
 
-### Member secrets (demo fixture)
+### Member secrets (demo fixture, HD-derived shielded-account nsks)
 
 | Member | Secret (64 hex) | Leaf |
 |--------|-----------------|------|
-| 0 | `a7a7…a7` (0xA7 × 32) | `bde7026dec1d3386bc7c459c166bd959836b119554e570a4d55d2ed7719ec2fa` |
-| 1 | `4242…42` (0x42 × 32) | `ce15b1d5…` |
-| 2 | `5c5c…5c` (0x5C × 32) | `7f6ce1af…` |
+| 0 | `72d2833e462b171ea3ad2676b9967703c9a8620dabf49883986f3f36377bdc65` | `50811a775db76ae635ff97016397495bd151150a3590c950c0dadb32fe8d66a7` |
+| 1 | `eee2d6cf8978e0a0b67c03eb68f4c48c0d0f1cc3cf77ca9f671ad193a893720a` | `05318633fcfc8b9fe5c930a454510a8b45267b08a9112621b7626b203c41fed3` |
+| 2 | `365434a89e065ad81a73062db4b6d7fe28b45e3a17fc9858fdb9ea4b8b0ab139` | `aa2db57d0e81febd8a97a2723983c7f5bb9c98f6067b810452279f473f9d679a` |
 | non-member | `deadbeef…` (rejected) | n/a |

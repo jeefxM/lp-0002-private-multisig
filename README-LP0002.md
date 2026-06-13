@@ -45,7 +45,7 @@ Our LP-0002 contribution:
 # then drives the full on-chain flow:
 #   deploy -> enroll(x3) -> create_proposal -> approve(member 0) -> approve(member 1)
 #   -> init_treasury -> fund -> execute(threshold 2) -> assert (count 2, treasury drained).
-# Each approval runs a real ~133s STARK (the default RISC0_DEV_MODE=0 gate).
+# Each approval runs a real ~174s STARK (the default RISC0_DEV_MODE=0 gate).
 ./scripts/lp0002-demo.sh
 
 # Fast plumbing check with fake receipts (~3 min, no real proofs):
@@ -53,7 +53,7 @@ DEV_MODE=1 ./scripts/lp0002-demo.sh
 ```
 
 The script is self-contained: it boots its own local sequencer and wallet home, so no
-external sequencer or testnet access is required. The same flow ran against
+external sequencer or testnet access is required. The same flow was exercised against
 `https://testnet.lez.logos.co` to produce the live on-chain evidence below. See the
 script header for the per-step `cargo run` invocations if you want to run them manually.
 
@@ -65,16 +65,16 @@ script header for the per-step `cargo run` invocations if you want to run them m
 
 ## Live on-chain evidence
 
-The full evidence record, with transaction hashes, block numbers, and proving times, is in
+The full evidence record, with transaction hashes and proving times, is in
 [`docs/LP-0002-solution.md`](docs/LP-0002-solution.md). In short:
 
-- **1-of-N full e2e**: deploy, three enrolls (registry root `d0404df3`), treasury bootstrap,
-  fund, create_proposal, a real `RISC0_DEV_MODE=0` approve (`13f1f0c2`, ~134s, count 0 -> 1),
-  and execute (`2d07a56a`, treasury 100 -> 0, recipient 0 -> 100).
-- **2-of-3 threshold** (the M-of-N proof): proposal `BZ182CU`, two anonymous approvals from
-  two distinct members (`1bef810a` count 0 -> 1, `05a784ea` count 1 -> 2) with two **distinct**
-  vote nullifiers (`cdda374f`, `3979979b`), then execute at threshold=2 (`81c7e42c`, treasury
-  20 -> 0, recipient 100 -> 120).
+- **2-of-3 threshold** (the M-of-N proof, HD-nsk-derived membership): proposal `Hf84MVjY`
+  (member_root `38ea719c`, three HD-derived shielded-account members), two anonymous approvals
+  from two distinct members (`09c9cf27` 174.18s count 0 -> 1, `83007dcd` 173.78s count 1 -> 2)
+  with two **distinct** vote nullifiers (`748015dc`, `7d37760a`), then InitTreasury
+  (`9bfb9fde` / `6696b49d`), fund 20 (`7db0d6c7`), and execute at threshold=2 (`deed4d0c`,
+  treasury 20 -> 0, recipient 0 -> 20). Every approve is a real `RISC0_DEV_MODE=0` STARK; any
+  hash is verifiable via `wallet chain-info transaction --hash <hash>`.
 
 ## Further reading
 

@@ -173,7 +173,7 @@ between them is the important reliability fact:
   later approval picks up from count 1 and reaches the threshold. The proposal
   state is the single source of truth and it persists independently of any client.
 - **What does NOT resume: in-progress local proving has no client-side
-  save/load.** A single `Approve` requires a ~133 s local STARK. If that prove is
+  save/load.** A single `Approve` requires a ~174 s local STARK. If that prove is
   interrupted (the client is killed mid-proof), there is no checkpoint of the
   partial proof; the interrupted prove must be re-run from scratch. The
   `run_approve` runner has no resume/checkpoint of an in-flight proof, and it does

@@ -3,9 +3,9 @@
 # VERIFY run_approve_secret: the user's entered secret drives the vote (anti-#87).
 # DEV_MODE=1 (fast fake receipts). Boots a fresh standalone sequencer, runs the
 # precondition deploy->enroll->create_proposal, then:
-#   (a) member 0 secret (a7..a7) -> count 0->1
-#   (b) member 1 secret (42..42) -> count 1->2
-#   (c) member 2 secret (5c..5c) -> count 2->3   (beyond old 0/1 limit)
+#   (a) member 0 secret (HD-nsk 72d2..dc65) -> count 0->1
+#   (b) member 1 secret (HD-nsk eee2..720a) -> count 1->2
+#   (c) member 2 secret (HD-nsk 3654..b139) -> count 2->3   (beyond old 0/1 limit)
 #   (d) RANDOM non-member secret -> "not an enrolled member", count UNCHANGED (3)
 ###############################################################################
 set -uo pipefail
@@ -23,9 +23,9 @@ SEQ_BIN="$REPO/target/release/sequencer_service"
 DEBUG_SEQ_CFG="$REPO/sequencer/service/configs/debug/sequencer_config.json"
 DEBUG_WALLET="$REPO/wallet/configs/debug"
 
-M0="a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7"
-M1="4242424242424242424242424242424242424242424242424242424242424242"
-M2="5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c"
+M0="72d2833e462b171ea3ad2676b9967703c9a8620dabf49883986f3f36377bdc65"
+M1="eee2d6cf8978e0a0b67c03eb68f4c48c0d0f1cc3cf77ca9f671ad193a893720a"
+M2="365434a89e065ad81a73062db4b6d7fe28b45e3a17fc9858fdb9ea4b8b0ab139"
 NONMEMBER="deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
 
 cd "$REPO"
@@ -95,13 +95,13 @@ run run_deploy;          sleep "$BLOCK_WAIT"
 run run_enroll;          sleep "$BLOCK_WAIT"
 run run_create_proposal; sleep "$BLOCK_WAIT"
 
-say "(a) APPROVE member 0 secret (a7..a7) -> expect count 0->1"
+say "(a) APPROVE member 0 secret (HD-nsk member 0) -> expect count 0->1"
 APPROVER_SECRET_HEX="$M0" run run_approve_secret; sleep "$BLOCK_WAIT"
 
-say "(b) APPROVE member 1 secret (42..42) -> expect count 1->2"
+say "(b) APPROVE member 1 secret (HD-nsk member 1) -> expect count 1->2"
 APPROVER_SECRET_HEX="$M1" run run_approve_secret; sleep "$BLOCK_WAIT"
 
-say "(c) APPROVE member 2 secret (5c..5c) -> expect count 2->3  [unlocks >0/1]"
+say "(c) APPROVE member 2 secret (HD-nsk member 2) -> expect count 2->3  [unlocks >0/1]"
 APPROVER_SECRET_HEX="$M2" run run_approve_secret; sleep "$BLOCK_WAIT"
 
 say "(d) APPROVE non-member secret (deadbeef..) -> expect REJECT, count UNCHANGED"

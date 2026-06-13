@@ -92,35 +92,33 @@ Everything below profiles `Approve`.
 The defensible proxy for "how expensive is an anonymous approval" is the
 wall-clock time to generate the real proof.
 
-**Real-proof approve time: ~133–134 s** to generate one DEV_MODE=0 STARK on the
+**Real-proof approve time: ~174 s** to generate one DEV_MODE=0 STARK on the
 build box (AMD EPYC-Genoa, 16 cores). This is a local timing observation, not a
 chain-reported figure.
 
-This is corroborated by the canonical on-chain runs, each of which required a
-local DEV_MODE=0 prove before the resulting tx landed:
+This is corroborated by the canonical on-chain 2-of-3 run (proposal `Hf84MVjY`,
+member_root `38ea719c`), each approve of which required a local DEV_MODE=0 prove
+before the resulting tx landed:
 
-- 1-of-N e2e: approve `13f1f0c2`, real DEV_MODE=0 STARK, ~134 s, landed at block
-  49316 (count 0 -> 1).
-- 2-of-3 threshold demo (the M-of-N proof):
-  - approve #1 (member 0) `1bef810a`, 133.49 s, block 49442, count 0 -> 1.
-  - approve #2 (member 1) `05a784ea`, 133.60 s, block 49456, count 1 -> 2.
+- approve #1 (member 0) `09c9cf27`, 174.18 s, count 0 -> 1.
+- approve #2 (member 1) `83007dcd`, 173.78 s, count 1 -> 2.
 
-The two threshold approvals are separate ~133 s proves by two different members;
-their vote nullifiers (`cdda374f`, `3979979b`) are distinct, and the proposal
+The two threshold approvals are separate ~174 s proves by two different members;
+their vote nullifiers (`748015dc`, `7d37760a`) are distinct, and the proposal
 state stores only `root + id + count + opaque nullifiers`, no member identity. So
-the per-approval cost scales linearly in the number of approvers (one ~133 s prove
+the per-approval cost scales linearly in the number of approvers (one ~174 s prove
 each), and that linear cost is **serial, not parallel**: each approve commits the
 full live ProposalState (count + nullifier set) into its proof, and apply rejects
 a proof built against a now-stale snapshot (see reliability doc LP23,
 `InconsistentAccountPreState`). Members may prove on independent machines, but only
 one approval per proposal-state-version can land, a proof built before another
 approval landed must be re-run against the updated state. In the canonical 2-of-3
-demo the two approvals landed sequentially (block 49442, count 0 -> 1; then block
-49456, count 1 -> 2), 14 blocks apart; approve #2 was necessarily proved against
-the count=1 state. Effective throughput is one ~133 s approval at a time.
+run the two approvals landed sequentially (count 0 -> 1, then count 1 -> 2) with a
+finality gate enforced between them; approve #2 was necessarily proved against the
+count=1 state. Effective throughput is one ~174 s approval at a time.
 
 For reference, the build-only path (no prove) and the public ops are sub-second;
-the ~133 s is entirely the STARK.
+the ~174 s is entirely the STARK.
 
 ---
 
@@ -138,7 +136,7 @@ the ~224 KB does not grow with the number of enrolled members.
 Block-size contrast (qualitative, since no byte-cost field exists): the
 `Approve` privacy transaction carries this ~224 KB succinct proof plus the
 private rider's commitment/nullifier/ciphertext, whereas the public `Execute` tx
-(`2d07a56a` in the 1-of-N run; `81c7e42c` in the 2-of-3 run) carries only an
+(`deed4d0c` in the 2-of-3 run) carries only an
 instruction (`Execute { threshold, seed }`), an account-id list, and no proof,
 it is a tiny message by comparison. The privacy approve is the only "heavy" block
 contributor in the whole flow; every other op is a small public message.
@@ -154,7 +152,7 @@ reasons:
 1. This rev exposes no cycle count on-chain or in the wallet; obtaining it
    requires instrumenting a local prove run (`RUST_LOG=risc0_zkvm=info`) of the
    approve guest specifically.
-2. A clean measurement would require a fresh DEV_MODE=0 prove (~133 s) plus the
+2. A clean measurement would require a fresh DEV_MODE=0 prove (~174 s) plus the
    build artifacts, and the build host is disk-constrained. We deliberately did
    not trigger that run for a single proxy number.
 
@@ -162,7 +160,7 @@ Important integrity note: an unrelated guest from a different program happens to
 have a logged cycle count on this host. **It is NOT the msig approve guest and is
 not cited here**, any cycle figure on this box belongs to other work and must not
 be read as an approve metric. The msig approve cycle count is simply not measured;
-the time (~133 s) and size (~224 KB) proxies above stand in for it.
+the time (~174 s) and size (~224 KB) proxies above stand in for it.
 
 ---
 
@@ -189,14 +187,14 @@ chained call per op, well within that bound.
 | Metric | Value | Source / caveat |
 |--------|-------|-----------------|
 | CU / gas / fee per tx | **none exists** | `common/src/transaction.rs`, wallet chain/account CLI, verified absent |
-| Approve real-proof time | ~133–134 s | local DEV_MODE=0 on AMD EPYC-Genoa, 16c; on-chain approves 13f1f0c2 / 1bef810a (133.49s) / 05a784ea (133.60s) |
+| Approve real-proof time | ~174 s | local DEV_MODE=0 on AMD EPYC-Genoa, 16c; on-chain approves 09c9cf27 (174.18s) / 83007dcd (173.78s) |
 | Approve receipt size | ~224 KB | on-chain receipt deserializes to `InnerReceipt::Succinct`; constant in member-set size at depth-5 |
-| Approve cost scaling | linear, one ~133 s prove per approver; serialized through on-chain state (one approval per state-version lands) | 2-of-3 demo = two distinct-member proves landing sequentially (blocks 49442 -> 49456) |
+| Approve cost scaling | linear, one ~174 s prove per approver; serialized through on-chain state (one approval per state-version lands) | 2-of-3 run = two distinct-member proves landing sequentially with a finality gate between them |
 | Public-op cost (enroll/create/init/execute/fund) | sub-second RISC-V exec, no fee, no proof | nssa v0.1.2 public-tx path |
 | Approve guest RISC0 cycle count | not measured | requires a fresh local prove; not obtained, and no figure from other guests on this host is cited |
 
 Bottom line: the only expensive thing in an LP-0002 multisig is generating each
-member's anonymous-approval STARK (~133 s, ~224 KB, one per approver), and those
+member's anonymous-approval STARK (~174 s, ~224 KB, one per approver), and those
 approvals are serialized through the proposal's on-chain state, one lands per
 state-version, the next is proved against the updated count. Everything else is a
 sub-second, fee-free public transaction. There is no gas or compute-unit price to

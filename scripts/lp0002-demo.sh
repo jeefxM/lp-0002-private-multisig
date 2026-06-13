@@ -13,7 +13,7 @@
 #       and prints the tx / block evidence,
 #   (e) cleans up the sequencer.
 #
-# DEFAULT RISC0_DEV_MODE=0 - the real STARK gate the bounty requires (~134s/approve).
+# DEFAULT RISC0_DEV_MODE=0 - the real STARK gate the bounty requires (~174s/approve).
 # For fast iteration of the NON-proof logic, run with DEV_MODE=1 (fake receipts):
 #         DEV_MODE=1 scripts/lp0002-demo.sh
 #
