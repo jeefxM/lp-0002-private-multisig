@@ -83,6 +83,22 @@ public leaf commitment in a Merkle set, an in-circuit membership proof, and a
 domain-separated nullifier bound to the action) and implemented it natively for
 the LEZ privacy-preserving transaction model and the RISC0 zkVM.
 
+**Membership is bound by derivation to a member's shielded account.** Each member's
+membership secret is their real shielded-account nullifier secret key (`nsk`), the
+same key the LEZ key tree produces for a shielded account (`SeedHolder` ->
+`SecretSpendingKey` -> `produce_private_key_holder(index).nullifier_secret_key`) and
+the same key that authorizes spends from that account. Control of the `nsk` is control
+of the account, so enrolling `member_leaf(nsk)` ties membership to a real shielded
+account by derivation. The enrolled leaf is `H(LEAF_DOMAIN || nsk)`, a one-way hash of
+the PRIVATE `nsk`, so the public registry never publishes the account's `npk` or
+`AccountId` and an observer cannot link a leaf (or a later vote) back to any on-chain
+account. To be precise about scope: this is derivation-binding, not an in-circuit
+proof that the leaf corresponds to a live account in the chain's commitment tree. The
+approve circuit proves Merkle membership of `H(LEAF_DOMAIN || nsk)` in the frozen
+member root and that the same `nsk` produced the proposal-bound nullifier; it does not
+additionally read live account state. A future rev could add that in-circuit live-account
+binding once it is a proven primitive for a custom program on this testnet rev.
+
 **Our authorship** is scoped to:
 
 - `programs/msig/core/src/lib.rs` (`msig_core`): the shared types and the
@@ -333,12 +349,17 @@ The pieces are designed to be reused independently of the demo fixture.
 - [~] An M-of-N member can submit an approval without revealing their identity to
   on-chain observers or other members. The approval is a privacy-preserving (ZK)
   transaction; the ProposalState records only root + id + count + opaque
-  nullifiers, with no member identity. Partial on the literal "shielded account":
-  members enroll a public commitment (leaf) rather than each holding a per-member
-  shielded LEZ account, so anonymity is among the public enrolled set of N members
-  (the member list is public; which member approved is hidden). The per-member
-  private-account enrollment path was not a proven primitive for a custom program
-  on this testnet rev; see Approach for the tradeoff.
+  nullifiers, with no member identity. On "members hold shielded accounts": each
+  member's membership secret IS their real shielded-account nullifier secret key
+  (`nsk`), HD-derived from the LEZ key tree, so membership is bound by derivation to a
+  shielded account (control of `nsk` == control of the account). The enrolled leaf is
+  `H(LEAF_DOMAIN || nsk)`, a one-way hash of the PRIVATE `nsk`, so the public registry
+  does not publish the account's `npk`/`AccountId` and the leaf cannot be linked to an
+  on-chain account; anonymity is among the public enrolled set of N members (the member
+  list is public; which member approved is hidden). Marked partial because the binding
+  is by derivation, not an in-circuit proof that the leaf maps to a live account in the
+  chain's commitment tree; that in-circuit live-account path was not a proven primitive
+  for a custom program on this testnet rev. See Approach for the scope.
 - [x] The on-chain verifier confirms a threshold of M approvals was reached
   without recording which members approved. Execute asserts `count >= threshold`;
   the recorded nullifiers are opaque.

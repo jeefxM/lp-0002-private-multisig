@@ -15,6 +15,7 @@ sequencer_service_rpc = { workspace = true, features = ["client"] }
 wallet.workspace = true
 msig_core.workspace = true
 key_protocol.workspace = true
+bip39.workspace = true
 
 anyhow.workspace = true
 hex.workspace = true

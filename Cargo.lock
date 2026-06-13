@@ -6082,6 +6082,7 @@ name = "program_deployment"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bip39",
  "clap",
  "common",
  "hex",
