@@ -38,33 +38,30 @@ use nssa_core::encryption::Scalar;
 use nssa_core::encryption::ViewingPublicKey;
 use nssa_core::{NullifierPublicKey, NullifierSecretKey, SharedSecretKey};
 use program_deployment::msig_demo;
+use rand::RngCore as _;
 use sequencer_service_rpc::RpcClient as _;
 use wallet::WalletCore;
 
 const TESTNET_ENDPOINT: &str = "https://testnet.lez.logos.co";
 
-// DEMO VOTER KEYS — one DISTINCT (nsk, vsk) rider pair per member index. Each rider note's
-// commitment/init-nullifier is deterministic from npk, so two approves in the SAME run MUST use
-// DISTINCT npks or the second rider collides on-chain. These are brand-new throwaways, NOT the
-// prior run's pair (now spent) and NOT test_private_account_keys_*. High bytes kept small so the
-// viewing scalar stays under the curve order. The voter is anonymous; no later step references
-// these keys.
-/// Voter #0 private nullifier key (fresh throwaway).
-const DEMO_NSK_0: NullifierSecretKey = [
-    0x0c, 0x71, 0xa4, 0x3e, 0x95, 0x18, 0xbd, 0x27, 0x6a, 0xc1, 0x04, 0x8f, 0x32, 0xe6, 0x5b, 0x90, 0x47, 0x1c, 0x88, 0x2a, 0x0d, 0xf3, 0x59, 0xb4, 0x66, 0x21, 0x7e, 0xd5, 0x39, 0xaa, 0x0b, 0x12,
-];
-/// Voter #0 private viewing key (fresh throwaway, top byte small).
-const DEMO_VSK_0: Scalar = [
-    0x0e, 0x53, 0xc7, 0x21, 0x8a, 0x46, 0x1f, 0xb9, 0x05, 0x6d, 0xe2, 0x33, 0x9c, 0x40, 0x7a, 0x18, 0xcc, 0x2b, 0x65, 0x91, 0x04, 0xd8, 0x57, 0xba, 0x3e, 0x09, 0x6f, 0xa1, 0x12, 0xe4, 0x4d, 0x08,
-];
-/// Voter #1 private nullifier key (fresh throwaway, DISTINCT from #0).
-const DEMO_NSK_1: NullifierSecretKey = [
-    0x0a, 0x38, 0xd6, 0x14, 0x7f, 0xb2, 0x29, 0x5c, 0x81, 0x03, 0xe9, 0x46, 0x1b, 0xc7, 0x50, 0x8d, 0x32, 0xa4, 0x69, 0x15, 0xde, 0x07, 0xb8, 0x4f, 0x21, 0x9a, 0x63, 0x0c, 0xf5, 0x38, 0xab, 0x11,
-];
-/// Voter #1 private viewing key (fresh throwaway, DISTINCT from #0, top byte small).
-const DEMO_VSK_1: Scalar = [
-    0x07, 0x4a, 0xb1, 0x2f, 0x96, 0x53, 0x1d, 0xc8, 0x60, 0x0b, 0xe5, 0x37, 0x9f, 0x42, 0x71, 0x1a, 0xd3, 0x28, 0x5b, 0x0c, 0x6e, 0xa9, 0x14, 0xf7, 0x30, 0x8d, 0x52, 0xb6, 0x09, 0xe1, 0x47, 0x0a,
-];
+// Rider keys (mask-2 private rider that emits the vote commitment/nullifier) are minted FRESH from
+// the OS RNG every run. Fresh randomness gives every approve a distinct npk automatically, so two
+// approves never collide their rider commitment/init-nullifier on-chain (the prior fixed
+// DEMO_NSK_*/DEMO_VSK_* pairs collided once their init-nullifier was spent by an earlier run). The
+// viewing scalar top bit is cleared so it stays < 2^255 < secp256k1 order and
+// ViewingPublicKey::from_scalar (from_repr().unwrap()) never panics; the nullifier secret key needs
+// no such constraint (it is SHA256'd into npk). The voter is anonymous; no later step references
+// these keys. The membership witness (msig_demo::approver_secret(), the HD-derived nsk) is separate
+// and unchanged.
+fn fresh_rider_keys() -> (NullifierSecretKey, Scalar) {
+    let mut rng = rand::rngs::OsRng;
+    let mut nsk: NullifierSecretKey = [0u8; 32];
+    rng.fill_bytes(&mut nsk);
+    let mut vsk: Scalar = [0u8; 32];
+    rng.fill_bytes(&mut vsk);
+    vsk[0] &= 0x7F; // clear MSB: value < 2^255 < secp256k1 order -> from_repr() never returns None.
+    (nsk, vsk)
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -75,14 +72,10 @@ async fn main() -> anyhow::Result<()> {
     let program = msig_demo::msig_program()?;
     let _program_id = program.id();
 
-    // Voter keys — one DISTINCT rider pair per member index (so the two approves in this run do
-    // not collide their rider commitment/init-nullifier on-chain).
+    // Voter keys — a FRESH rider pair minted per invocation (so approves never collide their rider
+    // commitment/init-nullifier on-chain, even across runs against a chain carrying prior state).
     let approver_index = msig_demo::approver_index();
-    let (nsk, vsk): (NullifierSecretKey, Scalar) = match approver_index {
-        0 => (DEMO_NSK_0, DEMO_VSK_0),
-        1 => (DEMO_NSK_1, DEMO_VSK_1),
-        other => anyhow::bail!("APPROVER_INDEX {other} has no dedicated rider key pair (only 0,1 wired)"),
-    };
+    let (nsk, vsk): (NullifierSecretKey, Scalar) = fresh_rider_keys();
     println!("approving as member index {approver_index}");
     let npk = NullifierPublicKey::from(&nsk);
     let vpk = ViewingPublicKey::from_scalar(vsk);

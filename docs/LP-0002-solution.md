@@ -536,6 +536,33 @@ All evidence is on `testnet.lez.logos.co` under program id
 The two vote nullifiers are distinct (two different members). The proposal state
 stores only root + id + count + opaque nullifiers, with no member identity.
 
+### 2-of-3 with HD-nsk-derived membership (binding-by-derivation evidence)
+
+This is the run matching the membership-by-derivation design above: each of the
+three members' secrets is their real shielded-account `nsk`, HD-derived from the
+LEZ key tree (`SeedHolder` -> `SecretSpendingKey` ->
+`produce_private_key_holder(i).nullifier_secret_key`), so the frozen `member_root`
+is built from `H(LEAF_DOMAIN || nsk)` leaves. Same program id
+`HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`, `RISC0_DEV_MODE=0`.
+
+- Proposal: `Hf84MVjY` (proposal_id `9f1c47a2`), nsk-derived member_root `38ea719c`
+- Approve #1, member 0: `09c9cf27` (real `RISC0_DEV_MODE=0` STARK 174.18 s,
+  count 0 -> 1)
+- Approve #2, member 1: `83007dcd` (real `RISC0_DEV_MODE=0` STARK 173.78 s,
+  count 1 -> 2, threshold met)
+- InitTreasury (fresh PDAs, seeds `[4;32]`/`[5;32]`): treasury `9bfb9fde`,
+  recipient `6696b49d`
+- Fund 20 (payer -> treasury): `7db0d6c7`
+- Execute (threshold 2): `deed4d0c` (treasury 20 -> 0, recipient 0 -> 20)
+- On-chain assert: proposal count = 2, treasury `12JLe9...` = 0, recipient
+  `4qCzn...` = 20 (all as expected)
+
+Both approvals are driven by two distinct HD-derived member `nsk`s, so the count
+advances 0 -> 1 -> 2 with two distinct vote nullifiers and no member identity in
+the proposal state. The treasury and recipient are fresh PDAs (uninitialized
+before this run), so the recipient credit of exactly 20 is attributable solely to
+this execute.
+
 ## Terms & Conditions
 
 By submitting this solution, I confirm that I have read and agree to the

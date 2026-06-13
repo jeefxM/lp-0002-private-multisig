@@ -93,10 +93,10 @@ pub const PROPOSAL_ID: [u8; 32] = [0x9f, 0x1c, 0x47, 0xa2, 0x6b, 0xd8, 0x03, 0x5
 pub const THRESHOLD: u32 = 2;
 
 /// Treasury PDA seed. Also passed as `Execute.seed` so the chained drain authorises the PDA.
-pub const TREASURY_SEED: [u8; 32] = [0_u8; 32];
+pub const TREASURY_SEED: [u8; 32] = [4_u8; 32];
 
 /// Recipient PDA seed (payout target).
-pub const RECIPIENT_SEED: [u8; 32] = [1_u8; 32];
+pub const RECIPIENT_SEED: [u8; 32] = [5_u8; 32];
 
 /// The 3 DEMO member membership secrets = GENUINE shielded-account nullifier secret keys (`nsk`),
 /// HD-derived from [`MEMBER_SEED_ENTROPY`] at indices 0..[`MEMBER_COUNT`].
