@@ -45,9 +45,18 @@ jobs:
 
       - uses: ./.github/actions/install-risc0
 
-      - uses: ./.github/actions/install-logos-blockchain-circuits
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # The runner build (program_deployment -> logos-blockchain-pol) needs the
+      # logos-blockchain-circuits artifacts at ~/.logos-blockchain-circuits, at
+      # the exact version the build script pins (v0.4.2 == EXPECTED_CIRCUITS_VERSION).
+      # The upstream install action fails in a fork (wrong release tag and a
+      # mismatched version), so fetch the public v0.4.2 release directly.
+      - name: Install logos-blockchain-circuits (v0.4.2)
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.logos-blockchain-circuits"
+          curl -sSL https://github.com/logos-blockchain/logos-blockchain-circuits/releases/download/v0.4.2/logos-blockchain-circuits-v0.4.2-linux-x86_64.tar.gz \
+            | tar -xz --strip-components=1 -C "$HOME/.logos-blockchain-circuits"
+          cat "$HOME/.logos-blockchain-circuits/VERSION"
 
       - name: Install active toolchain
         run: rustup install
