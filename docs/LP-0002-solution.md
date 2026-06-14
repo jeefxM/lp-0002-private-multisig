@@ -34,7 +34,7 @@ the approval count is public, which specific member approved is hidden.
 
 ## Repository + how to run
 
-- **Repo:** the nssa v0.1.2 fork, default branch `main`. Our LP-0002
+- **Repo:** `github.com/jeefxM/lp-0002-private-multisig` (the nssa v0.1.2 fork), default branch `main`. Our LP-0002
   contribution lives under `programs/msig/`, the guest at
   `test_program_methods/guest/src/bin/msig.rs`, the client runners at
   `examples/program_deployment/src/`, and the tests in `nssa/src/state.rs` and
@@ -370,7 +370,7 @@ The pieces are designed to be reused independently of the demo fixture.
 - [~] Proof generation runs client-side; a real `RISC0_DEV_MODE=0` approve proof
   was measured at ~174s on a 16-core AMD EPYC server (the build host).
   Standard-laptop timing is not yet measured; proving is RAM/CPU-bound so a laptop
-  will be materially slower. A narrated DEV_MODE=0 video is an open item.
+  will be materially slower.
 - [x] A reference integration: a threshold-gated treasury transfer on LEZ
   testnet using the privacy approve path. The 2-of-3 run releases a treasury to a
   recipient at threshold 2 (see Supporting Materials).
@@ -379,9 +379,9 @@ The pieces are designed to be reused independently of the demo fixture.
   on program id `HjHCub28...` with tx hashes in Supporting Materials;
   the direct `run_*` runner invocations plus the on-chain 2-of-3 ledger are the
   integration evidence.
-- [~] Full documentation and a clean public repository. This write-up plus the
-  in-source documentation are delivered; the public repository packaging (the
-  lambda-prize fork PR) is in progress.
+- [x] Full documentation and a clean public repository. This write-up plus the
+  in-source documentation are delivered in the public repository at
+  `github.com/jeefxM/lp-0002-private-multisig` (branch `main`).
 
 ### Usability
 
@@ -430,20 +430,19 @@ The pieces are designed to be reused independently of the demo fixture.
   and are included in CI. The 8 state tests + 4 circuit tests exercise the full
   flow in-process; `lp0002-ci.yml` runs them under `RISC0_DEV_MODE=1`. A
   standalone-sequencer end-to-end job in CI is not wired. Partial.
-- [~] CI green on the default branch. The LP-0002 workflow
+- [x] CI green on the default branch. The LP-0002 workflow
   (`.github/workflows/lp0002-ci.yml`) runs the msig core, state, and circuit
-  tests under `RISC0_DEV_MODE=1`; green status on the contribution branch is not
-  yet observed in GitHub Actions. The lambda-prize fork PR is in progress.
+  tests plus the runner build under `RISC0_DEV_MODE=1` and is green on `main`.
 - [~] A README documents end-to-end usage. This write-up plus a README LP-0002
   section cover deployment, the program address, and the run commands; the CLI /
   Basecamp step-by-step is partial.
-- [~] A reproducible end-to-end demo script that works with `RISC0_DEV_MODE=0`.
+- [x] A reproducible end-to-end demo script that works with `RISC0_DEV_MODE=0`.
   `scripts/lp0002-demo.sh` runs green end-to-end against a local standalone
   sequencer at `RISC0_DEV_MODE=0` (two real proofs, count=2, treasury drained,
-  recipient credited) on the build host. The data-dir path is now parameterized
-  for clean-clone portability.
-- [ ] A recorded video demo showing terminal output confirming
-  `RISC0_DEV_MODE=0`. Open. Not yet recorded.
+  recipient credited); re-verified from a fresh checkout on a reviewer-equivalent
+  toolchain state. The data-dir path is parameterized for clean-clone portability.
+- [x] A recorded, narrated video demo showing terminal output confirming
+  `RISC0_DEV_MODE=0`: https://www.youtube.com/watch?v=CXzqWLvBY0A
 
 ## FURPS Self-Assessment
 
@@ -502,13 +501,16 @@ instead of fabricating a CU number:
   explaining the scheme and the treasury-bootstrap rationale.
 - The LP-0002 CI workflow (`.github/workflows/lp0002-ci.yml`) runs the msig
   state and circuit tests under `RISC0_DEV_MODE=1` for logic coverage.
-- A standalone-sequencer end-to-end CI job and a recorded `RISC0_DEV_MODE=0`
-  video are open items (see the checklist).
+- A standalone-sequencer end-to-end CI job is an open item (see the checklist);
+  the narrated `RISC0_DEV_MODE=0` video demo is at
+  https://www.youtube.com/watch?v=CXzqWLvBY0A .
 
 ## Supporting Materials
 
 All evidence is on `testnet.lez.logos.co` under program id
-`HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`.
+`HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`. A narrated end-to-end demo video
+(showing the `RISC0_DEV_MODE=0` terminal output) is at
+https://www.youtube.com/watch?v=CXzqWLvBY0A .
 
 ### 2-of-3 threshold run (the M-of-N proof, HD-nsk-derived membership)
 
