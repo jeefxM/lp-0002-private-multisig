@@ -34,7 +34,7 @@ the approval count is public, which specific member approved is hidden.
 
 ## Repository + how to run
 
-- **Repo:** the nssa v0.1.2 fork on branch `lp0002-nsk-binding`. Our LP-0002
+- **Repo:** the nssa v0.1.2 fork, default branch `main`. Our LP-0002
   contribution lives under `programs/msig/`, the guest at
   `test_program_methods/guest/src/bin/msig.rs`, the client runners at
   `examples/program_deployment/src/`, and the tests in `nssa/src/state.rs` and

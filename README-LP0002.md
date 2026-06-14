@@ -37,6 +37,25 @@ Our LP-0002 contribution:
   `docs/LP-0002-solution.md`, `docs/lp0002-benchmarks.md`, `docs/lp0002-reliability.md`,
   `idl/lp0002-msig.idl.json`, `.github/workflows/lp0002-ci.yml`.
 
+## Prerequisites
+
+This is a fork of Logos nssa v0.1.2, so it builds like upstream LEZ. You need the Rust
+toolchain and the **RISC0 zkVM toolchain**. The RISC0 toolchain provides `r0vm` and the
+risc0 guest compiler, which the demo below uses to build the on-chain `msig` guest and to
+generate the real STARK at `RISC0_DEV_MODE=0`. Without it the guest build cannot compile.
+
+```sh
+# Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# RISC0 (installs the r0 guest toolchain + r0vm into ~/.risc0)
+curl -L https://risczero.com/install | bash
+# restart your shell, then:
+rzup install
+```
+
+The full upstream system dependency list (build-essential, clang, libssl, pkg-config) is in
+the main [`README.md`](README.md) under "Install dependencies".
+
 ## How to run
 
 ```bash
