@@ -70,6 +70,26 @@ if ss -ltn | grep -q ":${PORT}\b"; then
   sleep 2
 fi
 
+# ---- 0b. ensure logos-blockchain-circuits (the runner build needs them) -----
+# `cargo build -p program_deployment` pulls logos-blockchain-pol, whose build
+# script requires the circuits release at ~/.logos-blockchain-circuits (or
+# $LOGOS_BLOCKCHAIN_CIRCUITS). `rzup` does NOT install these (separate Logos
+# release), so fetch the pinned v0.4.2 here if absent -> `git clone && ./demo.sh`
+# is turnkey. Pre-installed circuits at the default path are used as-is.
+CIRCUITS_DIR="${LOGOS_BLOCKCHAIN_CIRCUITS:-$HOME/.logos-blockchain-circuits}"
+if [ ! -d "$CIRCUITS_DIR" ]; then
+  case "$(uname -s)-$(uname -m)" in
+    Linux-x86_64)   CIRC_ASSET="logos-blockchain-circuits-v0.4.2-linux-x86_64.tar.gz" ;;
+    Linux-aarch64)  CIRC_ASSET="logos-blockchain-circuits-v0.4.2-linux-aarch64.tar.gz" ;;
+    Darwin-arm64)   CIRC_ASSET="logos-blockchain-circuits-v0.4.2-macos-aarch64.tar.gz" ;;
+    *)              CIRC_ASSET="logos-blockchain-circuits-v0.4.2-linux-x86_64.tar.gz" ;;
+  esac
+  say "0b. INSTALL logos-blockchain-circuits v0.4.2 -> $CIRCUITS_DIR ($CIRC_ASSET)"
+  mkdir -p "$CIRCUITS_DIR"
+  curl -sSL "https://github.com/logos-blockchain/logos-blockchain-circuits/releases/download/v0.4.2/${CIRC_ASSET}" \
+    | tar -xz --strip-components=1 -C "$CIRCUITS_DIR"
+fi
+
 # ---- 1. build: msig GUEST ELF (heavy on a clean clone) ----------------------
 # cargo test -p nssa --release --no-run compiles the risc0 guest and emits the deployable
 # msig.bin at the hardcoded msig_demo::MSIG_BIN path. The committed tree builds program id

@@ -56,6 +56,17 @@ rzup install
 The full upstream system dependency list (build-essential, clang, libssl, pkg-config) is in
 the main [`README.md`](README.md) under "Install dependencies".
 
+The end-to-end demo also needs the `logos-blockchain-circuits` release (a separate Logos
+artifact that `rzup` does not install) at `~/.logos-blockchain-circuits`. `scripts/lp0002-demo.sh`
+auto-downloads the pinned `v0.4.2` if it is absent, so a fresh `./demo.sh` is turnkey. To install
+it manually:
+
+```sh
+mkdir -p ~/.logos-blockchain-circuits
+curl -sSL https://github.com/logos-blockchain/logos-blockchain-circuits/releases/download/v0.4.2/logos-blockchain-circuits-v0.4.2-linux-x86_64.tar.gz \
+  | tar -xz --strip-components=1 -C ~/.logos-blockchain-circuits
+```
+
 ## How to run
 
 ```bash
