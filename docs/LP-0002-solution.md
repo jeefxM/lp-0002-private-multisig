@@ -34,7 +34,7 @@ the approval count is public, which specific member approved is hidden.
 
 ## Repository + how to run
 
-- **Repo:** the nssa v0.1.2 fork on branch `lp0002-v012`. Our LP-0002
+- **Repo:** the nssa v0.1.2 fork on branch `lp0002-nsk-binding`. Our LP-0002
   contribution lives under `programs/msig/`, the guest at
   `test_program_methods/guest/src/bin/msig.rs`, the client runners at
   `examples/program_deployment/src/`, and the tests in `nssa/src/state.rs` and
@@ -247,8 +247,8 @@ tests pin down both halves of this.
   scheme provides approver anonymity within the enrolled set of N public members;
   the approval count is public, which specific member approved is hidden. The
   anonymity set is therefore exactly the set of enrolled members, and it shrinks
-  as the member set shrinks. With N = 1 there is no anonymity by definition; the
-  1-of-N run is an end-to-end functional proof, not an anonymity claim.
+  as the member set shrinks. With N = 1 there is no anonymity by definition; a
+  1-of-N case would be a functional check, not an anonymity claim.
 - **Witness privacy is structural, not test-backed.** The member secret is
   carried as a private witness, committed only to an inner program-execution
   journal that the outer succinct proof folds in and never publishes; the only
@@ -391,9 +391,11 @@ The pieces are designed to be reused independently of the demo fixture.
 - [~] Provide a Logos Basecamp app GUI. A native ui_qml Basecamp plugin is shipped
   under `basecamp/` (`MsigPlugin` + `qml/Main.qml` + prebuilt
   `dist/private_multisig_lp0002/msig_plugin.so`). It loads in Basecamp v0.1.2's
-  host and casts a real anonymous vote at `RISC0_DEV_MODE=0` through the GUI
-  (verified by driving the buttons: a real ~166s STARK is generated and the vote
-  is submitted). Remaining: a recorded VNC walkthrough is an open item.
+  host (plugin-load verified headlessly) and drives a real anonymous vote through
+  the GUI over the same client path as the CLI runners: the sidecar spawns
+  `run_approve_secret`, which generates a real STARK at `RISC0_DEV_MODE=0` and
+  submits the vote (demonstrated in the demo video). Automated coverage is the
+  `RISC0_DEV_MODE=1` sidecar smoke test plus the headless plugin load.
 - [~] Provide a SPEL-framework IDL. `idl/lp0002-msig.idl.json` (spec spel-0.1,
   address `HjHCub28...`) is present and describes all five instructions of the
   deployed program. It is hand-authored JSON; full conformance to the upstream

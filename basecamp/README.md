@@ -18,7 +18,7 @@ nullifier, submitted on-chain. (Contrast competitor #87: a static do-nothing
 | `src/MsigPlugin.{h,cpp}` | Basecamp `IComponent` plugin: `createWidget()` returns a `QQuickWidget` bound to `MsigBackend`. `Q_INIT_RESOURCE(msig_qml)`. |
 | `src/MsigBackend.{h,cpp}` | Backend `Q_INVOKABLE`s: `deriveLeaf(secretHex)` (local SHA256, secret stays on-machine), `getStatus()` (sidecar `/status`), `castVote(secretHex)` (sidecar `/approve`). Talks to the sidecar over HTTP (`QNetworkAccessManager`). |
 | `src/main.cpp` | Standalone preview app (`MsigApp`), same backend + QML, no Basecamp. |
-| `qml/Main.qml` | UI: 1 Derive my leaf · 2 Proposal status · 3 Cast anonymous vote (busy/progress for the ~134s prove; result = tx hash + count; errors like "not an enrolled member" / "already voted"). |
+| `qml/Main.qml` | UI: 1 Derive my leaf · 2 Proposal status · 3 Cast anonymous vote (busy/progress for the ~174s prove; result = tx hash + count; errors like "not an enrolled member" / "already voted"). |
 | `CMakeLists.txt` | Mirrors the LP-0016 template; adds `Qt6::Network`. |
 | `msig-sidecar.mjs` | Localhost-only HTTP server. `GET /status` → spawns `run_read_status`. `POST /approve {secret_hex}` → spawns `run_approve_secret`, parses `approve tx_hash:`, polls until the count advances, returns `{tx_hash, approval_count}`. |
 | `run-basecamp-lp0002.sh` | Starts the sidecar; launches the GUI. `MODE=app` (default) execs the standalone `MsigApp`; `MODE=basecamp` installs the module into the extracted Basecamp tree and launches it via AppRun. |
@@ -65,7 +65,7 @@ cd /root/lez-v012 && cargo build --release -p program_deployment --bin run_read_
    == `50811a77…66a7`, matching `msig_core::member_leaf` and the on-chain enrolled leaf 0.
 5. **Sidecar + runner path end to end** (`/tmp/msig_sidecar_smoke.sh`, DEV_MODE=1):
    - `GET /status` → `{ready:true, …, approval_count:0, threshold:2}`
-   - `POST /approve` member 0 (`a7..a7`) → `{success:true, tx_hash:…, approval_count:1}` (real on-chain vote, 0→1)
+   - `POST /approve` member 0 (`72d2..dc65`) → `{success:true, tx_hash:…, approval_count:1}` (real on-chain vote, 0→1)
    - `POST /approve` non-member (`deadbeef..`) → `{success:false, error:"…not an enrolled member…"}`, count stays 1
    - `POST /approve` member 0 AGAIN → rejected (proposal-bound nullifier already spent, no double vote), count stays 1
 
@@ -141,8 +141,8 @@ MODE=basecamp /root/lez-v012/basecamp/run-basecamp-lp0002.sh
    (`50811a77…` for member 0), computed locally; the secret never leaves the
    widget for derivation.
 4. **Section 3, Cast anonymous vote:** with the same secret still in the field,
-   press **Cast anonymous vote**. The button shows *"Proving & submitting…
-   (~134s)"* with a busy/progress bar (on testnet/`RISC0_DEV_MODE=0`; ~instant on
+   press **Cast anonymous vote**. The button shows *"Proving & submitting…"* with a
+   busy/progress bar (a real `RISC0_DEV_MODE=0` prove is ~174s; ~instant on
    a DEV_MODE=1 local sequencer). On success the result panel shows the **tx
    hash** and **approval_count now 1 / 2**.
 5. (Optional) Repeat with member 1's secret (`eee2d6cf…720a`) to reach the threshold

@@ -72,6 +72,5 @@ reasoning, the LEZ nonce and `program_owner` handling, and the known limitations
 ## Live deployment
 
 Deployed and exercised on LEZ testnet (`testnet.lez.logos.co`) under program id
-`HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`, with a 1-of-N end-to-end run and
-a 2-of-3 threshold run. The canonical on-chain ledger (tx hashes and blocks) is
+`HjHCub28GrUNgd2QuJ2SPob7YmaUgDRCGXwbt2jt4UWn`, with a 2-of-3 threshold run. The canonical on-chain ledger (all tx hashes) is
 in [`docs/LP-0002-solution.md`](LP-0002-solution.md).
