@@ -4967,6 +4967,7 @@ name = "lee"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "authenticated_transfer_core",
  "borsh",
  "build_utils",
  "hex",
@@ -4974,6 +4975,8 @@ dependencies = [
  "k256 0.13.4",
  "lee_core",
  "log",
+ "msig_core",
+ "programs",
  "rand 0.8.6",
  "risc0-binfmt",
  "risc0-zkvm",
@@ -6916,6 +6919,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "msig_core"
+version = "0.1.0"
+dependencies = [
+ "lee_core",
+ "risc0-zkvm",
+ "serde",
+]
+
+[[package]]
 name = "multer"
 version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8002,11 +8014,20 @@ dependencies = [
 name = "program_deployment"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "bip39",
  "clap",
  "common",
+ "hex",
+ "key_protocol",
  "lee",
  "lee_core",
+ "msig_core",
+ "programs",
+ "rand 0.8.6",
  "sequencer_service_rpc",
+ "test_methods",
+ "testnet_initial_state",
  "tokio",
  "wallet",
 ]
@@ -10476,7 +10497,9 @@ dependencies = [
 name = "test_methods_guests"
 version = "0.1.0"
 dependencies = [
+ "authenticated_transfer_core",
  "lee_core",
+ "msig_core",
  "risc0-zkvm",
  "serde",
 ]

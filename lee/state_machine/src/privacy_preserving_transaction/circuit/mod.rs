@@ -151,11 +151,19 @@ pub fn execute_and_prove_with_padded_inputs(
     let env = env_builder.build().unwrap();
     let prover = default_prover();
     let opts = ProverOpts::succinct();
+    let __t_outer = std::time::Instant::now();
     let prove_info = prover
         .prove_with_opts(env, PRIVACY_PRESERVING_CIRCUIT_ELF, &opts)
         .map_err(|e| LeeError::CircuitProvingError(e.to_string()))?;
+    eprintln!(
+        "MEASURE_OUTER_CIRCUIT stats={:?} prove_secs={:.3}",
+        prove_info.stats,
+        __t_outer.elapsed().as_secs_f64()
+    );
 
-    let proof = Proof(borsh::to_vec(&prove_info.receipt.inner)?);
+    let __proof_bytes = borsh::to_vec(&prove_info.receipt.inner)?;
+    eprintln!("MEASURE_PROOF_SIZE_BYTES={}", __proof_bytes.len());
+    let proof = Proof(__proof_bytes);
 
     let circuit_output: PrivacyPreservingCircuitOutput = prove_info
         .receipt
@@ -185,10 +193,16 @@ fn execute_and_prove_program(
 
     // Prove the program
     let prover = default_prover();
-    Ok(prover
+    let __t_inner = std::time::Instant::now();
+    let __pi = prover
         .prove(env, program.elf())
-        .map_err(|e| LeeError::ProgramProveFailed(e.to_string()))?
-        .receipt)
+        .map_err(|e| LeeError::ProgramProveFailed(e.to_string()))?;
+    eprintln!(
+        "MEASURE_INNER_GUEST stats={:?} prove_secs={:.3}",
+        __pi.stats,
+        __t_inner.elapsed().as_secs_f64()
+    );
+    Ok(__pi.receipt)
 }
 
 #[cfg(test)]

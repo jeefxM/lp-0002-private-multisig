@@ -1,0 +1,60 @@
+warning: lee@0.1.0: Generated module at /root/lez-rc5/target/debug/build/lee-aadd09a71b5dfb4c/out/lee/privacy_preserving_circuit/mod.rs
+warning: programs@0.1.0: Generated module at /root/lez-rc5/target/debug/build/programs-c5d82ab8585b71fd/out/lez/programs/mod.rs
+   Compiling test_methods v0.1.0 (/root/lez-rc5/lee/state_machine/test_methods)
+   Compiling lee v0.1.0 (/root/lez-rc5/lee/state_machine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 24.64s
+     Running unittests src/lib.rs (target/debug/deps/lee-c0ab8d6d63a94a5d)
+
+running 13 tests
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+
+thread 'main' (1) panicked at lee/state_machine/test_methods/guest/src/bin/msig.rs:106:5:
+assertion `left != right` failed: rider must be a LIVE funded account, not a fresh init
+  left: Account { program_owner: "0000000000000000000000000000000000000000000000000000000000000000", balance: 0, data: Data([]), nonce: Nonce(0) }
+ right: Account { program_owner: "0000000000000000000000000000000000000000000000000000000000000000", balance: 0, data: Data([]), nonce: Nonce(0) }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test privacy_preserving_transaction::circuit::tests::msig_approve_rejects_default_rider ... ok
+WARNING: Proving in dev mode does not generate a valid receipt. Receipts generated from this process are invalid and should never be used in production.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+
+thread 'main' (1) panicked at lee/state_machine/test_methods/guest/src/bin/msig.rs:129:5:
+approval nullifier already recorded (double vote)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test privacy_preserving_transaction::circuit::tests::msig_approve_rejects_double_vote ... ok
+WARNING: Proving in dev mode does not generate a valid receipt. Receipts generated from this process are invalid and should never be used in production.
+test privacy_preserving_transaction::circuit::tests::msig_approve_anonymous_membership ... ok
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+
+thread 'main' (1) panicked at lee/state_machine/test_methods/guest/src/bin/msig.rs:114:5:
+assertion `left == right` failed: approver is not an enrolled member
+  left: [10, 80, 29, 246, 217, 48, 203, 211, 162, 164, 232, 175, 141, 35, 189, 148, 83, 129, 238, 178, 95, 148, 105, 14, 252, 130, 97, 181, 65, 229, 205, 87]
+ right: [242, 166, 117, 116, 8, 227, 140, 200, 78, 97, 8, 78, 215, 103, 136, 235, 125, 27, 40, 29, 44, 207, 229, 39, 175, 13, 248, 241, 21, 96, 187, 213]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test privacy_preserving_transaction::circuit::tests::msig_approve_rejects_non_member ... ok
+WARNING: Proving in dev mode does not generate a valid receipt. Receipts generated from this process are invalid and should never be used in production.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+WARNING: Proving in dev mode does not generate a valid receipt. Receipts generated from this process are invalid and should never be used in production.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+WARNING: Proving in dev mode does not generate a valid receipt. Receipts generated from this process are invalid and should never be used in production.
+WARNING: Proving in dev mode does not generate a valid receipt. Receipts generated from this process are invalid and should never be used in production.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+WARNING: proving in dev mode. This will not generate valid, secure proofs.
+WARNING: Proving in dev mode does not generate a valid receipt. Receipts generated from this process are invalid and should never be used in production.
+test privacy_preserving_transaction::circuit::tests::msig_enroll_appends_member ... ok
+WARNING: Proving in dev mode does not generate a valid receipt. Receipts generated from this process are invalid and should never be used in production.
+test state::tests::msig::msig_approve_live_apply_is_authorized_false ... ok
+test state::tests::msig::msig_create_proposal_public_tx_claims_and_freezes ... ok
+test state::tests::msig::msig_enroll_public_tx_apply_rejection ... ok
+test state::tests::msig::msig_execute_releases_at_threshold ... ok
+test state::tests::msig::msig_enroll_signer_owned_appends ... ok
+test state::tests::msig::msig_full_flow_composes ... ok
+test state::tests::msig::msig_fund_treasury_pda_rejected ... ok
+test state::tests::msig::msig_treasury_bootstrap_then_execute ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 209 filtered out; finished in 3.02s
+
+EXIT=0

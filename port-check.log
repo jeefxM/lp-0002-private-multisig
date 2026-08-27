@@ -1,0 +1,7 @@
+warning: lee@0.1.0: Generated module at /root/lez-rc5/target/debug/build/lee-c5dcbb0409af5d6b/out/lee/privacy_preserving_circuit/mod.rs
+warning: programs@0.1.0: Generated module at /root/lez-rc5/target/debug/build/programs-4f8027fa813cbbb4/out/lez/programs/mod.rs
+   Compiling test_methods v0.1.0 (/root/lez-rc5/lee/state_machine/test_methods)
+    Checking program_deployment v0.1.0 (/root/lez-rc5/examples/program_deployment)
+    Checking lee v0.1.0 (/root/lez-rc5/lee/state_machine)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 15.52s
+EXIT=0

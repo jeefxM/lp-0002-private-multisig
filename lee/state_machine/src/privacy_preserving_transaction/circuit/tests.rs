@@ -813,3 +813,337 @@ fn private_pda_update_identifier_mismatch_fails() {
 
     assert!(matches!(result, Err(LeeError::CircuitProvingError(_))));
 }
+    /// LP-0002 (rc5) anonymous M-of-N approval: a privacy-preserving transaction mutates a PUBLIC
+    /// ProposalState while the member secret + Merkle path + proposal_id travel as a PRIVATE
+    /// instruction witness. The guest verifies in-guest Merkle membership against the snapshotted
+    /// member_root, derives a proposal-bound vote nullifier, rejects double-votes, and increments
+    /// the count. Review item #6: the rider is the member's LIVE shielded voting account keyed by
+    /// the SAME `secret` (== nsk) under VOTE_IDENTIFIER (0) — a PrivateAuthorizedUpdate, NOT a fresh
+    /// default rider. The voter stays anonymous.
+    #[test]
+    fn msig_approve_anonymous_membership() {
+        use crate::state::tests::TestPrivateKeys;
+        use msig_core::{
+            MerkleProof, PROPOSAL_HEADER_LEN, member_leaf, merkle_path, merkle_root, vote_nullifier,
+        };
+
+        let program = crate::test_methods::msig();
+
+        // Two-member set; approver holds secret_a (leaf index 0). secret == the rider account nsk.
+        let secret_a = [0xA7u8; 32];
+        let secret_b = [0x42u8; 32];
+        let leaves = vec![member_leaf(&secret_a), member_leaf(&secret_b)];
+        let member_root = merkle_root(&leaves);
+        let path: MerkleProof = merkle_path(&leaves, 0);
+        let proposal_id = [0x11u8; 32];
+
+        // PUBLIC ProposalState (msig-owned): member_root || proposal_id || count(0).
+        let mut data = Vec::with_capacity(PROPOSAL_HEADER_LEN);
+        data.extend_from_slice(&member_root);
+        data.extend_from_slice(&proposal_id);
+        data.extend_from_slice(&0u32.to_le_bytes());
+        let proposal = AccountWithMetadata::new(
+            Account {
+                program_owner: program.id(),
+                data: data.try_into().unwrap(),
+                ..Account::default()
+            },
+            true,
+            AccountId::new([9; 32]),
+        );
+
+        // LIVE private rider = approver voting account keyed by secret_a (nsk == secret), id 0.
+        let voter = TestPrivateKeys { nsk: secret_a, d: [0x31; 32], z: [0x32; 32] };
+        let rider_id = AccountId::for_regular_private_account(&voter.npk(), &voter.vpk(), 0);
+        let rider_account = Account {
+            program_owner: program.id(),
+            balance: 1,
+            ..Account::default()
+        };
+        let rider = AccountWithMetadata::new(rider_account.clone(), true, rider_id);
+
+        // Rider existing on-chain commitment + its membership proof.
+        let rider_commitment = Commitment::new(&rider_id, &rider_account);
+        let mut commitment_set = CommitmentSet::with_capacity(1);
+        commitment_set.extend(std::slice::from_ref(&rider_commitment));
+
+        let (output, proof) = execute_and_prove(
+            vec![proposal, rider],
+            Program::serialize_instruction(msig_core::MsigInstruction::Approve {
+                secret: secret_a,
+                merkle_path: path,
+                proposal_id,
+                vpk: voter.vpk().clone(),
+            })
+            .unwrap(),
+            vec![
+                InputAccountIdentity::Public,
+                InputAccountIdentity::PrivateAuthorizedUpdate {
+                    vpk: voter.vpk(),
+                    random_seed: [0; 32],
+                    view_tag: 0,
+                    nsk: voter.nsk,
+                    membership_proof: commitment_set
+                        .get_proof_for(&rider_commitment)
+                        .expect("rider commitment must be in the set"),
+                    identifier: 0,
+                },
+            ],
+            &program.clone().into(),
+        )
+        .unwrap();
+
+        assert!(proof.is_valid_for(&output));
+
+        // ProposalState: root + id preserved, count 0 -> 1, vote nullifier recorded.
+        assert_eq!(output.public_actions.len(), 1);
+        let ps_post = output.public_actions[0].post.clone();
+        let d = ps_post.data.clone().into_inner();
+        assert_eq!(&d[..32], &member_root);
+        assert_eq!(&d[32..64], &proposal_id);
+        assert_eq!(u32::from_le_bytes(d[64..68].try_into().unwrap()), 1);
+        assert_eq!(&d[68..100], &vote_nullifier(&secret_a, &proposal_id));
+
+        // The live rider rotated its commitment + emitted its nullifier.
+        assert_eq!(output.commitments().len(), 1);
+        assert_eq!(output.nullifiers().len(), 1);
+    }
+
+
+    /// Builds a LIVE private rider (msig-owned, non-default) keyed by `secret` (== nsk) under
+    /// VOTE_IDENTIFIER 0, plus its on-chain commitment + membership proof. Shared by the approve
+    /// circuit tests so they all exercise the review-item-#6 rider binding.
+    fn msig_live_rider(
+        secret: [u8; 32],
+    ) -> (
+        AccountWithMetadata,
+        InputAccountIdentity,
+        lee_core::encryption::ViewingPublicKey,
+    ) {
+        use crate::state::tests::TestPrivateKeys;
+        let voter = TestPrivateKeys { nsk: secret, d: [0x31; 32], z: [0x32; 32] };
+        let rider_id = AccountId::for_regular_private_account(&voter.npk(), &voter.vpk(), 0);
+        let rider_account = Account {
+            program_owner: crate::test_methods::msig().id(),
+            balance: 1,
+            ..Account::default()
+        };
+        let rider = AccountWithMetadata::new(rider_account.clone(), true, rider_id);
+        let rider_commitment = Commitment::new(&rider_id, &rider_account);
+        let mut commitment_set = CommitmentSet::with_capacity(1);
+        commitment_set.extend(std::slice::from_ref(&rider_commitment));
+        let identity = InputAccountIdentity::PrivateAuthorizedUpdate {
+            vpk: voter.vpk(),
+            random_seed: [0; 32],
+            view_tag: 0,
+            nsk: voter.nsk,
+            membership_proof: commitment_set
+                .get_proof_for(&rider_commitment)
+                .expect("rider commitment must be in the set"),
+            identifier: 0,
+        };
+        (rider, identity, voter.vpk())
+    }
+
+    fn msig_public_proposal(member_root: [u8; 32], proposal_id: [u8; 32], count: u32) -> AccountWithMetadata {
+        use msig_core::PROPOSAL_HEADER_LEN;
+        let mut data = Vec::with_capacity(PROPOSAL_HEADER_LEN);
+        data.extend_from_slice(&member_root);
+        data.extend_from_slice(&proposal_id);
+        data.extend_from_slice(&count.to_le_bytes());
+        AccountWithMetadata::new(
+            Account {
+                program_owner: crate::test_methods::msig().id(),
+                data: data.try_into().unwrap(),
+                ..Account::default()
+            },
+            true,
+            AccountId::new([9; 32]),
+        )
+    }
+
+    /// A secret whose leaf is not in member_root cannot approve: the in-guest membership check
+    /// fails, so no valid proof is produced. This is what makes it an M-of-N multisig. The rider
+    /// IS a valid live account keyed by `secret_x` (so the #6 rider asserts pass) — only membership
+    /// fails.
+    #[test]
+    fn msig_approve_rejects_non_member() {
+        use msig_core::{member_leaf, merkle_path, merkle_root};
+        let program = crate::test_methods::msig();
+        let leaves = vec![member_leaf(&[0xA7u8; 32]), member_leaf(&[0x42u8; 32])];
+        let member_root = merkle_root(&leaves);
+        let proposal_id = [0x11u8; 32];
+        let proposal = msig_public_proposal(member_root, proposal_id, 0);
+
+        let secret_x = [0xFFu8; 32];
+        let path = merkle_path(&leaves, 0); // sibling leaf_b; cannot reproduce root from secret_x
+        let (rider, rider_identity, rider_vpk) = msig_live_rider(secret_x);
+
+        let result = execute_and_prove(
+            vec![proposal, rider],
+            Program::serialize_instruction(msig_core::MsigInstruction::Approve {
+                secret: secret_x,
+                merkle_path: path,
+                proposal_id,
+                vpk: rider_vpk.clone(),
+            })
+            .unwrap(),
+            vec![InputAccountIdentity::Public, rider_identity],
+            &program.clone().into(),
+        );
+        assert!(result.is_err(), "non-member approval must be rejected: {result:?}");
+    }
+
+    /// The same member cannot approve the same proposal twice: the proposal-bound nullifier is
+    /// already recorded, so the in-guest double-vote check fails.
+    #[test]
+    fn msig_approve_rejects_double_vote() {
+        use msig_core::{member_leaf, merkle_path, merkle_root, vote_nullifier, PROPOSAL_HEADER_LEN};
+        let program = crate::test_methods::msig();
+        let secret_a = [0xA7u8; 32];
+        let leaves = vec![member_leaf(&secret_a), member_leaf(&[0x42u8; 32])];
+        let member_root = merkle_root(&leaves);
+        let proposal_id = [0x11u8; 32];
+
+        // ProposalState already records secret_a's nullifier (count = 1).
+        let mut data = Vec::with_capacity(PROPOSAL_HEADER_LEN + 32);
+        data.extend_from_slice(&member_root);
+        data.extend_from_slice(&proposal_id);
+        data.extend_from_slice(&1u32.to_le_bytes());
+        data.extend_from_slice(&vote_nullifier(&secret_a, &proposal_id));
+        let proposal = AccountWithMetadata::new(
+            Account {
+                program_owner: program.id(),
+                data: data.try_into().unwrap(),
+                ..Account::default()
+            },
+            true,
+            AccountId::new([9; 32]),
+        );
+
+        let path = merkle_path(&leaves, 0);
+        let (rider, rider_identity, rider_vpk) = msig_live_rider(secret_a);
+
+        let result = execute_and_prove(
+            vec![proposal, rider],
+            Program::serialize_instruction(msig_core::MsigInstruction::Approve {
+                secret: secret_a,
+                merkle_path: path,
+                proposal_id,
+                vpk: rider_vpk.clone(),
+            })
+            .unwrap(),
+            vec![InputAccountIdentity::Public, rider_identity],
+            &program.clone().into(),
+        );
+        assert!(result.is_err(), "double vote must be rejected: {result:?}");
+    }
+
+    /// Review item #6 NEGATIVE (full circuit path): a DEFAULT/fresh rider — even keyed by the right
+    /// secret — is rejected by the guest's assert #2 (`rider.account != Account::default()`), so the
+    /// anonymous vote cannot ride a fabricated fresh note; it must ride the member's LIVE account.
+    /// Complements the pure-fn unit test in the guest's `mod msig6_binding_tests` by exercising the
+    /// real guest+circuit.
+    #[test]
+    fn msig_approve_rejects_default_rider() {
+        use crate::state::tests::TestPrivateKeys;
+        use msig_core::{member_leaf, merkle_path, merkle_root};
+        let program = crate::test_methods::msig();
+        let secret_a = [0xA7u8; 32];
+        let leaves = vec![member_leaf(&secret_a), member_leaf(&[0x42u8; 32])];
+        let member_root = merkle_root(&leaves);
+        let proposal_id = [0x11u8; 32];
+        let proposal = msig_public_proposal(member_root, proposal_id, 0);
+        let path = merkle_path(&leaves, 0);
+
+        // DEFAULT rider, correctly keyed by secret_a but NOT live.
+        let voter = TestPrivateKeys { nsk: secret_a, d: [0x31; 32], z: [0x32; 32] };
+        let rider_id = AccountId::for_regular_private_account(&voter.npk(), &voter.vpk(), 0);
+        let rider_account = Account::default();
+        let rider = AccountWithMetadata::new(rider_account.clone(), true, rider_id);
+        let rider_commitment = Commitment::new(&rider_id, &rider_account);
+        let mut commitment_set = CommitmentSet::with_capacity(1);
+        commitment_set.extend(std::slice::from_ref(&rider_commitment));
+
+        let result = execute_and_prove(
+            vec![proposal, rider],
+            Program::serialize_instruction(msig_core::MsigInstruction::Approve {
+                secret: secret_a,
+                merkle_path: path,
+                proposal_id,
+                vpk: voter.vpk().clone(),
+            })
+            .unwrap(),
+            vec![
+                InputAccountIdentity::Public,
+                InputAccountIdentity::PrivateAuthorizedUpdate {
+                    vpk: voter.vpk(),
+                    random_seed: [0; 32],
+                    view_tag: 0,
+                    nsk: voter.nsk,
+                    membership_proof: commitment_set
+                        .get_proof_for(&rider_commitment)
+                        .expect("rider commitment must be in the set"),
+                    identifier: 0,
+                },
+            ],
+            &program.clone().into(),
+        );
+        assert!(result.is_err(), "default (non-live) rider must be rejected by assert #2: {result:?}");
+    }
+
+
+    /// Members enroll by appending their public leaf to the registry; the guest recomputes
+    /// member_root over all leaves. A plain public prove (single Public account, no rider, no chained
+    /// call) — only H(secret) is published. Exercises both `enroll()` branches at prove level: a
+    /// fresh default-owned registry is `Claim::Authorized`; an already-program-owned registry is a
+    /// plain pass-through.
+    #[test]
+    fn msig_enroll_appends_member() {
+        use msig_core::{member_leaf, merkle_root, REGISTRY_HEADER_LEN};
+
+        let program = crate::test_methods::msig();
+        let leaf1 = member_leaf(&[0xA7u8; 32]);
+        let leaf2 = member_leaf(&[0x42u8; 32]);
+
+        // First enroll: registry starts as a fresh default public account (default-owned branch).
+        let registry0 = AccountWithMetadata::new(Account::default(), true, AccountId::new([8; 32]));
+        let (out1, _proof) = execute_and_prove(
+            vec![registry0],
+            Program::serialize_instruction(msig_core::MsigInstruction::Enroll { leaf: leaf1 })
+                .unwrap(),
+            vec![InputAccountIdentity::Public],
+            &program.clone().into(),
+        )
+        .unwrap();
+        assert_eq!(out1.public_actions.len(), 1);
+        let reg1 = out1.public_actions[0].post.clone();
+        let d1 = reg1.data.clone().into_inner();
+        assert_eq!(u32::from_le_bytes(d1[32..REGISTRY_HEADER_LEN].try_into().unwrap()), 1);
+        assert_eq!(&d1[..32], &merkle_root(&[leaf1]));
+
+        // Second enroll: registry is now program-owned and already holds leaf1 (pass-through branch).
+        let registry1 = AccountWithMetadata::new(
+            Account {
+                program_owner: program.id(),
+                data: d1.try_into().unwrap(),
+                ..Account::default()
+            },
+            true,
+            AccountId::new([8; 32]),
+        );
+        let (out2, _proof) = execute_and_prove(
+            vec![registry1],
+            Program::serialize_instruction(msig_core::MsigInstruction::Enroll { leaf: leaf2 })
+                .unwrap(),
+            vec![InputAccountIdentity::Public],
+            &program.clone().into(),
+        )
+        .unwrap();
+        assert_eq!(out2.public_actions.len(), 1);
+        let reg2 = out2.public_actions[0].post.clone();
+        let d2 = reg2.data.clone().into_inner();
+        assert_eq!(u32::from_le_bytes(d2[32..REGISTRY_HEADER_LEN].try_into().unwrap()), 2);
+        assert_eq!(&d2[..32], &merkle_root(&[leaf1, leaf2]));
+    }
+

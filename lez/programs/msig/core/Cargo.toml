@@ -1,5 +1,5 @@
 [package]
-name = "test_methods_guests"
+name = "msig_core"
 version = "0.1.0"
 edition = "2024"
 license = { workspace = true }
@@ -9,8 +9,5 @@ workspace = true
 
 [dependencies]
 lee_core.workspace = true
-msig_core.workspace = true
-authenticated_transfer_core.workspace = true
-
 risc0-zkvm.workspace = true
 serde.workspace = true

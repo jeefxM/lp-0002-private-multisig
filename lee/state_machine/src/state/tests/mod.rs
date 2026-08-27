@@ -37,6 +37,7 @@ mod claiming;
 mod flash_swap;
 mod genesis;
 mod privacy_preserving;
+mod msig;
 mod public_program_rules;
 mod validity_window;
 
@@ -58,6 +59,7 @@ impl V03State {
         self.insert_program(crate::test_methods::pda_claimer());
         self.insert_program(crate::test_methods::two_pda_claimer());
         self.insert_program(crate::test_methods::noop());
+        self.insert_program(crate::test_methods::msig());
         self.insert_program(crate::test_methods::chain_caller());
         self.insert_program(crate::test_methods::modified_transfer_program());
         self.insert_program(crate::test_methods::malicious_authorization_changer());

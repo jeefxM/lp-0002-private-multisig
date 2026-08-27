@@ -1,0 +1,16 @@
+{
+  "name": "private_multisig_lp0002",
+  "version": "0.1.0",
+  "type": "ui_qml",
+  "description": "Anonymous M-of-N multisig voting (LP-0002): prove membership in a Merkle set and cast a proposal-bound anonymous on-chain approval",
+  "author": "jeefxM",
+  "category": "governance",
+  "main": {
+    "darwin-arm64": "msig_plugin.dylib",
+    "linux-amd64": "msig_plugin.so",
+    "linux-arm64": "msig_plugin.so"
+  },
+  "view": "qml/Main.qml",
+  "icon": "icons/msig.png",
+  "dependencies": []
+}

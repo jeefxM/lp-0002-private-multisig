@@ -11,6 +11,15 @@ workspace = true
 common.workspace = true
 lee.workspace = true
 lee_core.workspace = true
+msig_core.workspace = true
+key_protocol.workspace = true
+bip39.workspace = true
+anyhow.workspace = true
+hex.workspace = true
+rand.workspace = true
+testnet_initial_state.workspace = true
+programs.workspace = true
+test_methods = { path = "../../lee/state_machine/test_methods" }
 sequencer_service_rpc = { workspace = true, features = ["client"] }
 wallet.workspace = true
 

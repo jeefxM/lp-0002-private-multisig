@@ -1,0 +1,113 @@
+on:
+  push:
+    branches:
+      - main
+      - lp0002-demo
+    paths:
+      - "lez/programs/msig/**"
+      - "lee/state_machine/test_methods/guest/src/bin/msig.rs"
+      - "examples/program_deployment/**"
+      - "lee/state_machine/src/state/tests/msig.rs"
+      - "lee/state_machine/src/privacy_preserving_transaction/circuit/tests.rs"
+      - "scripts/lp0002-demo.sh"
+      - ".github/workflows/lp0002-ci.yml"
+
+  pull_request:
+    paths:
+      - "lez/programs/msig/**"
+      - "lee/state_machine/test_methods/guest/src/bin/msig.rs"
+      - "examples/program_deployment/**"
+      - "lee/state_machine/src/state/tests/msig.rs"
+      - "lee/state_machine/src/privacy_preserving_transaction/circuit/tests.rs"
+      - "scripts/lp0002-demo.sh"
+      - ".github/workflows/lp0002-ci.yml"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+name: LP-0002 msig
+
+jobs:
+  # Resolve (build once, then reuse) the repo's CI image — the same toolchain
+  # image upstream LEZ CI runs in (Rust + risc0 + system deps baked in).
+  ci-image:
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/ci-image.yml
+
+  # ----------------------------------------------------------------------------
+  # Unit/integration coverage for the msig state machine + circuit arms and the
+  # msig_core program, plus a compile-check of the LP-0002 flow runners.
+  # All logic runs under RISC0_DEV_MODE=1 (fake receipts). The real
+  # RISC0_DEV_MODE=0 approve STARK and its landing on the live sequencer remain
+  # the separate ZK-soundness evidence (see README-LP0002 / docs/LP-0002-*).
+  # This job is build + logic only and never touches the live testnet.
+  # ----------------------------------------------------------------------------
+  msig-tests:
+    needs: ci-image
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    container:
+      image: ${{ needs.ci-image.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      RISC0_DEV_MODE: "1"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.head_ref }}
+
+      - name: msig core unit tests
+        run: cargo test -p msig_core
+
+      - name: msig state + circuit tests (RISC0_DEV_MODE=1)
+        run: cargo test -p lee msig_
+
+      - name: Build the LP-0002 client runners
+        run: cargo build --release -p program_deployment --bins
+
+  # ----------------------------------------------------------------------------
+  # Full END-TO-END against a locally-booted STANDALONE sequencer (no external
+  # testnet). scripts/lp0002-demo.sh (RISC0_DEV_MODE=1 here so CI finishes
+  # without the ~minutes-per-approve real STARK; the root ./demo.sh entrypoint
+  # is the real-proof RISC0_DEV_MODE=0 path):
+  #   * builds the msig guest ELF via `cargo build -p test_methods`
+  #     (risc0_build::embed_methods) — no Docker needed for the guest build,
+  #   * builds the standalone sequencer + wallet CLI + flow runners,
+  #   * boots the sequencer on a fresh scratch dir,
+  #   * drives + asserts the whole 2-of-3 lifecycle:
+  #       deploy -> enroll(x3) -> create_proposal -> shielded-fund voters
+  #       -> approve(member 0) -> approve(member 1) -> init_treasury -> fund
+  #       -> execute(threshold 2) -> run_assert_state GREEN
+  #       (approval_count==2, treasury drained, recipient funded).
+  # ----------------------------------------------------------------------------
+  msig-e2e-devmode:
+    needs: ci-image
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    container:
+      image: ${{ needs.ci-image.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      RISC0_DEV_MODE: "1"
+      LP0002_ROOT: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.head_ref }}
+
+      - name: End-to-end flow (standalone sequencer, RISC0_DEV_MODE=1)
+        run: RISC0_DEV_MODE=1 ./scripts/lp0002-demo.sh
+
+      - name: Sequencer log (on failure)
+        if: failure()
+        shell: bash
+        run: |
+          echo "=== tail of standalone sequencer log ==="
+          tail -120 "${LP0002_ROOT:-.}/.localnet-demo/seq.log" 2>/dev/null || true

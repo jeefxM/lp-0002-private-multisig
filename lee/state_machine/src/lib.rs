@@ -229,6 +229,11 @@ mod test_methods {
     }
 
     #[must_use]
+    pub const fn msig() -> Program {
+        Program::new_unchecked(test_methods::MSIG_ID, Cow::Borrowed(test_methods::MSIG_ELF))
+    }
+
+    #[must_use]
     pub const fn claimer() -> Program {
         Program::new_unchecked(
             test_methods::CLAIMER_ID,

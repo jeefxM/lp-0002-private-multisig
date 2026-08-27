@@ -42,6 +42,7 @@ members = [
   "lez/programs/bridge",
   "lez/programs/clock",
   "lez/programs/faucet",
+  "lez/programs/msig/core",
   "lez/programs/pinata",
   "lez/programs/pinata_token",
   "lez/programs/token",
@@ -106,6 +107,7 @@ amm_program = { path = "lez/programs/amm" }
 associated_token_account_core = { path = "lez/programs/associated_token_account/core" }
 ata_program = { path = "lez/programs/associated_token_account" }
 authenticated_transfer_core = { path = "lez/programs/authenticated_transfer/core" }
+msig_core = { path = "lez/programs/msig/core" }
 faucet_core = { path = "lez/programs/faucet/core" }
 bridge_core = { path = "lez/programs/bridge/core" }
 vault_core = { path = "lez/programs/vault/core" }
