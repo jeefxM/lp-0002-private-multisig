@@ -1,8 +1,0 @@
-{
-  "sequencers": [ { "sequencer_addr": "http://127.0.0.1:3047" } ],
-  "seq_poll_timeout": "30s",
-  "seq_tx_poll_max_blocks": 25,
-  "seq_poll_max_retries": 25,
-  "seq_block_poll_max_amount": 300,
-  "multi_sequencer_client_config": { "distribution_limit": 1, "calibration_limit": 100 }
-}

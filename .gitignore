@@ -20,3 +20,14 @@ bedrock_signing_key
 integration_tests/configs/debug/
 
 .DS_Store
+
+# LP-0002 runtime state — never commit (scratch sequencer DBs, wallet homes, run logs)
+.localnet-demo/
+.localnet-resume/
+.localnet-resume-run.log
+.testnet-demo/
+.testnet-v024/
+*.log
+port-check.log
+port-test.log
+port-build.log
