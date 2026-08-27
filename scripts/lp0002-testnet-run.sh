@@ -19,6 +19,14 @@ TREASURY_AMT=100
 w()   { RUST_LOG=error "$WALLET" "$@"; }
 die() { echo "FATAL: $*" >&2; echo "=== RUN FAILED ==="; exit 1; }
 
+RPC_URL="${RPC_URL:-https://testnet.lez.logos.co}"
+# Direct JSON-RPC probe (the wallet CLI's account-get can stall; checks must not depend on it).
+rpc_account_initialized() {
+  curl -sS -m 15 -X POST "$RPC_URL" -H "Content-Type: application/json" \
+    -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getAccount\",\"params\":[\"$1\"]}" 2>/dev/null \
+  | python3 -c "import json,sys; r=json.load(sys.stdin)[\"result\"]; sys.exit(0 if r and any(r[\"program_owner\"]) else 1)" 2>/dev/null
+}
+
 status_json() { RUST_LOG=error "$BIN/run_read_status" 2>/dev/null | grep -o '{.*}' | tail -1; }
 count_now()   { status_json | grep -o '"approval_count":[0-9]*' | grep -o '[0-9]*$'; }
 ready_now()   { status_json | grep -o '"ready":[a-z]*' | grep -o 'true\|false'; }
@@ -36,10 +44,10 @@ wait_count() {
 wait_treasury_init() {
   local tid=$1
   for _ in $(seq 1 40); do
-    w account get --account-id "Public/$tid" 2>/dev/null | grep -qi "authenticated transfer" && return 0
+    rpc_account_initialized "$tid" && return 0
     sleep 15
   done
-  die "treasury PDA never initialized under authenticated_transfer"
+  die "treasury PDA never initialized"
 }
 wait_voting_live() {
   local vid=$1

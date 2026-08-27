@@ -109,8 +109,16 @@ c["home"] = home
 c["block_create_timeout"] = "1s"
 json.dump(c, open(dst, "w"), indent=2)
 PY
+# v0.2.4 wallet config schema: multi-sequencer list + client config.
 cat > "$D/wallet/wallet_config.json" <<JSON
-{"sequencer_addr":"http://127.0.0.1:$PORT","seq_poll_timeout":"30s","seq_tx_poll_max_blocks":25,"seq_poll_max_retries":25,"seq_block_poll_max_amount":300}
+{
+  "sequencers": [ { "sequencer_addr": "http://127.0.0.1:$PORT" } ],
+  "seq_poll_timeout": "30s",
+  "seq_tx_poll_max_blocks": 25,
+  "seq_poll_max_retries": 25,
+  "seq_block_poll_max_amount": 300,
+  "multi_sequencer_client_config": { "distribution_limit": 1, "calibration_limit": 100 }
+}
 JSON
 
 # ---- 1. build runners ----

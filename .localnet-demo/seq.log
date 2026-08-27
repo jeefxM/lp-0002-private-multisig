@@ -1,551 +1,576 @@
-[2026-06-26T14:42:36Z WARN  sequencer_core] Database not found at /root/lez-rc5/.localnet-demo/rocksdb, starting from genesis
-[2m2026-06-26T14:42:36.701160Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.959086ms
-[2m2026-06-26T14:42:36.791481Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.235257ms
-[2m2026-06-26T14:42:36.888196Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.272186ms
-[2m2026-06-26T14:42:37.017267Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 48.455539ms
-[2m2026-06-26T14:42:37.105378Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.748005ms
-[2m2026-06-26T14:42:37.193251Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.213876ms
-[2m2026-06-26T14:42:37.280306Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.921299ms
-[2m2026-06-26T14:42:37.365448Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.022602ms
-[2m2026-06-26T14:42:37.471971Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.103982ms
-[2m2026-06-26T14:42:37.519608Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.450004ms
-[2m2026-06-26T14:42:37.614173Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.632103ms
-[2m2026-06-26T14:42:37.661704Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.504939ms
-[2m2026-06-26T14:42:37.768281Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.123876ms
-[2m2026-06-26T14:42:37.861722Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.001313ms
-[2m2026-06-26T14:42:37.961567Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.608996ms
-[2026-06-26T14:42:38Z INFO  sequencer_service] Sequencer core set up
-[2026-06-26T14:42:38Z INFO  sequencer_service] Starting Sequencer Service RPC server on 0.0.0.0:3047
-[2026-06-26T14:42:38Z INFO  sequencer_service] RPC server started
-[2026-06-26T14:42:38Z INFO  sequencer_service] Starting main sequencer loop
-[2026-06-26T14:42:39Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:39.104129Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.204952ms
-[2026-06-26T14:42:39Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:39Z INFO  sequencer_service] Block with id 2 created
-[2026-06-26T14:42:39Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:40Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:40.204263Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.339193ms
-[2026-06-26T14:42:40Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:40Z INFO  sequencer_service] Block with id 3 created
-[2026-06-26T14:42:40Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:40Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:60222 conn_id=0
-[2026-06-26T14:42:40Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:60228 conn_id=1
-[2026-06-26T14:42:41Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2026-06-26T14:42:41Z INFO  sequencer_core] Validated transaction with hash 2262403372e8681604ce330f0040a1680b89f7db1c622ad6087e2bcf92fe8892, including it in block
-[2m2026-06-26T14:42:41.338245Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.368843ms
-[2026-06-26T14:42:41Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
-[2026-06-26T14:42:41Z INFO  sequencer_service] Block with id 4 created
-[2026-06-26T14:42:41Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:42Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:42.440078Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.144836ms
-[2026-06-26T14:42:42Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:42Z INFO  sequencer_service] Block with id 5 created
-[2026-06-26T14:42:42Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:43Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:43.547154Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.441112ms
-[2026-06-26T14:42:43Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:43Z INFO  sequencer_service] Block with id 6 created
-[2026-06-26T14:42:43Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:44Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:44.658395Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.698633ms
-[2026-06-26T14:42:44Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:44Z INFO  sequencer_service] Block with id 7 created
-[2026-06-26T14:42:44Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:44Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:60232 conn_id=2
-[2026-06-26T14:42:45Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:45.779379Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 52.691986ms
-[2026-06-26T14:42:45Z INFO  sequencer_core] Validated transaction with hash cc83be07fc7155e855a6892075e44706ec97c217a13348af393f5e1a99e392ac, including it in block
-[2m2026-06-26T14:42:45.923485Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 55.222883ms
-[2026-06-26T14:42:45Z INFO  sequencer_core] Validated transaction with hash cc70da75f0933e8b06512d14e4a57a99b54e1ed33b885afa876fff86d93a152c, including it in block
-[2m2026-06-26T14:42:46.081488Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 54.40489ms
-[2026-06-26T14:42:46Z INFO  sequencer_core] Validated transaction with hash 89e81d32ad6998b078b184d6d5b0557757523005657ff98bbdb70941edc068ef, including it in block
-[2m2026-06-26T14:42:46.161470Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.349584ms
-[2026-06-26T14:42:46Z INFO  sequencer_core] Created block with 4 transactions in 0 seconds
-[2026-06-26T14:42:46Z INFO  sequencer_service] Block with id 8 created
-[2026-06-26T14:42:46Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:47Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:47.260618Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.227343ms
-[2026-06-26T14:42:47Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:47Z INFO  sequencer_service] Block with id 9 created
-[2026-06-26T14:42:47Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:48Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:48.376864Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.038497ms
-[2026-06-26T14:42:48Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:48Z INFO  sequencer_service] Block with id 10 created
-[2026-06-26T14:42:48Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:48Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:60246 conn_id=3
-[2026-06-26T14:42:48Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:60256 conn_id=4
-[2026-06-26T14:42:49Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:49.536276Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 46.921796ms
-[2026-06-26T14:42:49Z INFO  sequencer_core] Validated transaction with hash de73ed5ab75776140972362f3324eaa643884e73b6c55de13d67b3f0aeb551d3, including it in block
-[2m2026-06-26T14:42:49.578067Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.603286ms
-[2026-06-26T14:42:49Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
-[2026-06-26T14:42:49Z INFO  sequencer_service] Block with id 11 created
-[2026-06-26T14:42:49Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:49Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:60264 conn_id=5
-[2026-06-26T14:42:49Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:60280 conn_id=6
-[2026-06-26T14:42:49Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:60296 conn_id=7
-[2026-06-26T14:42:50Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2026-06-26T14:42:50Z INFO  sequencer_core] Validated transaction with hash 881122e5622a6c6873c8ed790e9124a362f7dfd5731f93aa2ffcd2dd8b015a8f, including it in block
-[2m2026-06-26T14:42:50.705528Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.302483ms
-[2026-06-26T14:42:50Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
-[2026-06-26T14:42:50Z INFO  sequencer_service] Block with id 12 created
-[2026-06-26T14:42:50Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:51Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:51.811990Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.89184ms
-[2026-06-26T14:42:51Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:51Z INFO  sequencer_service] Block with id 13 created
-[2026-06-26T14:42:51Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:52Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:52.919960Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 16.378247ms
-[2026-06-26T14:42:52Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:52Z INFO  sequencer_service] Block with id 14 created
-[2026-06-26T14:42:52Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:53Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:54.048755Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.979997ms
-[2026-06-26T14:42:54Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:54Z INFO  sequencer_service] Block with id 15 created
-[2026-06-26T14:42:54Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:55Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:55.150796Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.587085ms
-[2026-06-26T14:42:55Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:55Z INFO  sequencer_service] Block with id 16 created
-[2026-06-26T14:42:55Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:56Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:56.254063Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.731192ms
-[2026-06-26T14:42:56Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:56Z INFO  sequencer_service] Block with id 17 created
-[2026-06-26T14:42:56Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:57Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:57.369674Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.886975ms
-[2026-06-26T14:42:57Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:57Z INFO  sequencer_service] Block with id 18 created
-[2026-06-26T14:42:57Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:58Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:58.438098Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.981579ms
-[2026-06-26T14:42:58Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:58Z INFO  sequencer_service] Block with id 19 created
-[2026-06-26T14:42:58Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:42:59Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:42:59.536914Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.22302ms
-[2026-06-26T14:42:59Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:42:59Z INFO  sequencer_service] Block with id 20 created
-[2026-06-26T14:42:59Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:00Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:00.641254Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.97787ms
-[2026-06-26T14:43:00Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:00Z INFO  sequencer_service] Block with id 21 created
-[2026-06-26T14:43:00Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:01Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:01.735563Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.449758ms
-[2026-06-26T14:43:01Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:01Z INFO  sequencer_service] Block with id 22 created
-[2026-06-26T14:43:01Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:02Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:02.838699Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.759567ms
-[2026-06-26T14:43:02Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:02Z INFO  sequencer_service] Block with id 23 created
-[2026-06-26T14:43:02Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:03Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:03.929281Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.501661ms
-[2026-06-26T14:43:03Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:03Z INFO  sequencer_service] Block with id 24 created
-[2026-06-26T14:43:03Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:04Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:05.032604Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.900106ms
-[2026-06-26T14:43:05Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:05Z INFO  sequencer_service] Block with id 25 created
-[2026-06-26T14:43:05Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:06Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:06.139846Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.79185ms
-[2026-06-26T14:43:06Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:06Z INFO  sequencer_service] Block with id 26 created
-[2026-06-26T14:43:06Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:07Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:07.235342Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.036088ms
-[2026-06-26T14:43:07Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:07Z INFO  sequencer_service] Block with id 27 created
-[2026-06-26T14:43:07Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:08Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:08.331150Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.697728ms
-[2026-06-26T14:43:08Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:08Z INFO  sequencer_service] Block with id 28 created
-[2026-06-26T14:43:08Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:09Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:09.454243Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.442387ms
-[2026-06-26T14:43:09Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:09Z INFO  sequencer_service] Block with id 29 created
-[2026-06-26T14:43:09Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:10Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:10.570087Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.416243ms
-[2026-06-26T14:43:10Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:10Z INFO  sequencer_service] Block with id 30 created
-[2026-06-26T14:43:10Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:11Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:11.688019Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.478727ms
-[2026-06-26T14:43:11Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:11Z INFO  sequencer_service] Block with id 31 created
-[2026-06-26T14:43:11Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:12Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:12.793231Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.979498ms
-[2026-06-26T14:43:12Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:12Z INFO  sequencer_service] Block with id 32 created
-[2026-06-26T14:43:12Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:13Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:13.893517Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.50725ms
-[2026-06-26T14:43:13Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:13Z INFO  sequencer_service] Block with id 33 created
-[2026-06-26T14:43:13Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:14Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:15.008180Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.471949ms
-[2026-06-26T14:43:15Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:15Z INFO  sequencer_service] Block with id 34 created
-[2026-06-26T14:43:15Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:16Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:16.099816Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.56551ms
-[2026-06-26T14:43:16Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:16Z INFO  sequencer_service] Block with id 35 created
-[2026-06-26T14:43:16Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:17Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:17.191617Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.26194ms
-[2026-06-26T14:43:17Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:17Z INFO  sequencer_service] Block with id 36 created
-[2026-06-26T14:43:17Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:18Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:18.293709Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.457949ms
-[2026-06-26T14:43:18Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:18Z INFO  sequencer_service] Block with id 37 created
-[2026-06-26T14:43:18Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:19Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:19.395928Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.392007ms
-[2026-06-26T14:43:19Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:19Z INFO  sequencer_service] Block with id 38 created
-[2026-06-26T14:43:19Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:20Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58266 conn_id=8
-[2026-06-26T14:43:20Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2026-06-26T14:43:20Z INFO  sequencer_core] Validated transaction with hash 94be6cf1cd71055fb823ef81deada9e7666551c5c158beb99eb28e1f0ca45fde, including it in block
-[2m2026-06-26T14:43:20.540694Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 51.533839ms
-[2026-06-26T14:43:20Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
-[2026-06-26T14:43:20Z INFO  sequencer_service] Block with id 39 created
-[2026-06-26T14:43:20Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:21Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:21.658342Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.720803ms
-[2026-06-26T14:43:21Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:21Z INFO  sequencer_service] Block with id 40 created
-[2026-06-26T14:43:21Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:22Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:22.774283Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.745492ms
-[2026-06-26T14:43:22Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:22Z INFO  sequencer_service] Block with id 41 created
-[2026-06-26T14:43:22Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:23Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:23.886383Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.07313ms
-[2026-06-26T14:43:23Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:23Z INFO  sequencer_service] Block with id 42 created
-[2026-06-26T14:43:23Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:24Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:24.982682Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.784851ms
-[2026-06-26T14:43:24Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:25Z INFO  sequencer_service] Block with id 43 created
-[2026-06-26T14:43:25Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:26Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:26.055596Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.511788ms
-[2026-06-26T14:43:26Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:26Z INFO  sequencer_service] Block with id 44 created
-[2026-06-26T14:43:26Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:27Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:27.155218Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.47404ms
-[2026-06-26T14:43:27Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:27Z INFO  sequencer_service] Block with id 45 created
-[2026-06-26T14:43:27Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:28Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:28.251612Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.396282ms
-[2026-06-26T14:43:28Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:28Z INFO  sequencer_service] Block with id 46 created
-[2026-06-26T14:43:28Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:29Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:29.370826Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.841707ms
-[2026-06-26T14:43:29Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:29Z INFO  sequencer_service] Block with id 47 created
-[2026-06-26T14:43:29Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:30Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:30.467490Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.900143ms
-[2026-06-26T14:43:30Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:30Z INFO  sequencer_service] Block with id 48 created
-[2026-06-26T14:43:30Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:31Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:31.578400Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.709487ms
-[2026-06-26T14:43:31Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:31Z INFO  sequencer_service] Block with id 49 created
-[2026-06-26T14:43:31Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:32Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:32.695907Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.760826ms
-[2026-06-26T14:43:32Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:32Z INFO  sequencer_service] Block with id 50 created
-[2026-06-26T14:43:32Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:33Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:33.760160Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.092987ms
-[2026-06-26T14:43:33Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:33Z INFO  sequencer_service] Block with id 51 created
-[2026-06-26T14:43:33Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:34Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:34.871715Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.762645ms
-[2026-06-26T14:43:34Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:34Z INFO  sequencer_service] Block with id 52 created
-[2026-06-26T14:43:34Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:35Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:35.997660Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.686542ms
-[2026-06-26T14:43:36Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:36Z INFO  sequencer_service] Block with id 53 created
-[2026-06-26T14:43:36Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:37Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:37.147308Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 49.832244ms
-[2026-06-26T14:43:37Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:37Z INFO  sequencer_service] Block with id 54 created
-[2026-06-26T14:43:37Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:38Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:38.198303Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.831923ms
-[2026-06-26T14:43:38Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:38Z INFO  sequencer_service] Block with id 55 created
-[2026-06-26T14:43:38Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:39Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:39.297393Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.117353ms
-[2026-06-26T14:43:39Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:39Z INFO  sequencer_service] Block with id 56 created
-[2026-06-26T14:43:39Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:40Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:40.397161Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.391942ms
-[2026-06-26T14:43:40Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:40Z INFO  sequencer_service] Block with id 57 created
-[2026-06-26T14:43:40Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:41Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:41.523497Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.237653ms
-[2026-06-26T14:43:41Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:41Z INFO  sequencer_service] Block with id 58 created
-[2026-06-26T14:43:41Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:42Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:42.616306Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.928276ms
-[2026-06-26T14:43:42Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:42Z INFO  sequencer_service] Block with id 59 created
-[2026-06-26T14:43:42Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:43Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:43.721090Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.860908ms
-[2026-06-26T14:43:43Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:43Z INFO  sequencer_service] Block with id 60 created
-[2026-06-26T14:43:43Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:44Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:44.782546Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.3364ms
-[2026-06-26T14:43:44Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:44Z INFO  sequencer_service] Block with id 61 created
-[2026-06-26T14:43:44Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:45Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:45.885809Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.233149ms
-[2026-06-26T14:43:45Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:45Z INFO  sequencer_service] Block with id 62 created
-[2026-06-26T14:43:45Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:46Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:46.988920Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.898012ms
-[2026-06-26T14:43:46Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:47Z INFO  sequencer_service] Block with id 63 created
-[2026-06-26T14:43:47Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:48Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:48.091738Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.691787ms
-[2026-06-26T14:43:48Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:48Z INFO  sequencer_service] Block with id 64 created
-[2026-06-26T14:43:48Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:49Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:49.182530Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.513301ms
-[2026-06-26T14:43:49Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:49Z INFO  sequencer_service] Block with id 65 created
-[2026-06-26T14:43:49Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:50Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:50.277958Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.098663ms
-[2026-06-26T14:43:50Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:50Z INFO  sequencer_service] Block with id 66 created
-[2026-06-26T14:43:50Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:50Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58662 conn_id=9
-[2026-06-26T14:43:50Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58672 conn_id=10
-[2026-06-26T14:43:51Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2026-06-26T14:43:51Z INFO  sequencer_core] Validated transaction with hash 5c3e674542e06ea7e14a947b9563d592a5d2812ebeabbb007282970ea6d0904f, including it in block
-[2m2026-06-26T14:43:51.381543Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.08243ms
-[2026-06-26T14:43:51Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
-[2026-06-26T14:43:51Z INFO  sequencer_service] Block with id 67 created
-[2026-06-26T14:43:51Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:51Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58686 conn_id=11
-[2026-06-26T14:43:51Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58698 conn_id=12
-[2026-06-26T14:43:51Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58710 conn_id=13
-[2026-06-26T14:43:52Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2026-06-26T14:43:52Z INFO  sequencer_core] Validated transaction with hash 7490f38fb1081425e5e19a53472aa14223b97fac0950f70f83d6a44f6da25bb3, including it in block
-[2m2026-06-26T14:43:52.480048Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.511682ms
-[2026-06-26T14:43:52Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
-[2026-06-26T14:43:52Z INFO  sequencer_service] Block with id 68 created
-[2026-06-26T14:43:52Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:52Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58714 conn_id=14
-[2026-06-26T14:43:52Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58730 conn_id=15
-[2026-06-26T14:43:52Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58734 conn_id=16
-[2026-06-26T14:43:53Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:53.576403Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 46.303532ms
-[2m2026-06-26T14:43:53.674890Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.325073ms
-[2026-06-26T14:43:53Z INFO  sequencer_core] Validated transaction with hash d397291ba6360a60d081eddc8bc9a50c759b367150f3b0570481a2b109a411be, including it in block
-[2m2026-06-26T14:43:53.760853Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.02228ms
-[2m2026-06-26T14:43:53.844882Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.330461ms
-[2026-06-26T14:43:53Z INFO  sequencer_core] Validated transaction with hash 4f191345753c2d1ce03fe44900f6ab1c8a751ef671b113e8a9e3b0cdb452d9cd, including it in block
-[2m2026-06-26T14:43:53.942078Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.898213ms
-[2026-06-26T14:43:53Z INFO  sequencer_core] Created block with 3 transactions in 0 seconds
-[2026-06-26T14:43:53Z INFO  sequencer_service] Block with id 69 created
-[2026-06-26T14:43:53Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:53Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58744 conn_id=17
-[2026-06-26T14:43:53Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:58754 conn_id=18
-[2026-06-26T14:43:54Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:55.041001Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.966607ms
-[2026-06-26T14:43:55Z INFO  sequencer_core] Validated transaction with hash be70770a738e407213da8484be4431de09a6650429b69aff65a4fe11ddb3f27d, including it in block
-[2m2026-06-26T14:43:55.132883Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.068052ms
-[2026-06-26T14:43:55Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
-[2026-06-26T14:43:55Z INFO  sequencer_service] Block with id 70 created
-[2026-06-26T14:43:55Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:56Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:56.230588Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.032375ms
-[2026-06-26T14:43:56Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:56Z INFO  sequencer_service] Block with id 71 created
-[2026-06-26T14:43:56Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:57Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:57.362330Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 49.840125ms
-[2026-06-26T14:43:57Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:57Z INFO  sequencer_service] Block with id 72 created
-[2026-06-26T14:43:57Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:58Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:58.457423Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.030532ms
-[2026-06-26T14:43:58Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:58Z INFO  sequencer_service] Block with id 73 created
-[2026-06-26T14:43:58Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:43:59Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:43:59.518833Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.349013ms
-[2026-06-26T14:43:59Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:43:59Z INFO  sequencer_service] Block with id 74 created
-[2026-06-26T14:43:59Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:00Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:00.613380Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.622606ms
-[2026-06-26T14:44:00Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:00Z INFO  sequencer_service] Block with id 75 created
-[2026-06-26T14:44:00Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:01Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:01.720527Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.162194ms
-[2026-06-26T14:44:01Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:01Z INFO  sequencer_service] Block with id 76 created
-[2026-06-26T14:44:01Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:02Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:02.823333Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.048667ms
-[2026-06-26T14:44:02Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:02Z INFO  sequencer_service] Block with id 77 created
-[2026-06-26T14:44:02Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:03Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:03.913343Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.476476ms
-[2026-06-26T14:44:03Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:03Z INFO  sequencer_service] Block with id 78 created
-[2026-06-26T14:44:03Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:04Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:05.053468Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 51.797126ms
-[2026-06-26T14:44:05Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:05Z INFO  sequencer_service] Block with id 79 created
-[2026-06-26T14:44:05Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:06Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:06.145242Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.491708ms
-[2026-06-26T14:44:06Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:06Z INFO  sequencer_service] Block with id 80 created
-[2026-06-26T14:44:06Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:07Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:07.243750Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.207328ms
-[2026-06-26T14:44:07Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:07Z INFO  sequencer_service] Block with id 81 created
-[2026-06-26T14:44:07Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:08Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:08.346426Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.138191ms
-[2026-06-26T14:44:08Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:08Z INFO  sequencer_service] Block with id 82 created
-[2026-06-26T14:44:08Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:09Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:09.453782Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.848911ms
-[2026-06-26T14:44:09Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:09Z INFO  sequencer_service] Block with id 83 created
-[2026-06-26T14:44:09Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:10Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:10.573784Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.144135ms
-[2026-06-26T14:44:10Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:10Z INFO  sequencer_service] Block with id 84 created
-[2026-06-26T14:44:10Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:11Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:11.676355Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.526772ms
-[2026-06-26T14:44:11Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:11Z INFO  sequencer_service] Block with id 85 created
-[2026-06-26T14:44:11Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:12Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:12.726597Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.889469ms
-[2026-06-26T14:44:12Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:12Z INFO  sequencer_service] Block with id 86 created
-[2026-06-26T14:44:12Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:13Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:13.844853Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.000441ms
-[2026-06-26T14:44:13Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:13Z INFO  sequencer_service] Block with id 87 created
-[2026-06-26T14:44:13Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:14Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:14.936740Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.86356ms
-[2026-06-26T14:44:14Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:14Z INFO  sequencer_service] Block with id 88 created
-[2026-06-26T14:44:14Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:15Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:16.054414Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.000067ms
-[2026-06-26T14:44:16Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:16Z INFO  sequencer_service] Block with id 89 created
-[2026-06-26T14:44:16Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:17Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:17.149487Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.585424ms
-[2026-06-26T14:44:17Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:17Z INFO  sequencer_service] Block with id 90 created
-[2026-06-26T14:44:17Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:18Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:18.244546Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.537344ms
-[2026-06-26T14:44:18Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:18Z INFO  sequencer_service] Block with id 91 created
-[2026-06-26T14:44:18Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:19Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:19.350997Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.165234ms
-[2026-06-26T14:44:19Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:19Z INFO  sequencer_service] Block with id 92 created
-[2026-06-26T14:44:19Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:20Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:20.457697Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.019512ms
-[2026-06-26T14:44:20Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:20Z INFO  sequencer_service] Block with id 93 created
-[2026-06-26T14:44:20Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:21Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:21.569732Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.686293ms
-[2026-06-26T14:44:21Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:21Z INFO  sequencer_service] Block with id 94 created
-[2026-06-26T14:44:21Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:22Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:22.664842Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.995927ms
-[2026-06-26T14:44:22Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:22Z INFO  sequencer_service] Block with id 95 created
-[2026-06-26T14:44:22Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:23Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:23.757121Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.024923ms
-[2026-06-26T14:44:23Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:23Z INFO  sequencer_service] Block with id 96 created
-[2026-06-26T14:44:23Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:24Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:42494 conn_id=19
-[2026-06-26T14:44:24Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:42498 conn_id=20
-[2026-06-26T14:44:24Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:24.915330Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 52.298392ms
-[2m2026-06-26T14:44:25.001034Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.697293ms
-[2026-06-26T14:44:25Z INFO  sequencer_core] Validated transaction with hash 2354ebbd131ef55b8df77f3323500b3a8f36b3462de4b7dfc98137d617a24908, including it in block
-[2m2026-06-26T14:44:25.094084Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.832351ms
-[2026-06-26T14:44:25Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
-[2026-06-26T14:44:25Z INFO  sequencer_service] Block with id 97 created
-[2026-06-26T14:44:25Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:26Z INFO  sequencer_service] Collecting transactions from mempool, block creation
-[2m2026-06-26T14:44:26.191014Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.394172ms
-[2026-06-26T14:44:26Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
-[2026-06-26T14:44:26Z INFO  sequencer_service] Block with id 98 created
-[2026-06-26T14:44:26Z INFO  sequencer_service] Waiting for new transactions
-[2026-06-26T14:44:26Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:42504 conn_id=21
+[2026-08-27T22:57:00Z INFO  sequencer_core] Bedrock signing public key: 5343722842666a8d0df90edbf706e6ff0145b24db0540255a00cd30a25380c5c
+[2026-08-27T22:57:00Z WARN  sequencer_core] Database not found at /root/lez-rc5/.localnet-demo/rocksdb, starting from genesis
+[2026-08-27T22:57:00Z INFO  sequencer_core] Genesis fingerprint: 03b7a9e798f533e8917a208e65a9bc808bb35ac937c59317d00249315c09cd98
+[2m2026-08-27T22:57:00.162085Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.9609ms
+[2m2026-08-27T22:57:00.246401Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.0627ms
+[2m2026-08-27T22:57:00.284966Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.168335ms
+[2m2026-08-27T22:57:00.322903Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.729625ms
+[2m2026-08-27T22:57:00.404627Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.087223ms
+[2m2026-08-27T22:57:00.460870Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.829276ms
+[2m2026-08-27T22:57:00.575122Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 13.362062ms
+[2m2026-08-27T22:57:00.683351Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.103609ms
+[2m2026-08-27T22:57:00.721794Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.882227ms
+[2m2026-08-27T22:57:00.836245Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.907163ms
+[2m2026-08-27T22:57:00.947859Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.619436ms
+[2m2026-08-27T22:57:00.993433Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.389414ms
+[2m2026-08-27T22:57:01.088720Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.077098ms
+[2m2026-08-27T22:57:01.174107Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.031656ms
+[2m2026-08-27T22:57:01.215618Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.862431ms
+[2m2026-08-27T22:57:01.256072Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.767369ms
+[2m2026-08-27T22:57:01.391771Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.077702ms
+[2m2026-08-27T22:57:01.489111Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.886893ms
+[2m2026-08-27T22:57:01.550944Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.172088ms
+[2m2026-08-27T22:57:01.634920Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.727489ms
+[2m2026-08-27T22:57:01.713256Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.120739ms
+[2m2026-08-27T22:57:01.749306Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.368273ms
+[2m2026-08-27T22:57:01.852113Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.250231ms
+[2m2026-08-27T22:57:01.937794Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.650745ms
+[2m2026-08-27T22:57:01.976552Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.799438ms
+[2m2026-08-27T22:57:02.075289Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.054926ms
+[2m2026-08-27T22:57:02.162439Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.028836ms
+[2m2026-08-27T22:57:02.208781Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.493777ms
+[2m2026-08-27T22:57:02.332927Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 48.002228ms
+[2m2026-08-27T22:57:02.431025Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.142053ms
+[2m2026-08-27T22:57:02.511269Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 48.973962ms
+[2m2026-08-27T22:57:02.557398Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.183665ms
+[2026-08-27T22:57:02Z INFO  sequencer_service] Sequencer core set up
+[2026-08-27T22:57:02Z INFO  sequencer_service] Starting Sequencer Service RPC server on 0.0.0.0:3047
+[2026-08-27T22:57:02Z INFO  sequencer_service] RPC server started
+[2026-08-27T22:57:02Z INFO  sequencer_service] Starting main sequencer loop
+[2026-08-27T22:57:03Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:03.618292Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.201092ms
+[2026-08-27T22:57:03Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:03.658609Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.114219ms
+[2026-08-27T22:57:03Z INFO  sequencer_service] Block with id 2 created
+[2026-08-27T22:57:04Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:04.747616Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.357218ms
+[2026-08-27T22:57:04Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:04.861194Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.319401ms
+[2026-08-27T22:57:04Z INFO  sequencer_service] Block with id 3 created
+[2026-08-27T22:57:05Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:39510 conn_id=0
+[2026-08-27T22:57:05Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:39520 conn_id=1
+[2026-08-27T22:57:05Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:39524 conn_id=2
+[2026-08-27T22:57:05Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:39530 conn_id=3
+[2026-08-27T22:57:05Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:39544 conn_id=4
+[2026-08-27T22:57:05Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2026-08-27T22:57:05Z INFO  sequencer_core] Validated transaction with hash 047668a5ba871873645c2ff412414dfbe79526e1c205ccf5dd0baa474e865df1, including it in block
+[2m2026-08-27T22:57:05.998872Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.868193ms
+[2026-08-27T22:57:06Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
+[2m2026-08-27T22:57:06.064383Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.871564ms
+[2026-08-27T22:57:06Z INFO  sequencer_service] Block with id 4 created
+[2026-08-27T22:57:07Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:07.137191Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.46379ms
+[2026-08-27T22:57:07Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:07.182454Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.098043ms
+[2026-08-27T22:57:07Z INFO  sequencer_service] Block with id 5 created
+[2026-08-27T22:57:08Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:08.247204Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.641015ms
+[2026-08-27T22:57:08Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:08.286583Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.352229ms
+[2026-08-27T22:57:08Z INFO  sequencer_service] Block with id 6 created
+[2026-08-27T22:57:09Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:39548 conn_id=5
+[2026-08-27T22:57:09Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:09.449131Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 52.548638ms
+[2026-08-27T22:57:09Z INFO  sequencer_core] Validated transaction with hash 999b19b92e0c7e219f1cf295e76c58fed7e18a383b5a7d2838646d10d7d0854b, including it in block
+[2m2026-08-27T22:57:09.600079Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 51.598583ms
+[2026-08-27T22:57:09Z INFO  sequencer_core] Validated transaction with hash 81e387ec8523eaf4fdcdf9e0bd03d92a90178352389ecdf4c4e753488e0216d5, including it in block
+[2m2026-08-27T22:57:09.759199Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 52.031682ms
+[2026-08-27T22:57:09Z INFO  sequencer_core] Validated transaction with hash d5397ad0495f09495bddeadc6d75e538edbb71e9da8540e644792d5fee393274, including it in block
+[2m2026-08-27T22:57:09.825087Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.161062ms
+[2026-08-27T22:57:09Z INFO  sequencer_core] Created block with 4 transactions in 0 seconds
+[2m2026-08-27T22:57:09.963115Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 50.7805ms
+[2m2026-08-27T22:57:10.102837Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 47.958868ms
+[2m2026-08-27T22:57:10.233843Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 48.708034ms
+[2m2026-08-27T22:57:10.282517Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.346406ms
+[2026-08-27T22:57:10Z INFO  sequencer_service] Block with id 7 created
+[2026-08-27T22:57:11Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:11.355607Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.664175ms
+[2026-08-27T22:57:11Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:11.453569Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.033623ms
+[2026-08-27T22:57:11Z INFO  sequencer_service] Block with id 8 created
+[2026-08-27T22:57:12Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:12.558119Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.798234ms
+[2026-08-27T22:57:12Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:12.600440Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.190942ms
+[2026-08-27T22:57:12Z INFO  sequencer_service] Block with id 9 created
+[2026-08-27T22:57:13Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43142 conn_id=6
+[2026-08-27T22:57:13Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43154 conn_id=7
+[2026-08-27T22:57:13Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:13.750987Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.98445ms
+[2026-08-27T22:57:13Z INFO  sequencer_core] Validated transaction with hash 5de0eabe8076ee9adce15c03d58a755b64e6f9212228dcd436a1102c701bb231, including it in block
+[2m2026-08-27T22:57:13.788684Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.379847ms
+[2026-08-27T22:57:13Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
+[2m2026-08-27T22:57:13.830327Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.99307ms
+[2m2026-08-27T22:57:13.921921Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.312322ms
+[2026-08-27T22:57:13Z INFO  sequencer_service] Block with id 10 created
+[2026-08-27T22:57:14Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43158 conn_id=8
+[2026-08-27T22:57:14Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43168 conn_id=9
+[2026-08-27T22:57:14Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43174 conn_id=10
+[2026-08-27T22:57:14Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43176 conn_id=11
+[2026-08-27T22:57:14Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2026-08-27T22:57:14Z INFO  sequencer_core] Validated transaction with hash e61f04b525730de20263999b69abaf2b00dff857df0ea1430d09ed2b115bd5b4, including it in block
+[2m2026-08-27T22:57:15.059084Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.053766ms
+[2026-08-27T22:57:15Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
+[2m2026-08-27T22:57:15.101260Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.305827ms
+[2026-08-27T22:57:15Z INFO  sequencer_service] Block with id 11 created
+[2026-08-27T22:57:16Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:16.174808Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.835756ms
+[2026-08-27T22:57:16Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:16.236947Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 17.338754ms
+[2026-08-27T22:57:16Z INFO  sequencer_service] Block with id 12 created
+[2026-08-27T22:57:17Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:17.325171Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.304331ms
+[2026-08-27T22:57:17Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:17.369694Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.32149ms
+[2026-08-27T22:57:17Z INFO  sequencer_service] Block with id 13 created
+[2026-08-27T22:57:18Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:18.516226Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.731211ms
+[2026-08-27T22:57:18Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:18.576400Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.742555ms
+[2026-08-27T22:57:18Z INFO  sequencer_service] Block with id 14 created
+[2026-08-27T22:57:19Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:19.708332Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.033273ms
+[2026-08-27T22:57:19Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:19.777892Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.402761ms
+[2026-08-27T22:57:19Z INFO  sequencer_service] Block with id 15 created
+[2026-08-27T22:57:20Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:20.865642Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.58085ms
+[2026-08-27T22:57:20Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:20.932334Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.319001ms
+[2026-08-27T22:57:20Z INFO  sequencer_service] Block with id 16 created
+[2026-08-27T22:57:21Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:22.021993Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.242965ms
+[2026-08-27T22:57:22Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:22.059915Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.456128ms
+[2026-08-27T22:57:22Z INFO  sequencer_service] Block with id 17 created
+[2026-08-27T22:57:23Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:23.121657Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.909184ms
+[2026-08-27T22:57:23Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:23.161452Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.149782ms
+[2026-08-27T22:57:23Z INFO  sequencer_service] Block with id 18 created
+[2026-08-27T22:57:24Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:24.222998Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.176732ms
+[2026-08-27T22:57:24Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:24.260799Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.347539ms
+[2026-08-27T22:57:24Z INFO  sequencer_service] Block with id 19 created
+[2026-08-27T22:57:25Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:25.340234Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.586276ms
+[2026-08-27T22:57:25Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:25.381738Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.379476ms
+[2026-08-27T22:57:25Z INFO  sequencer_service] Block with id 20 created
+[2026-08-27T22:57:26Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:26.463042Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.401943ms
+[2026-08-27T22:57:26Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:26.501881Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.259331ms
+[2026-08-27T22:57:26Z INFO  sequencer_service] Block with id 21 created
+[2026-08-27T22:57:27Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:27.583964Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.502997ms
+[2026-08-27T22:57:27Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:27.625925Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.064004ms
+[2026-08-27T22:57:27Z INFO  sequencer_service] Block with id 22 created
+[2026-08-27T22:57:28Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:28.700853Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.520496ms
+[2026-08-27T22:57:28Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:28.761542Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.403381ms
+[2026-08-27T22:57:28Z INFO  sequencer_service] Block with id 23 created
+[2026-08-27T22:57:29Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:29.816848Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.212791ms
+[2026-08-27T22:57:29Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:29.876532Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.045372ms
+[2026-08-27T22:57:29Z INFO  sequencer_service] Block with id 24 created
+[2026-08-27T22:57:30Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:30.975054Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.529276ms
+[2026-08-27T22:57:30Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:31.027561Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.50386ms
+[2026-08-27T22:57:31Z INFO  sequencer_service] Block with id 25 created
+[2026-08-27T22:57:32Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:32.094046Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.686684ms
+[2026-08-27T22:57:32Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:32.134994Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.074487ms
+[2026-08-27T22:57:32Z INFO  sequencer_service] Block with id 26 created
+[2026-08-27T22:57:33Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:33.208079Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.000467ms
+[2026-08-27T22:57:33Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:33.254559Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.663643ms
+[2026-08-27T22:57:33Z INFO  sequencer_service] Block with id 27 created
+[2026-08-27T22:57:34Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:34.316636Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 13.287921ms
+[2026-08-27T22:57:34Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:34.367700Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.3827ms
+[2026-08-27T22:57:34Z INFO  sequencer_service] Block with id 28 created
+[2026-08-27T22:57:35Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:35.466142Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.29875ms
+[2026-08-27T22:57:35Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:35.528399Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.215349ms
+[2026-08-27T22:57:35Z INFO  sequencer_service] Block with id 29 created
+[2026-08-27T22:57:36Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:36.642959Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 15.077848ms
+[2026-08-27T22:57:36Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:36.698783Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.283464ms
+[2026-08-27T22:57:36Z INFO  sequencer_service] Block with id 30 created
+[2026-08-27T22:57:37Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:37.793312Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.038971ms
+[2026-08-27T22:57:37Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:37.843688Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.853328ms
+[2026-08-27T22:57:37Z INFO  sequencer_service] Block with id 31 created
+[2026-08-27T22:57:38Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:38.961923Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.755498ms
+[2026-08-27T22:57:38Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:39.018762Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.4116ms
+[2026-08-27T22:57:39Z INFO  sequencer_service] Block with id 32 created
+[2026-08-27T22:57:40Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:40.093976Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.296508ms
+[2026-08-27T22:57:40Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:40.132335Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.369408ms
+[2026-08-27T22:57:40Z INFO  sequencer_service] Block with id 33 created
+[2026-08-27T22:57:41Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:41.190492Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.454829ms
+[2026-08-27T22:57:41Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:41.232120Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.023454ms
+[2026-08-27T22:57:41Z INFO  sequencer_service] Block with id 34 created
+[2026-08-27T22:57:42Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:42.333997Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 47.572671ms
+[2026-08-27T22:57:42Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:42.386034Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.616344ms
+[2026-08-27T22:57:42Z INFO  sequencer_service] Block with id 35 created
+[2026-08-27T22:57:43Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:43.480578Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.278378ms
+[2026-08-27T22:57:43Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:43.538499Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.98698ms
+[2026-08-27T22:57:43Z INFO  sequencer_service] Block with id 36 created
+[2026-08-27T22:57:44Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:44.632145Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.073731ms
+[2026-08-27T22:57:44Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:44.739086Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 51.166708ms
+[2026-08-27T22:57:44Z INFO  sequencer_service] Block with id 37 created
+[2026-08-27T22:57:44Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:48148 conn_id=12
+[2026-08-27T22:57:44Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:48150 conn_id=13
+[2026-08-27T22:57:44Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:48154 conn_id=14
+[2026-08-27T22:57:45Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2026-08-27T22:57:45Z INFO  sequencer_core] Validated transaction with hash 671139660878bbd650edecf7828ee17932434ce7065f76860d415003d9890e26, including it in block
+[2m2026-08-27T22:57:45.846437Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 14.853081ms
+[2026-08-27T22:57:45Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
+[2m2026-08-27T22:57:45.913579Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.591873ms
+[2026-08-27T22:57:45Z INFO  sequencer_service] Block with id 38 created
+[2026-08-27T22:57:46Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:46.985246Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.867441ms
+[2026-08-27T22:57:46Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:47.034320Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.902301ms
+[2026-08-27T22:57:47Z INFO  sequencer_service] Block with id 39 created
+[2026-08-27T22:57:48Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:48.113545Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.458609ms
+[2026-08-27T22:57:48Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:48.159666Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.777871ms
+[2026-08-27T22:57:48Z INFO  sequencer_service] Block with id 40 created
+[2026-08-27T22:57:49Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:49.221809Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.374178ms
+[2026-08-27T22:57:49Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:49.259526Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.11554ms
+[2026-08-27T22:57:49Z INFO  sequencer_service] Block with id 41 created
+[2026-08-27T22:57:50Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:50.326469Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.999262ms
+[2026-08-27T22:57:50Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:50.364989Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.402048ms
+[2026-08-27T22:57:50Z INFO  sequencer_service] Block with id 42 created
+[2026-08-27T22:57:51Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:51.455646Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.251976ms
+[2026-08-27T22:57:51Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:51.520295Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.834054ms
+[2026-08-27T22:57:51Z INFO  sequencer_service] Block with id 43 created
+[2026-08-27T22:57:52Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:52.654553Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.743058ms
+[2026-08-27T22:57:52Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:52.702281Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.672796ms
+[2026-08-27T22:57:52Z INFO  sequencer_service] Block with id 44 created
+[2026-08-27T22:57:53Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:53.834878Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.572652ms
+[2026-08-27T22:57:53Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:53.907246Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.437433ms
+[2026-08-27T22:57:53Z INFO  sequencer_service] Block with id 45 created
+[2026-08-27T22:57:54Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:55.006625Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.583906ms
+[2026-08-27T22:57:55Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:55.046728Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.09449ms
+[2026-08-27T22:57:55Z INFO  sequencer_service] Block with id 46 created
+[2026-08-27T22:57:56Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:56.103874Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.247239ms
+[2026-08-27T22:57:56Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:56.145941Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.974166ms
+[2026-08-27T22:57:56Z INFO  sequencer_service] Block with id 47 created
+[2026-08-27T22:57:57Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:57.200811Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.171349ms
+[2026-08-27T22:57:57Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:57.243362Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.41559ms
+[2026-08-27T22:57:57Z INFO  sequencer_service] Block with id 48 created
+[2026-08-27T22:57:58Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:58.303094Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.636692ms
+[2026-08-27T22:57:58Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:58.346812Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.261839ms
+[2026-08-27T22:57:58Z INFO  sequencer_service] Block with id 49 created
+[2026-08-27T22:57:59Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:57:59.421385Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.985633ms
+[2026-08-27T22:57:59Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:57:59.458430Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.303558ms
+[2026-08-27T22:57:59Z INFO  sequencer_service] Block with id 50 created
+[2026-08-27T22:58:00Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:00.582661Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.377803ms
+[2026-08-27T22:58:00Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:00.628975Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.505149ms
+[2026-08-27T22:58:00Z INFO  sequencer_service] Block with id 51 created
+[2026-08-27T22:58:01Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:01.698283Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.812885ms
+[2026-08-27T22:58:01Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:01.760953Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.697896ms
+[2026-08-27T22:58:01Z INFO  sequencer_service] Block with id 52 created
+[2026-08-27T22:58:02Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:02.851421Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 13.828177ms
+[2026-08-27T22:58:02Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:02.903807Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.895376ms
+[2026-08-27T22:58:02Z INFO  sequencer_service] Block with id 53 created
+[2026-08-27T22:58:03Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:04.008383Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.423317ms
+[2026-08-27T22:58:04Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:04.045095Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.183328ms
+[2026-08-27T22:58:04Z INFO  sequencer_service] Block with id 54 created
+[2026-08-27T22:58:05Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:05.104569Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.33ms
+[2026-08-27T22:58:05Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:05.150876Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.453801ms
+[2026-08-27T22:58:05Z INFO  sequencer_service] Block with id 55 created
+[2026-08-27T22:58:06Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:06.212231Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.368551ms
+[2026-08-27T22:58:06Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:06.254044Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.126329ms
+[2026-08-27T22:58:06Z INFO  sequencer_service] Block with id 56 created
+[2026-08-27T22:58:07Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:07.305524Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.329398ms
+[2026-08-27T22:58:07Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:07.350079Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.421273ms
+[2026-08-27T22:58:07Z INFO  sequencer_service] Block with id 57 created
+[2026-08-27T22:58:08Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:08.447359Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 13.50959ms
+[2026-08-27T22:58:08Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:08.510205Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.475797ms
+[2026-08-27T22:58:08Z INFO  sequencer_service] Block with id 58 created
+[2026-08-27T22:58:09Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:09.585912Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.548256ms
+[2026-08-27T22:58:09Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:09.630728Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.590685ms
+[2026-08-27T22:58:09Z INFO  sequencer_service] Block with id 59 created
+[2026-08-27T22:58:10Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:10.716403Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.441116ms
+[2026-08-27T22:58:10Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:10.808765Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.35023ms
+[2026-08-27T22:58:10Z INFO  sequencer_service] Block with id 60 created
+[2026-08-27T22:58:11Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:11.910086Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.671948ms
+[2026-08-27T22:58:11Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:11.952853Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.744975ms
+[2026-08-27T22:58:11Z INFO  sequencer_service] Block with id 61 created
+[2026-08-27T22:58:12Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:13.044028Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.861307ms
+[2026-08-27T22:58:13Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:13.125326Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 14.183915ms
+[2026-08-27T22:58:13Z INFO  sequencer_service] Block with id 62 created
+[2026-08-27T22:58:14Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:14.207869Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.234938ms
+[2026-08-27T22:58:14Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:14.246560Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.970756ms
+[2026-08-27T22:58:14Z INFO  sequencer_service] Block with id 63 created
+[2026-08-27T22:58:15Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49778 conn_id=15
+[2026-08-27T22:58:15Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49782 conn_id=16
+[2026-08-27T22:58:15Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49796 conn_id=17
+[2026-08-27T22:58:15Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:15.298289Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.243077ms
+[2026-08-27T22:58:15Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:15.336786Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.832778ms
+[2026-08-27T22:58:15Z INFO  sequencer_service] Block with id 64 created
+[2026-08-27T22:58:15Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49804 conn_id=18
+[2026-08-27T22:58:16Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2026-08-27T22:58:16Z INFO  sequencer_core] Validated transaction with hash 9f9e060d3291bb4057d2bdb105c061ea0b4ae74bccbaa943048628396c406d87, including it in block
+[2m2026-08-27T22:58:16.432409Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.676085ms
+[2026-08-27T22:58:16Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
+[2m2026-08-27T22:58:16.492207Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.120903ms
+[2026-08-27T22:58:16Z INFO  sequencer_service] Block with id 65 created
+[2026-08-27T22:58:16Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49806 conn_id=19
+[2026-08-27T22:58:16Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49816 conn_id=20
+[2026-08-27T22:58:16Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49822 conn_id=21
+[2026-08-27T22:58:16Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49826 conn_id=22
+[2026-08-27T22:58:17Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2026-08-27T22:58:17Z INFO  sequencer_core] Validated transaction with hash 56307321ced1a9b6050bdb0c14c93498141211bdc66431f41f9b7be4b17e4f2c, including it in block
+[2m2026-08-27T22:58:17.590935Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.818623ms
+[2026-08-27T22:58:17Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
+[2m2026-08-27T22:58:17.652527Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.094207ms
+[2026-08-27T22:58:17Z INFO  sequencer_service] Block with id 66 created
+[2026-08-27T22:58:17Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49840 conn_id=23
+[2026-08-27T22:58:17Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49846 conn_id=24
+[2026-08-27T22:58:18Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49848 conn_id=25
+[2026-08-27T22:58:18Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:18.777953Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.810095ms
+[2m2026-08-27T22:58:18.823061Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.60727ms
+[2026-08-27T22:58:18Z INFO  sequencer_core] Validated transaction with hash 41a0ba11c171bbd6d47e856095485f0927a6e4818b936db75e7d48b264e502fe, including it in block
+[2m2026-08-27T22:58:18.904786Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.155099ms
+[2m2026-08-27T22:58:18.965098Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.218258ms
+[2026-08-27T22:58:18Z INFO  sequencer_core] Validated transaction with hash fd37efb3b7a5b872c4113cb80e0f6ca59f8fb3305740c20301599024062ba4e3, including it in block
+[2m2026-08-27T22:58:19.004840Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.095473ms
+[2026-08-27T22:58:19Z INFO  sequencer_core] Created block with 3 transactions in 0 seconds
+[2m2026-08-27T22:58:19.124697Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.916954ms
+[2m2026-08-27T22:58:19.168497Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 4.890377ms
+[2m2026-08-27T22:58:19.254761Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.389917ms
+[2m2026-08-27T22:58:19.295351Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.078356ms
+[2m2026-08-27T22:58:19.332127Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.202389ms
+[2026-08-27T22:58:19Z INFO  sequencer_service] Block with id 67 created
+[2026-08-27T22:58:19Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49854 conn_id=26
+[2026-08-27T22:58:19Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49868 conn_id=27
+[2026-08-27T22:58:19Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:49876 conn_id=28
+[2026-08-27T22:58:20Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:20.407961Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.978246ms
+[2026-08-27T22:58:20Z INFO  sequencer_core] Validated transaction with hash 750c0023c6356e8171ed8584cc1c1d8b9dc6392ffb9b891a7d67914ecb3b1c1c, including it in block
+[2m2026-08-27T22:58:20.472873Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.264392ms
+[2026-08-27T22:58:20Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
+[2m2026-08-27T22:58:20.510909Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.132616ms
+[2m2026-08-27T22:58:20.609553Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.92485ms
+[2026-08-27T22:58:20Z INFO  sequencer_service] Block with id 68 created
+[2026-08-27T22:58:21Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:21.691852Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.468999ms
+[2026-08-27T22:58:21Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:21.734853Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.537929ms
+[2026-08-27T22:58:21Z INFO  sequencer_service] Block with id 69 created
+[2026-08-27T22:58:22Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:22.864127Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 49.768317ms
+[2026-08-27T22:58:22Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:22.925365Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.067689ms
+[2026-08-27T22:58:22Z INFO  sequencer_service] Block with id 70 created
+[2026-08-27T22:58:23Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:24.023334Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.144909ms
+[2026-08-27T22:58:24Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:24.078050Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.842778ms
+[2026-08-27T22:58:24Z INFO  sequencer_service] Block with id 71 created
+[2026-08-27T22:58:25Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:25.147002Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.406571ms
+[2026-08-27T22:58:25Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:25.218825Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 13.688488ms
+[2026-08-27T22:58:25Z INFO  sequencer_service] Block with id 72 created
+[2026-08-27T22:58:26Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:26.288130Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.199477ms
+[2026-08-27T22:58:26Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:26.326879Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.058302ms
+[2026-08-27T22:58:26Z INFO  sequencer_service] Block with id 73 created
+[2026-08-27T22:58:27Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:27.398097Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.164008ms
+[2026-08-27T22:58:27Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:27.457811Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.56151ms
+[2026-08-27T22:58:27Z INFO  sequencer_service] Block with id 74 created
+[2026-08-27T22:58:28Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:28.541291Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.081813ms
+[2026-08-27T22:58:28Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:28.605283Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.796784ms
+[2026-08-27T22:58:28Z INFO  sequencer_service] Block with id 75 created
+[2026-08-27T22:58:29Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:29.695987Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.975193ms
+[2026-08-27T22:58:29Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:29.761883Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.875913ms
+[2026-08-27T22:58:29Z INFO  sequencer_service] Block with id 76 created
+[2026-08-27T22:58:30Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:30.884011Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 51.97342ms
+[2026-08-27T22:58:30Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:30.939238Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.533787ms
+[2026-08-27T22:58:30Z INFO  sequencer_service] Block with id 77 created
+[2026-08-27T22:58:31Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:32.040468Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.085805ms
+[2026-08-27T22:58:32Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:32.084093Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.33556ms
+[2026-08-27T22:58:32Z INFO  sequencer_service] Block with id 78 created
+[2026-08-27T22:58:33Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:33.142305Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.276678ms
+[2026-08-27T22:58:33Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:33.181612Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.155142ms
+[2026-08-27T22:58:33Z INFO  sequencer_service] Block with id 79 created
+[2026-08-27T22:58:34Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:34.250409Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.259518ms
+[2026-08-27T22:58:34Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:34.289215Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.166548ms
+[2026-08-27T22:58:34Z INFO  sequencer_service] Block with id 80 created
+[2026-08-27T22:58:35Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:35.371703Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.898994ms
+[2026-08-27T22:58:35Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:35.434216Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.305721ms
+[2026-08-27T22:58:35Z INFO  sequencer_service] Block with id 81 created
+[2026-08-27T22:58:36Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:36.537785Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.333603ms
+[2026-08-27T22:58:36Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:36.584071Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.507308ms
+[2026-08-27T22:58:36Z INFO  sequencer_service] Block with id 82 created
+[2026-08-27T22:58:37Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:37.673347Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.044679ms
+[2026-08-27T22:58:37Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:37.717550Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 13.55142ms
+[2026-08-27T22:58:37Z INFO  sequencer_service] Block with id 83 created
+[2026-08-27T22:58:38Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:38.807293Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.281601ms
+[2026-08-27T22:58:38Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:38.855392Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.627185ms
+[2026-08-27T22:58:38Z INFO  sequencer_service] Block with id 84 created
+[2026-08-27T22:58:39Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:39.962025Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.683248ms
+[2026-08-27T22:58:39Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:40.004847Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.0303ms
+[2026-08-27T22:58:40Z INFO  sequencer_service] Block with id 85 created
+[2026-08-27T22:58:41Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:41.072099Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.52819ms
+[2026-08-27T22:58:41Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:41.114226Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.14098ms
+[2026-08-27T22:58:41Z INFO  sequencer_service] Block with id 86 created
+[2026-08-27T22:58:42Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:42.168244Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.337378ms
+[2026-08-27T22:58:42Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:42.208034Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.275967ms
+[2026-08-27T22:58:42Z INFO  sequencer_service] Block with id 87 created
+[2026-08-27T22:58:43Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:43.262507Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.492366ms
+[2026-08-27T22:58:43Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:43.302980Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.233417ms
+[2026-08-27T22:58:43Z INFO  sequencer_service] Block with id 88 created
+[2026-08-27T22:58:44Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:44.429697Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.048119ms
+[2026-08-27T22:58:44Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:44.497394Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.101943ms
+[2026-08-27T22:58:44Z INFO  sequencer_service] Block with id 89 created
+[2026-08-27T22:58:45Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:45.592925Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.631745ms
+[2026-08-27T22:58:45Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:45.636438Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.415853ms
+[2026-08-27T22:58:45Z INFO  sequencer_service] Block with id 90 created
+[2026-08-27T22:58:46Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:46.704983Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.972524ms
+[2026-08-27T22:58:46Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:46.780163Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.807231ms
+[2026-08-27T22:58:46Z INFO  sequencer_service] Block with id 91 created
+[2026-08-27T22:58:47Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:47.848193Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 12.382367ms
+[2026-08-27T22:58:47Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:47.902124Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 10.097322ms
+[2026-08-27T22:58:47Z INFO  sequencer_service] Block with id 92 created
+[2026-08-27T22:58:48Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:49.044293Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 11.344894ms
+[2026-08-27T22:58:49Z INFO  sequencer_core] Created block with 1 transactions in 0 seconds
+[2m2026-08-27T22:58:49.090288Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 7.58968ms
+[2026-08-27T22:58:49Z INFO  sequencer_service] Block with id 93 created
+[2026-08-27T22:58:49Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43816 conn_id=29
+[2026-08-27T22:58:49Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43830 conn_id=30
+[2026-08-27T22:58:49Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:43838 conn_id=31
+[2026-08-27T22:58:50Z INFO  sequencer_service] Our turn: collecting transactions from mempool, creating block
+[2m2026-08-27T22:58:50.239946Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 50.346523ms
+[2m2026-08-27T22:58:50.284525Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 6.561027ms
+[2026-08-27T22:58:50Z INFO  sequencer_core] Validated transaction with hash ded1cec17ea5a0a5058a00f258e78f761f26519751bd5344dead48053d4df879, including it in block
+[2m2026-08-27T22:58:50.331511Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.923034ms
+[2026-08-27T22:58:50Z INFO  sequencer_core] Created block with 2 transactions in 0 seconds
+[2m2026-08-27T22:58:50.417759Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 9.819394ms
+[2m2026-08-27T22:58:50.462815Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 5.544603ms
+[2m2026-08-27T22:58:50.513118Z[0m [32m INFO[0m [2mrisc0_zkvm::host::server::exec::executor[0m[2m:[0m execution time: 8.767471ms
+[2026-08-27T22:58:50Z INFO  sequencer_service] Block with id 94 created
+[2026-08-27T22:58:51Z INFO  jsonrpsee_server::server] connection; remote_addr=127.0.0.1:54698 conn_id=32
+[2026-08-27T22:58:51Z INFO  sequencer_service] Received SIGTERM
+[2026-08-27T22:58:51Z INFO  sequencer_service] Shutting down sequencer...
+[2026-08-27T22:58:51Z ERROR sequencer_service] An error occurred while stopping Sequencer RPC server: The server is already stopped
+[2026-08-27T22:58:51Z INFO  sequencer_service] Sequencer shutdown complete

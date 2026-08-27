@@ -54,6 +54,21 @@ trap cleanup EXIT
 die() { echo "FATAL: $*" >&2; [ -f "$D/seq.log" ] && tail -20 "$D/seq.log" >&2; exit 1; }
 w()   { RUST_LOG=error "$WALLET" "$@"; }
 
+# Direct JSON-RPC account probe (the wallet CLI's account-get can stall against a
+# fresh sequencer; checks must not depend on it).
+rpc_account() {
+  curl -sS -m 10 -X POST "http://127.0.0.1:$PORT" -H "Content-Type: application/json" \
+    -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getAccount\",\"params\":[\"$1\"]}" 2>/dev/null
+}
+# True when the account exists with a NON-ZERO program_owner (initialized).
+rpc_account_initialized() {
+  rpc_account "$1" | python3 -c "import json,sys; r=json.load(sys.stdin)[\"result\"]; sys.exit(0 if r and any(r[\"program_owner\"]) else 1)" 2>/dev/null
+}
+# True when the account has a non-zero balance.
+rpc_account_funded() {
+  rpc_account "$1" | python3 -c "import json,sys; r=json.load(sys.stdin)[\"result\"]; sys.exit(0 if r and r[\"balance\"]>0 else 1)" 2>/dev/null
+}
+
 status_json() { RUST_LOG=error "$BIN/run_read_status" 2>/dev/null | grep -o '{.*}' | tail -1; }
 count_now()   { status_json | grep -o '"approval_count":[0-9]*' | grep -o '[0-9]*$'; }
 ready_now()   { status_json | grep -o '"ready":[a-z]*' | grep -o 'true\|false'; }
@@ -69,7 +84,7 @@ wait_count() {
 }
 wait_treasury_init() {
   for _ in $(seq 1 40); do
-    w account get --account-id "Public/$TREASURY_ID" 2>/dev/null | grep -qi "authenticated transfer" && return 0
+    rpc_account_initialized "$TREASURY_ID" && return 0
     sleep 1
   done
   die "treasury PDA never initialized under authenticated_transfer"
@@ -85,8 +100,16 @@ c["home"] = home
 c["block_create_timeout"] = "1s"
 json.dump(c, open(dst, "w"), indent=2)
 PY
+# v0.2.4 wallet config schema: multi-sequencer list + client config.
 cat > "$D/wallet/wallet_config.json" <<JSON
-{"sequencer_addr":"http://127.0.0.1:$PORT","seq_poll_timeout":"30s","seq_tx_poll_max_blocks":25,"seq_poll_max_retries":25,"seq_block_poll_max_amount":300}
+{
+  "sequencers": [ { "sequencer_addr": "http://127.0.0.1:$PORT" } ],
+  "seq_poll_timeout": "30s",
+  "seq_tx_poll_max_blocks": 25,
+  "seq_poll_max_retries": 25,
+  "seq_block_poll_max_amount": 300,
+  "multi_sequencer_client_config": { "distribution_limit": 1, "calibration_limit": 100 }
+}
 JSON
 
 # ---- 1. build runners ----
@@ -137,8 +160,8 @@ M1_VID="$(  printf '%s\n' "$SETUP_OUT" | sed -n 's/^MEMBER1_VOTING_ID=//p' | hea
 [ -n "$FUNDER_ID" ] && [ -n "$M0_VID" ] && [ -n "$M1_VID" ] || die "could not parse setup ids"
 
 # funder must be genesis-funded + directly spendable (testnet_initial_state public acc 0 = 10000)
-w account get --account-id "Public/$FUNDER_ID" 2>/dev/null | grep -qi "authenticated transfer" \
-  || die "funder $FUNDER_ID not funded/spendable (sequencer built with --features testnet?)"
+rpc_account_funded "$FUNDER_ID" \
+  || die "funder $FUNDER_ID not funded (sequencer genesis missing testnet_initial_state account 0?)"
 echo "funder $FUNDER_ID is funded + spendable"
 
 # ---- 4. deploy -> enroll -> create_proposal ----
