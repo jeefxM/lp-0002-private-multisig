@@ -6,7 +6,7 @@
 set -uo pipefail
 
 R="${LP0002_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
-export LEE_WALLET_HOME_DIR=$R/.testnet-demo/wallet
+export LEE_WALLET_HOME_DIR="${LEE_WALLET_HOME_DIR:-$R/.testnet-v024/wallet}"
 unset RISC0_DEV_MODE   # REAL proofs
 cd "$R" || exit 1
 

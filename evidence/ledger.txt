@@ -1,0 +1,42 @@
+# LP-0002 v0.2.4 live-testnet 2-of-3 ledger — run of 2026-08-27 (UTC)
+# program id (base58): 4tvD5XPFc4ofgN3YV4ymZ1nWqn3iUwB9tucesYzBKJB9
+# (decimal words: [1155063609, 1918607948, 1043343914, 2266441241, 1831314946, 53341822, 1565811176, 2148869898])
+
+# deploy
+tx 047668a5ba871873645c2ff412414dfbe79526e1c205ccf5dd0baa474e865df1
+
+# funder (pinata-funded)
+account 6iArKUXxhUJqS7kCaPNhwMWt3ro71PDyBj7jwAyE2VQV
+
+# enrolls (3 leaves)
+tx 3e66651f1b5f41b95838b303d150a57f4d9e36133f50090dec469db1a577ff98
+tx 2c58c3625e69a721828db5b402744d83c6da0a7a38463c5e8635113a3a9aaa00
+tx d4622851c6267febe84f671c9667d9d12c7d168fd5ac23aaa94a3ee986c36127
+
+# members registry
+account CnCcqFBGeiigwxV6a8jJEiSorMzdDG8ivXpvEqXjMbnw
+
+# create_proposal
+tx 8de1d41b5f855644c537d6d42bf42d1777b0c1eb632eece379283d8ae0960b42
+account Hf84MVjYamaaCxmBpziYEow6JNuLH7SBNdzLwArf23vu
+
+# shielded voter funding (member 0, member 1)
+tx 22431df6ff8abfb7a822f31ac73c161f5e1d3fdffd76ae18ce0ba134b8278a82
+tx 73edc29fde2d969baed2d742e4b7275a950c89cf5878a4154e23b2597bd2a83f
+
+
+# anonymous approvals (real STARKs; nullifiers a139609a…, 0e491ba7…)
+tx f86ffd5dc3100583251587a0609a3ad765da6e726e144301496b00542768cb22
+tx 2ae72df740b0444b959275c22aea6a2f3c16f72a911b349922a9bb6885e5c25b
+
+# init treasury + recipient PDAs
+tx 41a0ba11c171bbd6d47e856095485f0927a6e4818b936db75e7d48b264e502fe
+tx fd37efb3b7a5b872c4113cb80e0f6ca59f8fb3305740c20301599024062ba4e3
+account FcxK5rKuiHzAgZ4jwtcuTgnCLagKZe6B6VkzCeiViJ3u
+account HQQR3sfZx5VzswqVDsx2YhvRrNGqPYcVh3YSJF3KJXQy
+
+# fund treasury (100)
+tx 67c39319a1912057a8e25d47b2690f65dc26e7ef5d0845780731d5ccfd528f01
+
+# execute (threshold 2) — treasury 100 -> 0, recipient 0 -> 100
+tx ded1cec17ea5a0a5058a00f258e78f761f26519751bd5344dead48053d4df879

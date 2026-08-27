@@ -1,0 +1,41 @@
+==============================================================
+LP-0002 v0.2.4 LIVE TESTNET 2-of-3  (REAL STARK)  start 13:24:21
+funder=6iArKUXxhUJqS7kCaPNhwMWt3ro71PDyBj7jwAyE2VQV  dust=5  treasury=100
+==============================================================
+funder balance:
+Account owned by authenticated transfer program
+{"balance":10150,"program_owner":"J8otq1J8Zpjhhpp6FPfhFtWKTCkLjthdk12cwHiMZCTB","data":"","nonce":0}
+Stored statistics at /root/lez-rc5/.testnet-v024/wallet/statistics.json
+### STEP 0: setup voters (import member 0,1 keychains) 13:24:22
+MEMBER0_VOTING_ID=8aayuDao8UeK6twM3VmjgUaXLSByVxAHHwFbTVpnBG19
+MEMBER0_NPK=9e4280ca2d6809d3fcde49858f1908163eff11167bcdf17c33e20549cd947064
+MEMBER1_VOTING_ID=9nMbr8CQJNFhghASeySLZfhYCyV6eBC61XfFWCXeciz8
+MEMBER1_NPK=ccc0eaf33706aad11641bf85b6ef2cc1723513d45f330c1bceff8dfac6638a39
+Stored persistent accounts at /root/lez-rc5/.testnet-v024/wallet/storage.json
+FUNDER_ID=6iArKUXxhUJqS7kCaPNhwMWt3ro71PDyBj7jwAyE2VQV
+M0_VID=8aayuDao8UeK6twM3VmjgUaXLSByVxAHHwFbTVpnBG19
+M1_VID=9nMbr8CQJNFhghASeySLZfhYCyV6eBC61XfFWCXeciz8
+### STEP 1: enroll x3 13:24:22
+registry account (signer-owned): CnCcqFBGeiigwxV6a8jJEiSorMzdDG8ivXpvEqXjMbnw
+target member_root after all enrolls: fe674331798c881a980e994d9b58d95d43c30840b8da0f02b3d2b363be90f662
+enrolling leaf 0: 7bbc77fe2ddbc4540ec187865ac2d747955d65206f8992ace457776be638cf3d
+enroll 0 tx_hash: 3e66651f1b5f41b95838b303d150a57f4d9e36133f50090dec469db1a577ff98
+enrolling leaf 1: e897eca8215e249c5fe68e48752f104d066330dade42f48fe1a1391cece66b82
+enroll 1 tx_hash: 2c58c3625e69a721828db5b402744d83c6da0a7a38463c5e8635113a3a9aaa00
+enrolling leaf 2: d9ed464c6ed3729350d0dbb79a32ba5b32e759fb2f01f0a93481380c9934b780
+enroll 2 tx_hash: d4622851c6267febe84f671c9667d9d12c7d168fd5ac23aaa94a3ee986c36127
+waiting ~4 min for 3 enroll txs to land (nonce 0,1,2)...
+### STEP 2: create_proposal 13:28:22
+proposal account: Hf84MVjYamaaCxmBpziYEow6JNuLH7SBNdzLwArf23vu
+create_proposal tx_hash: 8de1d41b5f855644c537d6d42bf42d1777b0c1eb632eece379283d8ae0960b42
+proposal READY (approval_count=0) 13:28:53
+### STEP 3: fund member voting accounts 13:28:53
+-- fund member 0 (5) -> 8aayuDao8UeK6twM3VmjgUaXLSByVxAHHwFbTVpnBG19
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 131072, user_cycles: 82233, paging_cycles: 33287, reserved_cycles: 15552 } prove_secs=116.480
+Error: Failed to build transaction: Circuit proving error
+
+Caused by:
+    Circuit proving error
+FATAL: fund member 0 failed
+=== RUN FAILED ===
+RUN_EXIT=1

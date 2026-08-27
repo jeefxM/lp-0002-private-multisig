@@ -1,0 +1,1 @@
+{"captured_at":"2026-08-27T17:06:51Z","request":{"jsonrpc":"2.0","id":16,"method":"getAccount","params":["HQQR3sfZx5VzswqVDsx2YhvRrNGqPYcVh3YSJF3KJXQy"]},"response":{"jsonrpc":"2.0","id":16,"result":{"program_owner":[583309054,2344528779,3806558405,2890696795,2257354672,3978764116,2273929063,1518858078],"balance":100,"data":[],"nonce":0}}}

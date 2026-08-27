@@ -1,22 +1,22 @@
-# LP-0002 msig: Reliability & Error Codes (LEZ v0.2.0-rc5)
+# LP-0002 msig: Reliability & Error Codes (LEZ v0.2.4)
 
 This document covers the reliability surface of the LP-0002 anonymous M-of-N
-multisig (`msig`) as ported to **Logos LEZ v0.2.0-rc5**. It is adapted from the
+multisig (`msig`) as ported to **Logos LEZ v0.2.4**. It is adapted from the
 original v0.1.2 reliability note (`/root/lez-v012/docs/lp0002-reliability.md`);
 the program logic is the same ported guest, but the chain target, program id, and
-source paths differ and have been updated here so the references match rc5.
+source paths differ and have been updated here so the references match v0.2.4.
 
 - **Target:** a **LOCAL standalone sequencer** (`sequencer_service` built with the
   `standalone` feature, `RISC0_DEV_MODE=1`). The local resume/error demos in this note run against this local sequencer,
-  but the canonical real-STARK evidence run for rc5 **did** land on
-  `testnet.lez.logos.co` (the rc5 2-of-3 proposal
+  but the canonical real-STARK evidence run **did** land on
+  `testnet.lez.logos.co` (the v0.2.4 2-of-3 proposal
   `Hf84MVjYamaaCxmBpziYEow6JNuLH7SBNdzLwArf23vu`, `approval_count=2`, executed).
-- **Program id (rc5):** `MSIG_ID` (8 × u32 LE) =
-  `[3100124547, 2797454125, 2467287583, 3014535533, 2620419628, 3253148841, 840948196, 515808628]`,
-  i.e. base58 program id `9pwpqhXCZqzBDYctvTvzPeV1qoviSAENw2utmayHgvBF` (32-byte
+- **Program id (v0.2.4):** `MSIG_ID` (8 × u32 LE) =
+  `[1155063609, 1918607948, 1043343914, 2266441241, 1831314946, 53341822, 1565811176, 2148869898]`,
+  i.e. base58 program id `4tvD5XPFc4ofgN3YV4ymZ1nWqn3iUwB9tucesYzBKJB9` (32-byte
   hex `8325c8b82dc3bda61fd20f936d29aeb32c6e309ca91ce7c1e4d91f32749dbe1e`).
-- **Guest source:** `test_program_methods/guest/src/bin/msig.rs` (line numbers below
-  are verified against this rc5 file).
+- **Guest source:** `lee/state_machine/test_methods/guest/src/bin/msig.rs` (line numbers below
+  are verified against this v0.2.4 file).
 
 It covers:
 
@@ -42,7 +42,7 @@ among public members, not hidden or anonymous membership. It is also why the
 approve-side rejects below (LP01–LP04) can only say "you are not a member" or "you
 already voted" without revealing who you are.
 
-**rc5 addition — review item #6 (live-account binding).** The rc5 approve guest
+**Review item #6 (live-account binding).** The approve guest
 additionally binds each anonymous approval to the member's **live, funded shielded
 voting account** keyed by the same `secret` as the membership leaf (two extra
 asserts, LP01a / LP01b below). This prevents an approval that does not ride a real,
@@ -70,24 +70,24 @@ lives in the chain's apply layer:
    state-transition validation rejects it (unauthorized claim, unauthorized balance
    decrease, stale pre-state, etc.).
 
-### Program-level failures (guest) — `test_program_methods/guest/src/bin/msig.rs`
+### Program-level failures (guest) — `lee/state_machine/test_methods/guest/src/bin/msig.rs`
 
-| Code | Trigger | Source (rc5 line) | Mechanism | Member-facing meaning |
+| Code | Trigger | Source (v0.2.4 line) | Mechanism | Member-facing meaning |
 |------|---------|-------------------|-----------|-----------------------|
-| LP01 | Approve: proposal `data` shorter than `PROPOSAL_HEADER_LEN` (68 B) | `msig.rs:88` `assert!(data.len() >= PROPOSAL_HEADER_LEN, "proposal state header too short")` | assert panic (prove fails) | The ProposalState you referenced is not a valid, created proposal. Create the proposal first. |
-| LP02 | Approve: supplied `proposal_id` != id frozen in the ProposalState | `msig.rs:93` `assert_eq!(proposal_id, proposal_id_state, "proposal id mismatch")` | assert panic (prove fails) | You are approving the wrong proposal id; it does not match the live proposal. |
-| LP01a | Approve: rider account id != `for_regular_private_account(npk(secret), VOTE_IDENTIFIER)` (review item #6) | `msig.rs:98` `assert_eq!(rider.account_id, expected_rider, "rider must be the member's account keyed by the voting secret")` | assert panic (prove fails) | The account you rode the approval on is not your voting account derived from your secret. |
-| LP01b | Approve: rider account is `Account::default()` (fresh/uninitialized) (review item #6) | `msig.rs:102` `assert_ne!(rider.account, Account::default(), "rider must be a LIVE funded account, not a fresh init")` | assert panic (prove fails) | Your voting account is not live/funded yet. Fund it (a shielded transfer) before approving. |
-| LP03 | Approve: approver's leaf `H(secret)` is not in the proposal's frozen `member_root` | `msig.rs:110` `assert_eq!(root_from_path(leaf, &merkle_path), member_root, "approver is not an enrolled member")` | assert panic (prove fails) | You are not an enrolled member of this proposal's member set (or your Merkle path is wrong). |
-| LP04 | Approve: this secret's proposal-bound nullifier is already recorded | `msig.rs:125` `assert!(!nullifiers.contains(&nullifier), "approval nullifier already recorded (double vote)")` | assert panic (prove fails) | You have already approved this proposal. One approval per member per proposal. |
-| LP05 | Execute: proposal `data` shorter than `PROPOSAL_HEADER_LEN` | `msig.rs:164` `assert!(data.len() >= PROPOSAL_HEADER_LEN, "proposal state header too short")` | assert panic (exec rejected) | The proposal account passed to execute is not a valid proposal. |
-| LP06 | Execute: `approval_count < threshold` | `msig.rs:166` `assert!(count >= threshold, "approval count below threshold")` | assert panic (exec rejected) | Not enough members have approved yet; the treasury stays locked until count >= M. |
+| LP01 | Approve: proposal `data` shorter than `PROPOSAL_HEADER_LEN` (68 B) | `msig.rs:89` `assert!(data.len() >= PROPOSAL_HEADER_LEN, "proposal state header too short")` | assert panic (prove fails) | The ProposalState you referenced is not a valid, created proposal. Create the proposal first. |
+| LP02 | Approve: supplied `proposal_id` != id frozen in the ProposalState | `msig.rs:94` `assert_eq!(proposal_id, proposal_id_state, "proposal id mismatch")` | assert panic (prove fails) | You are approving the wrong proposal id; it does not match the live proposal. |
+| LP01a | Approve: rider account id != `for_regular_private_account(npk(secret), vpk, VOTE_IDENTIFIER)` (the member's ML-KEM vpk travels in the private witness; ids are vpk-bound since v0.2.1) (review item #6) | `msig.rs:102` `assert_eq!(rider.account_id, expected_rider, "rider must be the member's account keyed by the voting secret")` | assert panic (prove fails) | The account you rode the approval on is not your voting account derived from your secret. |
+| LP01b | Approve: rider account is `Account::default()` (fresh/uninitialized) (review item #6) | `msig.rs:106` `assert_ne!(rider.account, Account::default(), "rider must be a LIVE funded account, not a fresh init")` | assert panic (prove fails) | Your voting account is not live/funded yet. Fund it (a shielded transfer) before approving. |
+| LP03 | Approve: approver's leaf `H(secret)` is not in the proposal's frozen `member_root` | `msig.rs:117` `assert_eq!(root_from_path(leaf, &merkle_path), member_root, "approver is not an enrolled member")` | assert panic (prove fails) | You are not an enrolled member of this proposal's member set (or your Merkle path is wrong). |
+| LP04 | Approve: this secret's proposal-bound nullifier is already recorded | `msig.rs:131` `assert!(!nullifiers.contains(&nullifier), "approval nullifier already recorded (double vote)")` | assert panic (prove fails) | You have already approved this proposal. One approval per member per proposal. |
+| LP05 | Execute: proposal `data` shorter than `PROPOSAL_HEADER_LEN` | `msig.rs:168` `assert!(data.len() >= PROPOSAL_HEADER_LEN, "proposal state header too short")` | assert panic (exec rejected) | The proposal account passed to execute is not a valid proposal. |
+| LP06 | Execute: `approval_count < threshold` | `msig.rs:170` `assert!(count >= threshold, "approval count below threshold")` | assert panic (exec rejected) | Not enough members have approved yet; the treasury stays locked until count >= M. |
 | LP07 | CreateProposal: claimed account's data would exceed the data limit | `msig.rs:38` `.expect("proposal state fits into data limit")` | expect panic | Internal sizing invariant; indicates a corrupted/oversized input account. |
 | LP08 | Enroll: a stored registry leaf is truncated when re-read | `msig.rs:54` `.expect("registry leaf truncated")` | expect panic | The MembersRegistry account data is malformed (truncated leaf). |
 | LP09 | Enroll: recomputed registry data would exceed the data limit | `msig.rs:69` `.expect("registry should fit into data limit")` | expect panic | Too many members for the account data limit (registry full / oversized). |
-| LP10 | Approve: a stored nullifier is truncated when re-read | `msig.rs:122` `.expect("nullifier set truncated")` | expect panic | The ProposalState nullifier set is malformed (truncated). |
-| LP11 | Approve: recomputed proposal data would exceed the data limit | `msig.rs:143` `.expect("proposal state should fit into data limit")` | expect panic | Too many recorded approvals for the data limit (proposal full). |
-| LP12 | Any instruction: wrong number of pre-state accounts | `msig.rs:233/243/249/258/271/275/288` `... else { return; }` | silent no-op (no ProgramOutput) | The transaction was built with the wrong account list; it does nothing and applies no state change. A client/runner construction bug, not a member action. |
+| LP10 | Approve: a stored nullifier is truncated when re-read | `msig.rs:126` `.expect("nullifier set truncated")` | expect panic | The ProposalState nullifier set is malformed (truncated). |
+| LP11 | Approve: recomputed proposal data would exceed the data limit | `msig.rs:147` `.expect("proposal state should fit into data limit")` | expect panic | Too many recorded approvals for the data limit (proposal full). |
+| LP12 | Any instruction: wrong number of pre-state accounts | `msig.rs:236/247/253/262/279` `... else { return; }` | silent no-op (no ProgramOutput) | The transaction was built with the wrong account list; it does nothing and applies no state change. A client/runner construction bug, not a member action. |
 
 Note on LP01–LP04 (and LP01a/LP01b) mechanics: because `Approve` is a privacy (ZK)
 transaction, these asserts fire **inside the guest during local proof generation**,
@@ -116,16 +116,16 @@ There are **two distinct failure surfaces** for an approval.
 
 ### Surface (a): local proof fails to generate
 
-Every approve-side reject (LP01–LP04, plus the rc5 rider asserts LP01a/LP01b) is a
+Every approve-side reject (LP01–LP04, plus the rider asserts LP01a/LP01b) is a
 guest `assert!`/`assert_eq!` that panics **inside the inner program prove**, before
 any submission. The prover panic is mapped to a `ProgramProveFailed`-class error
-(rc5: in `lez/wallet/src/lib.rs`, the `execute_and_prove` path), surfaced as an
+(in `lez/wallet/src/lib.rs`, the `execute_and_prove` path), surfaced as an
 opaque RISC0 panic dump — e.g. a non-member approval prints
 `assertion failed: approver is not an enrolled member` and a double vote prints
 `approval nullifier already recorded (double vote)`, both buried in a prover
 backtrace a member cannot reasonably read.
 
-**Recommended (not yet in rc5 `run_approve`):** wrap the prove failure in a clear,
+**Recommended (not yet in `run_approve`):** wrap the prove failure in a clear,
 member-facing message that enumerates the only conditions that can reject an
 approve — (1) you are not an enrolled member of this proposal's frozen member set,
 (2) you have already approved (your proposal-bound vote nullifier is already
@@ -133,7 +133,7 @@ recorded; no double votes), (3) your voting-account rider is not your live funde
 account keyed by your secret, or (4) the proposal id / member root you supplied does
 not match the live ProposalState — then attach the raw prover error for operators.
 Because nothing is submitted on a failed prove, re-running after fixing the input is
-always safe. (The v0.1.2 note implemented this wrapper in its `run_approve`; the rc5
+always safe. (The v0.1.2 note implemented this wrapper in its `run_approve`; the current
 `run_approve` does not yet carry it, so it is documented here as a recommendation
 rather than a claim.)
 
@@ -156,7 +156,7 @@ retry" rather than treating the returned `tx_hash` as success. `run_read_status`
 ## REL-2: Partial-approval resumability — DEMONSTRATED
 
 Partial-approval resumability is **partly durable and partly not**, and the line
-between them is the important reliability fact. As of rc5 the durable half is no
+between them is the important reliability fact. On this rev the durable half is no
 longer just asserted — it is **demonstrated end-to-end** by
 `scripts/lp0002-resume.sh`.
 

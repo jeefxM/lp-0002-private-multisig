@@ -1,17 +1,17 @@
 # LP-0002 msig: Benchmarks (compute, cost, performance)
 
 This document reports the performance and cost profile of the LP-0002 anonymous
-M-of-N multisig (`msig`) program on the Logos LEZ v0.2.0-rc5 testnet rev
-(`testnet.lez.logos.co`, program `9pwpqhXCZqzBDYctvTvzPeV1qoviSAENw2utmayHgvBF`).
+M-of-N multisig (`msig`) program on the Logos LEZ v0.2.4 testnet rev
+(`testnet.lez.logos.co`, program `4tvD5XPFc4ofgN3YV4ymZ1nWqn3iUwB9tucesYzBKJB9`).
 
 It is written to be honest about what this rev does and does not expose. The
-headline fact: **this Logos LEZ v0.2.0-rc5 rev has no compute-unit / gas / fee field**, so
+headline fact: **this Logos LEZ v0.2.4 rev has no compute-unit / gas / fee field**, so
 there is no native "CU" or "gas" number to report. The sections below document
 that absence with file references, then give the defensible proxy metrics that
 actually characterize the cost of the privacy approve (the one expensive
 operation) versus the cheap public operations.
 
-Measurement host (the "build box"): AMD EPYC-Genoa, 16 cores, 32 GiB RAM. All
+Measurement host: Hetzner Cloud 8-vCPU (AMD), 16 GB RAM. All
 local timing numbers below were observed on this host. Timing is sensitive to
 CPU, core count, and load; treat the figures as order-of-magnitude, not a spec.
 
@@ -92,21 +92,28 @@ Everything below profiles `Approve`.
 The defensible proxy for "how expensive is an anonymous approval" is the
 wall-clock time to generate the real proof.
 
-**Real-proof approve time: ~180 s** to generate one DEV_MODE=0 STARK on the
-build box (AMD EPYC-Genoa, 16 cores). This is a local timing observation, not a
-chain-reported figure.
+**Real-proof approve time: ~30 min wall** to generate one DEV_MODE=0 STARK on
+the measurement host (8-vCPU Hetzner Cloud, 16 GB RAM): inner msig guest
+~4.6 min + outer privacy circuit ~24 min. This is a local timing observation,
+not a chain-reported figure. It is markedly slower than the rc5-era ~30 min
+because the v0.2.4 privacy circuit is ~4x larger (4.7–5.2M vs 1,048,576 total
+cycles — viewing-key/ciphertext binding and the ML-KEM-768 account-id
+commitment landed between rc5 and v0.2.4); the msig guest itself also grew
+(1,048,576 vs 262,144 total cycles) since the review-item-#6 rider check now
+re-derives a vpk-bound account id in-guest. Note the prover also needs
+**>6 GB of RAM** for the outer circuit on this rev — it OOMs on a 4 GB host.
 
 This is corroborated by the canonical on-chain 2-of-3 run (proposal `Hf84MVjY`,
 member_root `fe674331`), each approve of which required a local DEV_MODE=0 prove
 before the resulting tx landed:
 
-- approve #1 (member 0) `2614f4a9`, ~180 s, count 0 -> 1.
-- approve #2 (member 1) `09f00672`, ~180 s, count 1 -> 2.
+- approve #1 (member 0) `f86ffd5d`, inner 278.4 s + outer 1542.7 s, count 0 -> 1.
+- approve #2 (member 1) `2ae72df7`, inner 271.8 s + outer 1677.9 s, count 1 -> 2.
 
-The two threshold approvals are separate ~180 s proves by two different members;
+The two threshold approvals are separate ~30 min proves by two different members;
 their vote nullifiers (`a139609a`, `0e491ba7`) are distinct, and the proposal
 state stores only `root + id + count + opaque nullifiers`, no member identity. So
-the per-approval cost scales linearly in the number of approvers (one ~180 s prove
+the per-approval cost scales linearly in the number of approvers (one ~30 min prove
 each), and that linear cost is **serial, not parallel**: each approve commits the
 full live ProposalState (count + nullifier set) into its proof, and apply rejects
 a proof built against a now-stale snapshot (see reliability doc LP23,
@@ -115,10 +122,10 @@ one approval per proposal-state-version can land, a proof built before another
 approval landed must be re-run against the updated state. In the canonical 2-of-3
 run the two approvals landed sequentially (count 0 -> 1, then count 1 -> 2) with a
 finality gate enforced between them; approve #2 was necessarily proved against the
-count=1 state. Effective throughput is one ~180 s approval at a time.
+count=1 state. Effective throughput is one ~30 min approval at a time.
 
 For reference, the build-only path (no prove) and the public ops are sub-second;
-the ~180 s is entirely the STARK.
+the ~30 min is entirely the STARK.
 
 ---
 
@@ -127,14 +134,14 @@ the ~180 s is entirely the STARK.
 The second defensible proxy is the proof artifact size.
 
 The on-chain approve receipt deserializes to `InnerReceipt::Succinct`, a real
-succinct STARK, **~224 KB**. This is categorically not a `Fake` receipt (a
+succinct STARK, **~261 KB**. This is categorically not a `Fake` receipt (a
 dev-mode placeholder), and it is the object the privacy tx carries and the
 sequencer folds in. The succinct receipt size is essentially constant in the
 member-set size at this depth (the circuit is fixed depth-5, 32 member slots), so
-the ~224 KB does not grow with the number of enrolled members.
+the ~261 KB does not grow with the number of enrolled members.
 
 Block-size contrast (qualitative, since no byte-cost field exists): the
-`Approve` privacy transaction carries this ~224 KB succinct proof plus the
+`Approve` privacy transaction carries this ~261 KB succinct proof plus the
 private rider's commitment/nullifier/ciphertext, whereas the public `Execute` tx
 (`2354ebbd` in the 2-of-3 run) carries only an
 instruction (`Execute { threshold, seed }`), an account-id list, and no proof,
@@ -143,7 +150,7 @@ contributor in the whole flow; every other op is a small public message.
 
 ---
 
-## 5. RISC0 cycle count for the approve guest: measured (live rc5 DEV_MODE=0)
+## 5. RISC0 cycle count for the approve guest: measured (live v0.2.4 DEV_MODE=0)
 
 The RISC0 cycle count (total / user cycles, segment count) of the `approve` guest
 execution is the natural compute proxy, and the live rc5 DEV_MODE=0 run measured
@@ -152,16 +159,16 @@ it directly. The proving harness emits `MEASURE_INNER_GUEST` and
 for both threshold approves:
 
 1. **Inner approve guest** (the in-guest Merkle-membership check + proposal-bound
-   nullifier derivation): **262,144 total cycles**, **197,041-209,217 user cycles**
+   nullifier derivation): **1,048,576 total cycles**, **~673,043 user cycles**
    across the two approves, **1 segment**, **~30 s** to prove.
 2. **Outer succinct circuit** (the recursion/wrap that yields the on-chain
-   `InnerReceipt::Succinct`): **1,048,576 total cycles**, **~151 s** to prove.
+   `InnerReceipt::Succinct`): **4,718,592–5,242,880 total cycles (5 segments; grows with the proposal's nullifier set)**, **~26–28 min** to prove.
 
-Summed, those two stages are the **~180 s** wall per DEV_MODE=0 approve reported in
+Summed, those two stages are the **~30 min** wall per DEV_MODE=0 approve reported in
 Sections 3 and 7: the inner guest is the cheap part and the outer succinct wrap
 dominates. This rev still exposes no cycle count on-chain or in the wallet, so the
 figures above come from instrumenting the prove run, not from a chain-reported
-field. The counts are stable across both approves (262,144 inner / 1,048,576 outer
+field. The counts are stable across both approves (1,048,576 inner / 4.7–5.2M outer
 each), consistent with the fixed depth-5 circuit not varying with which member
 proves.
 
@@ -190,14 +197,14 @@ chained call per op, well within that bound.
 | Metric | Value | Source / caveat |
 |--------|-------|-----------------|
 | CU / gas / fee per tx | **none exists** | `common/src/transaction.rs`, wallet chain/account CLI, verified absent |
-| Approve real-proof time | ~180 s | live DEV_MODE=0 on AMD EPYC-Genoa, 16c; on-chain approves 2614f4a9 / 09f00672 |
-| Approve receipt size | ~224 KB | on-chain receipt deserializes to `InnerReceipt::Succinct`; constant in member-set size at depth-5 |
-| Approve cost scaling | linear, one ~180 s prove per approver; serialized through on-chain state (one approval per state-version lands) | 2-of-3 run = two distinct-member proves landing sequentially with a finality gate between them |
-| Public-op cost (enroll/create/init/execute/fund) | sub-second RISC-V exec, no fee, no proof | Logos LEZ v0.2.0-rc5 public-tx path |
-| Approve guest RISC0 cycle count | inner guest 262,144 total / 197,041-209,217 user, 1 segment; outer circuit 1,048,576 total | measured on live rc5 DEV_MODE=0 run (`.testnet-demo/run.log`, MEASURE_INNER_GUEST / MEASURE_OUTER_CIRCUIT) |
+| Approve real-proof time | ~30 min wall (inner ~4.6 min + outer ~24 min) | live DEV_MODE=0 on Hetzner 8-vCPU/16 GB; prover needs >6 GB RAM for the outer circuit |
+| Approve receipt size | ~261 KB | on-chain receipt deserializes to `InnerReceipt::Succinct`; constant in member-set size at depth-5 |
+| Approve cost scaling | linear, one ~30 min prove per approver; serialized through on-chain state (one approval per state-version lands) | 2-of-3 run = two distinct-member proves landing sequentially with a finality gate between them |
+| Public-op cost (enroll/create/init/execute/fund) | sub-second RISC-V exec, no fee, no proof | Logos LEZ v0.2.4 public-tx path |
+| Approve guest RISC0 cycle count | inner guest 1,048,576 total / ~673,043 user, 1 segment; outer circuit 4,718,592–5,242,880 total (5 segments) | measured on live v0.2.4 DEV_MODE=0 run (MEASURE_INNER_GUEST / MEASURE_OUTER_CIRCUIT lines in the run log; raw RPC snapshots in `evidence/`) |
 
 Bottom line: the only expensive thing in an LP-0002 multisig is generating each
-member's anonymous-approval STARK (~180 s, ~224 KB, one per approver), and those
+member's anonymous-approval STARK (~30 min, ~261 KB, one per approver), and those
 approvals are serialized through the proposal's on-chain state, one lands per
 state-version, the next is proved against the updated count. Everything else is a
 sub-second, fee-free public transaction. There is no gas or compute-unit price to
