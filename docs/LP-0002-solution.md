@@ -434,12 +434,15 @@ The pieces are designed to be reused independently of the demo fixture.
   multi-variant `.lgx`** (`darwin-arm64` + `linux-amd64` + `linux-arm64`, Ed25519-signed) at
   <https://github.com/jeefxM/logos-lp0002-msig-module/releases/latest> (source repo
   `jeefxM/logos-lp0002-msig-module`) — installable via Basecamp -> Package Manager -> Install from
-  file. It loads in Basecamp's
-  host (plugin-load verified headlessly) and drives a real anonymous vote through
-  the GUI over the same client path as the CLI runners: the sidecar spawns
-  `run_approve_secret`, which generates a real STARK at `RISC0_DEV_MODE=0` and
-  submits the vote (demonstrated in the demo video). Automated coverage is the
-  `RISC0_DEV_MODE=1` sidecar smoke test plus the headless plugin load.
+  file. **Provenance, stated plainly:** the module was built, Ed25519-signed,
+  plugin-load-verified, and demonstrated driving a real anonymous vote (sidecar
+  spawns `run_approve_secret` -> real `RISC0_DEV_MODE=0` STARK -> vote lands; see
+  the demo video) **during the first-round rework that closed review item #5** —
+  against the LEZ/Basecamp revisions current at that time. The hosted release is
+  unchanged since; it has **not been re-verified against the v0.2.4 runners or
+  the current Basecamp release**. The GUI is a thin shell over the same runner
+  CLI, so re-verifying it is packaging work, not protocol work — the v0.2.4
+  protocol evidence in this submission is the CLI/testnet ledger above.
 - [~] Provide a SPEL-framework IDL. `idl/lp0002-msig.idl.json` (spec spel-0.1,
   address `4tvD5XPF...`) is present and describes all five instructions of the
   deployed program. It is hand-authored JSON; full conformance to the upstream

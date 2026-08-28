@@ -156,6 +156,11 @@ a downloadable `.lgx`** at
 Package Manager -> *Install from file*. The module source is the public repo
 [`jeefxM/logos-lp0002-msig-module`](https://github.com/jeefxM/logos-lp0002-msig-module).
 
+> Provenance: the hosted `.lgx` was built, signed, and verified in the
+> first-round rework (review item #5). It has not been re-verified against the
+> v0.2.4 runners or the current Basecamp release; the v0.2.4 protocol evidence
+> is the CLI + live-testnet ledger in this repo.
+
 ## Deployed program
 
 - Network: `testnet.lez.logos.co`
