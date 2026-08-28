@@ -67,8 +67,27 @@ curl -L https://risczero.com/install | bash
 rzup install
 ```
 
-The full upstream system dependency list (build-essential, clang, libssl, pkg-config) is in
-the main [`README.md`](README.md) under "Install dependencies".
+System packages (Debian/Ubuntu — these are the ones a clean box actually needs;
+verified by building this repo from a fresh clone on a stock Ubuntu 24.04 host):
+
+```sh
+sudo apt-get install -y build-essential pkg-config libssl-dev \
+                        libclang-dev \    # bindgen -> RocksDB bindings (sequencer)
+                        libpcsclite-dev \ # keycard wallet support
+                        curl python3       # used by the demo scripts' RPC probes
+```
+
+`libclang-dev` and `libpcsclite-dev` are easy to miss: without them the workspace
+builds *most* crates and then fails late, on the sequencer, with
+`Unable to find libclang` or a `pcsclite` pkg-config error. The broader upstream
+dependency list is in the main [`README.md`](README.md) under "Install dependencies".
+
+**Resources.** Building the workspace needs ~15 GB of disk. Generating a real
+(`RISC0_DEV_MODE=0`) approve proof needs **more than 6 GB of RAM** for the outer
+privacy circuit — a 4 GB host gets its prover OOM-killed — and takes ~30 minutes
+per approve on 8 vCPU, so a full real-proof `./demo.sh` is a ~1-2 hour run.
+Set `CARGO_TARGET_DIR` if you want the build artefacts somewhere other than
+`./target`; the scripts honour it.
 
 No separate circuits download is needed on v0.2.4: the privacy circuit and all
 guest ELFs are compiled/embedded by the cargo build itself (`risc0_build`), and
