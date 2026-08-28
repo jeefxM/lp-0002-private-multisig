@@ -1,0 +1,45 @@
+LP-0002 on Logos LEZ v0.2.4 — measured RISC0 compute cost (review item #1, round 1)
+====================================================================================
+Captured verbatim from the live-testnet 2-of-3 run of 2026-08-27 (RISC0_DEV_MODE
+unset = real STARKs). Host: Hetzner Cloud CPX-class, 8 vCPU (AMD), 15 GB RAM,
+Ubuntu 24.04. The MEASURE_* lines are printed by instrumentation added to
+lee/state_machine/src/privacy_preserving_transaction/circuit/mod.rs
+(execute_and_prove / execute_and_prove_program).
+
+There is no native compute-unit / gas / fee field on this LEZ rev, so the RISC0
+cycle counts below ARE the compute-unit measure. See docs/lp0002-benchmarks.md.
+
+-- Shielded voter funding (authenticated_transfer privacy tx), member 0 --------
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 131072, user_cycles: 82233, paging_cycles: 33287, reserved_cycles: 15552 } prove_secs=32.188
+MEASURE_OUTER_CIRCUIT stats=SessionStats { segments: 5, total_cycles: 4210688, user_cycles: 3832081, paging_cycles: 257635, reserved_cycles: 120972 } prove_secs=1425.116
+MEASURE_PROOF_SIZE_BYTES=260759
+tx 22431df6ff8abfb7a822f31ac73c161f5e1d3fdffd76ae18ce0ba134b8278a82
+
+-- Shielded voter funding, member 1 --------------------------------------------
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 131072, user_cycles: 82248, paging_cycles: 33287, reserved_cycles: 15537 } prove_secs=29.941
+MEASURE_OUTER_CIRCUIT stats=SessionStats { segments: 5, total_cycles: 4210688, user_cycles: 3832332, paging_cycles: 257300, reserved_cycles: 121056 } prove_secs=1395.441
+MEASURE_PROOF_SIZE_BYTES=260759
+tx 73edc29fde2d969baed2d742e4b7275a950c89cf5878a4154e23b2597bd2a83f
+
+-- ANONYMOUS APPROVE #1 (member 0, msig guest) ---------------------------------
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 1048576, user_cycles: 673043, paging_cycles: 50102, reserved_cycles: 325431 } prove_secs=278.366
+MEASURE_OUTER_CIRCUIT stats=SessionStats { segments: 5, total_cycles: 4718592, user_cycles: 4326164, paging_cycles: 262474, reserved_cycles: 129954 } prove_secs=1542.662
+MEASURE_PROOF_SIZE_BYTES=261431
+tx f86ffd5dc3100583251587a0609a3ad765da6e726e144301496b00542768cb22
+
+-- ANONYMOUS APPROVE #2 (member 1, msig guest) ---------------------------------
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 1048576, user_cycles: 687920, paging_cycles: 50424, reserved_cycles: 310232 } prove_secs=271.797
+MEASURE_OUTER_CIRCUIT stats=SessionStats { segments: 5, total_cycles: 5242880, user_cycles: 4349609, paging_cycles: 260760, reserved_cycles: 632511 } prove_secs=1677.851
+MEASURE_PROOF_SIZE_BYTES=261687
+tx 2ae72df740b0444b959275c22aea6a2f3c16f72a911b349922a9bb6885e5c25b
+
+-- Summary --------------------------------------------------------------------
+approve (anonymous, real STARK): inner msig guest 1,048,576 total cycles
+  (673,043-687,920 user, 1 segment) ~4.5-4.6 min; outer privacy circuit
+  4,718,592-5,242,880 total cycles (5 segments) ~26-28 min; succinct receipt
+  ~261.5 KB. Wall ~30 min per approve on the host above.
+The outer circuit grows with the proposal's nullifier set (4,718,592 for the
+first approve, 5,242,880 for the second). The outer prover needs >6 GB RAM: a
+3.8 GB host OOM-killed r0vm on the identical transaction.
+Public ops (enroll / create_proposal / init_treasury / fund / execute) are
+plain public transactions: sub-second RISC-V execution, no STARK.

@@ -36,7 +36,7 @@ for attribution.
 
 Our LP-0002 contribution:
 
-- `programs/msig/core/src/lib.rs`, the `msig_core` shared scheme: depth-5 Merkle member
+- `lez/programs/msig/core/src/lib.rs`, the `msig_core` shared scheme: depth-5 Merkle member
   set, `MsigInstruction` (`CreateProposal`, `Approve`, `Enroll`, `Execute`, `InitTreasury`),
   domain-separated leaf/nullifier hashing, account layouts.
 - `lee/state_machine/test_methods/guest/src/bin/msig.rs`, the on-chain `msig` guest.
@@ -44,8 +44,8 @@ Our LP-0002 contribution:
   truth for every runner).
 - `examples/program_deployment/src/bin/run_{deploy,enroll,init_treasury,create_proposal,approve,execute}.rs`,
   the client runners.
-- msig tests in `lee/state_machine/src/state.rs` (public-tx + bootstrap + compose) and
-  `lee/state_machine/src/privacy_preserving_transaction/circuit.rs` (approve tests, including one real
+- msig tests in `lee/state_machine/src/state/tests/msig.rs` (public-tx + bootstrap + compose) and
+  `lee/state_machine/src/privacy_preserving_transaction/circuit/tests.rs` (approve tests, including one real
   `RISC0_DEV_MODE=0` STARK plus negatives).
 - LP-0002 packaging: this file, `NOTICE`, `scripts/lp0002-demo.sh`,
   `docs/LP-0002-solution.md`, `docs/lp0002-benchmarks.md`, `docs/lp0002-reliability.md`,

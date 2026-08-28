@@ -50,8 +50,8 @@ the approval count is public, which specific member approved is hidden.
 - **Repo:** `github.com/jeefxM/lp-0002-private-multisig` (the Logos LEZ v0.2.4 port), default branch `main`. Our LP-0002
   contribution lives under `programs/msig/`, the guest at
   `lee/state_machine/test_methods/guest/src/bin/msig.rs`, the client runners at
-  `examples/program_deployment/src/`, and the tests in `lee/state_machine/src/state.rs` and
-  `lee/state_machine/src/privacy_preserving_transaction/circuit.rs`.
+  `examples/program_deployment/src/`, and the tests in `lee/state_machine/src/state/tests/msig.rs` and
+  `lee/state_machine/src/privacy_preserving_transaction/circuit/tests.rs`.
 - **End-to-end demo entrypoint:** **`./demo.sh`** (runs the full flow with REAL
   STARKs, `RISC0_DEV_MODE=0`, by default; `RISC0_DEV_MODE=1 ./scripts/lp0002-demo.sh`
   is the fast fake-receipt variant CI uses). It drives the 2-of-3
@@ -63,17 +63,23 @@ the approval count is public, which specific member approved is hidden.
   privacy circuit is ~4x the rc5 one), execute at threshold 2, and assert
   the on-chain outcome via `run_assert_state` (the green/red gate). The script
   drives the 2-of-3 path, which is the M-of-N proof. The individual steps are the same
-  runners that produced the live 2-of-3 ledger below; the script runs green
-  end-to-end against a local standalone sequencer at `RISC0_DEV_MODE=0` on the
-  build host (two real proofs, count=2, treasury drained, recipient credited).
+  runners that produced the live 2-of-3 ledger below. **Verification status, stated
+  precisely:** the local standalone-sequencer flow is verified green end-to-end at
+  `RISC0_DEV_MODE=1` (fake receipts — the fast logic path CI runs); the
+  **real-STARK (`RISC0_DEV_MODE=0`) evidence for this rev is the live-testnet
+  2-of-3 run** in Supporting Materials, whose two anonymous approvals carry real
+  ~261 KB succinct receipts with the prover statistics recorded in
+  `evidence/measure-v024.txt`. `./demo.sh` runs the same flow locally at
+  `RISC0_DEV_MODE=0` by default; budget ~30 min per approve and >6 GB RAM for the
+  outer prover.
 - **Local logic tests** (fast, fake-receipt logic coverage):
 
   ```
   cargo test -p lee msig_
   ```
 
-  This runs the 8 public-tx / state tests in `lee/state_machine/src/state.rs` and the 4
-  circuit tests in `lee/state_machine/src/privacy_preserving_transaction/circuit.rs`. The
+  This runs the 8 public-tx / state / apply-path tests in `lee/state_machine/src/state/tests/msig.rs` and the 4
+  circuit tests in `lee/state_machine/src/privacy_preserving_transaction/circuit/tests.rs`. The
   functional tests run under `RISC0_DEV_MODE=1` (fake receipts) for logic
   coverage.
 - **Real proof + on-chain approve** (~30 min per proof on an 8-vCPU host):
@@ -303,9 +309,32 @@ tests pin down both halves of this.
   per-circuit trusted setup ceremony to trust.
 - **Threshold integrity** assumes honest enrollment: whoever controls
   enrollment controls the member set, so an adversary who can enroll arbitrary
-  leaves can manufacture approvals. In this rev the registry is signer-owned by a
-  single demo key; a production deployment would gate enrollment behind a
-  governance program or a fixed genesis member set.
+  leaves can manufacture approvals. **Enrollment in this rev is permissionless
+  once the registry PDA is claimed** — the guest appends any submitted leaf and
+  recomputes `member_root`; there is no enrolment authority. A production
+  deployment would gate enrollment behind a governance program or freeze a
+  genesis member set.
+- **⚠️ `Execute` is NOT authorization-gated in this rev — a known, disclosed
+  limitation of this reference implementation.** The guest reads `threshold`
+  from the *caller's instruction* and its only check is
+  `assert!(count >= threshold)` (guest `msig.rs`, `execute()`); it does not bind
+  the threshold to the proposal state, does not verify that the supplied
+  proposal, treasury, and recipient accounts belong to one another, and does not
+  check the proposal's `program_owner`. Public transactions on this rev need no
+  signer for PDA-authorised transfers. Consequently **anyone can submit
+  `Execute { threshold: 0, seed }` and move a msig-owned treasury PDA's balance
+  to the recipient PDA without any approval**, and both PDAs are derivable from
+  the program id and public seeds. The anonymity and threshold-*counting*
+  properties this bounty targets (in-circuit membership, proposal-bound
+  nullifiers, double-vote rejection, the in-circuit live-account binding) are
+  unaffected — the gap is in the *release authorization* path. The fix is
+  mechanical (read `threshold` from the frozen ProposalState, derive and check
+  the treasury/recipient PDAs in-guest, assert `proposal.program_owner ==
+  self_program_id`), but it changes the guest ELF and therefore the deployed
+  program id, which would invalidate the on-chain evidence in this submission;
+  it is queued as the immediate follow-up rather than silently patched here. The
+  live testnet balances referenced in Supporting Materials are abandoned test
+  value and are expected to be drainable by anyone.
 - **Liveness** of Execute depends on the treasury being funded and the proposal
   reaching the threshold; nothing in the design forces members to approve.
 
@@ -322,7 +351,7 @@ tests pin down both halves of this.
   scope.
 - **No native compute-unit / gas field on this rev.** This v0.2.4 (`lee`) rev exposes no
   compute-unit / gas / fee field at the chain level (verified absent in the wallet CLI, in
-  chain-info tx/block output, and in `common/transaction.rs`). The Performance section
+  chain-info tx/block output, and in `lez/common/src/transaction.rs`). The Performance section
   reports the measured RISC0 zkVM compute cost for the v0.2.4 run (1,048,576 total cycles /
   673,043 user cycles per approve, 1 segment) as the compute-unit measure, alongside
   proxies (proof-generation time, receipt size, approve-tx block size).
@@ -344,7 +373,7 @@ tests pin down both halves of this.
 
 The pieces are designed to be reused independently of the demo fixture.
 
-- **`msig_core` as a reusable module.** `programs/msig/core/src/lib.rs` is a
+- **`msig_core` as a reusable module.** `lez/programs/msig/core/src/lib.rs` is a
   no-std-friendly crate that any guest, circuit, or client can depend on to get
   byte-identical hashing and Merkle math. The public surface is `MsigInstruction`
   (the instruction set), `member_leaf`, `vote_nullifier`, `merkle_root`,
@@ -467,7 +496,7 @@ The pieces are designed to be reused independently of the demo fixture.
 
 - [x] Document the compute-unit (CU) cost of each on-chain operation. Reported. The
   chain exposes no native CU / gas / fee field (verified absent in the wallet CLI,
-  chain-info tx/block, and `common/transaction.rs`), so this run reports the measured
+  chain-info tx/block, and `lez/common/src/transaction.rs`), so this run reports the measured
   RISC0 zkVM compute cost as the CU measure: the approve guest runs 1,048,576 total cycles
   (673,043 user cycles, 1 segment) and the outer succinct circuit 4,718,592–5,242,880 cycles across the two approves
   (5 segments; the outer grows with the proposal's nullifier set). See the FURPS
@@ -489,10 +518,13 @@ The pieces are designed to be reused independently of the demo fixture.
   program address, the run commands, a step-by-step Manual CLI walkthrough, and the Basecamp
   module, alongside the live on-chain evidence.
 - [x] A reproducible end-to-end demo script that works with `RISC0_DEV_MODE=0`.
-  `scripts/lp0002-demo.sh` runs green end-to-end against a local standalone
-  sequencer at `RISC0_DEV_MODE=0` (two real proofs, count=2, treasury drained,
-  recipient credited); re-verified from a fresh checkout on a reviewer-equivalent
-  toolchain state. The data-dir path is parameterized for clean-clone portability.
+  **`./demo.sh`** is the entrypoint and sets `RISC0_DEV_MODE=0` (real STARKs) by
+  default; the inner `scripts/lp0002-demo.sh` honours an inherited value and
+  defaults to `1` for fast iteration. The flow is verified green end-to-end
+  locally at `RISC0_DEV_MODE=1`, and the real-STARK path for this rev is
+  evidenced by the live-testnet 2-of-3 run (Supporting Materials +
+  `evidence/measure-v024.txt`) rather than by a local real-proof log. The
+  data-dir path is parameterized for clean-clone portability.
 - [x] A recorded, narrated video demo showing terminal output confirming
   `RISC0_DEV_MODE=0`: https://www.youtube.com/watch?v=CXzqWLvBY0A
 
@@ -553,7 +585,7 @@ compute cost plus defensible proxies:
 - This write-up documents the cryptographic approach, the nullifier scheme, the
   LEZ account model (both nonce and `program_owner`), the security assumptions,
   the known limitations, and the integration guide.
-- `programs/msig/core/src/lib.rs` and the guest carry module-level docs
+- `lez/programs/msig/core/src/lib.rs` and the guest carry module-level docs
   explaining the scheme and the treasury-bootstrap rationale.
 - The LP-0002 CI workflow (`.github/workflows/lp0002-ci.yml`) runs the msig
   state and circuit tests under `RISC0_DEV_MODE=1` for logic coverage, plus a
@@ -652,4 +684,4 @@ history and in the first-round submission documents.
 ## Terms & Conditions
 
 By submitting this solution, I confirm that I have read and agree to the
-[Terms & Conditions](../TERMS.md).
+[Terms & Conditions](https://github.com/logos-co/lambda-prize/blob/master/TERMS.md).

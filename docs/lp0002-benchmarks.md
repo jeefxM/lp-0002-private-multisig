@@ -94,8 +94,8 @@ wall-clock time to generate the real proof.
 
 **Real-proof approve time: ~30 min wall** to generate one DEV_MODE=0 STARK on
 the measurement host (8-vCPU Hetzner Cloud, 16 GB RAM): inner msig guest
-~4.6 min + outer privacy circuit ~24 min. This is a local timing observation,
-not a chain-reported figure. It is markedly slower than the rc5-era ~30 min
+~4.6 min + outer privacy circuit ~26–28 min. This is a local timing observation,
+not a chain-reported figure. It is markedly slower than the rc5-era ~180 s
 because the v0.2.4 privacy circuit is ~4x larger (4.7–5.2M vs 1,048,576 total
 cycles — viewing-key/ciphertext binding and the ML-KEM-768 account-id
 commitment landed between rc5 and v0.2.4); the msig guest itself also grew
@@ -155,12 +155,13 @@ contributor in the whole flow; every other op is a small public message.
 The RISC0 cycle count (total / user cycles, segment count) of the `approve` guest
 execution is the natural compute proxy, and the live v0.2.4 DEV_MODE=0 run measured
 it directly. The proving harness emits `MEASURE_INNER_GUEST` and
-`MEASURE_OUTER_CIRCUIT` `SessionStats` lines (captured in `.testnet-demo/run.log`)
+`MEASURE_OUTER_CIRCUIT` `SessionStats` lines (captured in `evidence/measure-v024.txt`)
 for both threshold approves:
 
 1. **Inner approve guest** (the in-guest Merkle-membership check + proposal-bound
-   nullifier derivation): **1,048,576 total cycles**, **~673,043 user cycles**
-   across the two approves, **1 segment**, **~30 s** to prove.
+   nullifier derivation): **1,048,576 total cycles**, **673,043–687,920 user
+   cycles** across the two approves, **1 segment**, **~4.6 min** to prove
+   (278.4 s / 271.8 s).
 2. **Outer succinct circuit** (the recursion/wrap that yields the on-chain
    `InnerReceipt::Succinct`): **4,718,592–5,242,880 total cycles (5 segments; grows with the proposal's nullifier set)**, **~26–28 min** to prove.
 
@@ -196,8 +197,8 @@ chained call per op, well within that bound.
 
 | Metric | Value | Source / caveat |
 |--------|-------|-----------------|
-| CU / gas / fee per tx | **none exists** | `common/src/transaction.rs`, wallet chain/account CLI, verified absent |
-| Approve real-proof time | ~30 min wall (inner ~4.6 min + outer ~24 min) | live DEV_MODE=0 on Hetzner 8-vCPU/16 GB; prover needs >6 GB RAM for the outer circuit |
+| CU / gas / fee per tx | **none exists** | `lez/common/src/transaction.rs`, wallet chain/account CLI, verified absent |
+| Approve real-proof time | ~30 min wall (inner ~4.6 min + outer ~26–28 min) | live DEV_MODE=0 on Hetzner 8-vCPU/16 GB; prover needs >6 GB RAM for the outer circuit |
 | Approve receipt size | ~261 KB | on-chain receipt deserializes to `InnerReceipt::Succinct`; constant in member-set size at depth-5 |
 | Approve cost scaling | linear, one ~30 min prove per approver; serialized through on-chain state (one approval per state-version lands) | 2-of-3 run = two distinct-member proves landing sequentially with a finality gate between them |
 | Public-op cost (enroll/create/init/execute/fund) | sub-second RISC-V exec, no fee, no proof | Logos LEZ v0.2.4 public-tx path |

@@ -1,4 +1,6 @@
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - main
@@ -11,6 +13,9 @@ on:
       - "lee/state_machine/src/privacy_preserving_transaction/circuit/tests.rs"
       - "scripts/lp0002-demo.sh"
       - ".github/workflows/lp0002-ci.yml"
+      - "demo.sh"
+      - "README-LP0002.md"
+      - "docs/**"
 
   pull_request:
     paths:
@@ -21,10 +26,14 @@ on:
       - "lee/state_machine/src/privacy_preserving_transaction/circuit/tests.rs"
       - "scripts/lp0002-demo.sh"
       - ".github/workflows/lp0002-ci.yml"
+      - "demo.sh"
+      - "README-LP0002.md"
+      - "docs/**"
 
 permissions:
   contents: read
   pull-requests: read
+  packages: read
 
 name: LP-0002 msig
 
@@ -95,8 +104,10 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     env:
+      # No LP0002_ROOT here: inside a container job ${{ github.workspace }} is the
+      # HOST path, which does not exist in the container. The script resolves its
+      # own root via `dirname $0/..`, which is correct in both cases.
       RISC0_DEV_MODE: "1"
-      LP0002_ROOT: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v5
         with:

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # LP-0002 msig 2-of-3 FULL flow on the LIVE Logos LEZ v0.2.4 testnet.
-# REAL STARK proofs (RISC0_DEV_MODE UNSET). Funder = pinata-funded HHYV1Pru.
+# REAL STARK proofs (RISC0_DEV_MODE UNSET). Funder = your pinata-funded public
+# account, passed as FUNDER_ID (required; see evidence/README.md).
 # Deploy already done manually (program_id reconciled). This runs enroll..assert.
 # Gating sized for ~1 block/min. Captures every tx hash to stdout (the run log).
 set -uo pipefail
@@ -12,7 +13,7 @@ cd "$R" || exit 1
 
 BIN=$R/target/release
 WALLET=$BIN/wallet
-FUNDER_ID="${FUNDER_ID:-HHYV1PruAV8Xza1jxtMiDrM7N5QGGRVNWaZQNk5aXDC6}"   # the run's funder; OVERRIDE for your own run: `wallet pinata claim --to Public/<id>` then FUNDER_ID=<id>
+FUNDER_ID="${FUNDER_ID:?set FUNDER_ID to your pinata-funded public account (see evidence/README.md)}"   # the run's funder; OVERRIDE for your own run: `wallet pinata claim --to Public/<id>` then FUNDER_ID=<id>
 MEMBER_DUST=5
 TREASURY_AMT=100
 
@@ -67,7 +68,8 @@ echo "funder balance:"; w account get --account-id "Public/$FUNDER_ID" 2>&1 | ta
 
 # ---- 0. setup voters: import member keychains; capture voting ids (ignore genesis funder) ----
 echo "### STEP 0: setup voters (import member 0,1 keychains) $(date -u +%H:%M:%S)"
-export VOTERS_DIR=$R/.testnet-demo
+export VOTERS_DIR="${VOTERS_DIR:-$R/.testnet-demo}"
+mkdir -p "$VOTERS_DIR"   # run_setup_voters writes member<i>.keys here and does not create it
 SETUP_OUT="$("$BIN/run_setup_voters" 2>&1)" || { echo "$SETUP_OUT"; die "run_setup_voters failed"; }
 echo "$SETUP_OUT"
 M0_VID="$(printf '%s\n' "$SETUP_OUT" | sed -n 's/^MEMBER0_VOTING_ID=//p' | head -1)"

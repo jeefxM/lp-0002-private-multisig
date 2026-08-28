@@ -45,7 +45,7 @@ WALLET="$R/target/release/wallet"
 BIN="$R/target/release"
 
 export LEE_WALLET_HOME_DIR="$D/wallet"
-export RISC0_DEV_MODE=1
+export RISC0_DEV_MODE="${RISC0_DEV_MODE:-1}"
 cd "$R" || exit 1
 
 SEQ_PID=""
