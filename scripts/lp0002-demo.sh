@@ -37,7 +37,9 @@ PORT=3047
 MEMBER_DUST=100
 TREASURY_AMT=5000
 WALLET="$R/target/release/wallet"
-BIN="$R/target/release"
+# Honour CARGO_TARGET_DIR if the environment sets one (common in CI and shared
+# build caches); otherwise the workspace-local target dir.
+BIN="${CARGO_TARGET_DIR:-$R/target}/release"
 
 export LEE_WALLET_HOME_DIR="$D/wallet"
 # Honour an inherited RISC0_DEV_MODE (the root ./demo.sh entrypoint sets 0 = REAL

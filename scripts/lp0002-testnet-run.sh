@@ -11,7 +11,7 @@ export LEE_WALLET_HOME_DIR="${LEE_WALLET_HOME_DIR:-$R/.testnet-v024/wallet}"
 unset RISC0_DEV_MODE   # REAL proofs
 cd "$R" || exit 1
 
-BIN=$R/target/release
+BIN="${CARGO_TARGET_DIR:-$R/target}/release"
 WALLET=$BIN/wallet
 FUNDER_ID="${FUNDER_ID:?set FUNDER_ID to your pinata-funded public account (see evidence/README.md)}"   # the run's funder; OVERRIDE for your own run: `wallet pinata claim --to Public/<id>` then FUNDER_ID=<id>
 MEMBER_DUST=5

@@ -42,7 +42,7 @@ PORT=3048                      # distinct from the demo's 3047 so a stray demo s
 MEMBER_DUST=100
 TREASURY_AMT=5000
 WALLET="$R/target/release/wallet"
-BIN="$R/target/release"
+BIN="${CARGO_TARGET_DIR:-$R/target}/release"
 
 export LEE_WALLET_HOME_DIR="$D/wallet"
 export RISC0_DEV_MODE="${RISC0_DEV_MODE:-1}"
