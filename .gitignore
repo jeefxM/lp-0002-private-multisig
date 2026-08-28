@@ -32,3 +32,13 @@ port-check.log
 port-test.log
 port-build.log
 member*.keys
+
+# Upstream LEZ workflows: this fork ships ONLY the LP-0002 workflow (plus the
+# ci-image machinery it depends on). Upstream CI is red here by construction --
+# it builds the whole workspace, runs suites we do not touch, and would make the
+# default branch red for reasons unrelated to this submission.
+.github/workflows/ci.yml
+.github/workflows/bench-regression.yml
+.github/workflows/pr-review-board.yml
+.github/workflows/publish_images.yml
+.github/pull_request_template.md
