@@ -189,6 +189,17 @@ Package Manager -> *Install from file*. The module source is the public repo
   proposal account is owned by this program id (raw RPC snapshots in `evidence/`)
 - Program id (8x u32 le): `[1155063609, 1918607948, 1043343914, 2266441241, 1831314946, 53341822, 1565811176, 2148869898]`
 
+## Demo video
+
+A narrated end-to-end walkthrough showing the terminal output with
+`RISC0_DEV_MODE=0` (real STARK proving, not fake receipts):
+**https://www.youtube.com/watch?v=CXzqWLvBY0A**
+
+Recorded for the first submission against the LEZ rev current at that time; the
+flow, the CLI surface and the assertions it shows are unchanged. The v0.2.4
+equivalent in text form is `evidence/demo-realproof-v024.txt` (fresh clone,
+`./demo.sh`, real proofs, `DEMO_EXIT=0`).
+
 ## Live on-chain evidence
 
 The full evidence record, with transaction hashes and proving times, is in
