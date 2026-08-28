@@ -39,7 +39,7 @@ Our LP-0002 contribution:
 - `programs/msig/core/src/lib.rs`, the `msig_core` shared scheme: depth-5 Merkle member
   set, `MsigInstruction` (`CreateProposal`, `Approve`, `Enroll`, `Execute`, `InitTreasury`),
   domain-separated leaf/nullifier hashing, account layouts.
-- `test_program_methods/guest/src/bin/msig.rs`, the on-chain `msig` guest.
+- `lee/state_machine/test_methods/guest/src/bin/msig.rs`, the on-chain `msig` guest.
 - `examples/program_deployment/src/msig_demo.rs`, the shared demo fixture (single source of
   truth for every runner).
 - `examples/program_deployment/src/bin/run_{deploy,enroll,init_treasury,create_proposal,approve,execute}.rs`,
@@ -70,16 +70,9 @@ rzup install
 The full upstream system dependency list (build-essential, clang, libssl, pkg-config) is in
 the main [`README.md`](README.md) under "Install dependencies".
 
-The end-to-end demo also needs the `logos-blockchain-circuits` release (a separate Logos
-artifact that `rzup` does not install) at `~/.logos-blockchain-circuits`. `scripts/lp0002-demo.sh`
-auto-downloads the pinned `v0.4.2` if it is absent, so a fresh `./demo.sh` is turnkey. To install
-it manually:
-
-```sh
-mkdir -p ~/.logos-blockchain-circuits
-curl -sSL https://github.com/logos-blockchain/logos-blockchain-circuits/releases/download/v0.4.2/logos-blockchain-circuits-v0.4.2-linux-x86_64.tar.gz \
-  | tar -xz --strip-components=1 -C ~/.logos-blockchain-circuits
-```
+No separate circuits download is needed on v0.2.4: the privacy circuit and all
+guest ELFs are compiled/embedded by the cargo build itself (`risc0_build`), and
+the live-testnet run in `evidence/` was produced with exactly this build path.
 
 ## How to run
 
@@ -89,11 +82,13 @@ curl -sSL https://github.com/logos-blockchain/logos-blockchain-circuits/releases
 # then drives the full on-chain flow:
 #   deploy -> enroll(x3) -> create_proposal -> approve(member 0) -> approve(member 1)
 #   -> init_treasury -> fund -> execute(threshold 2) -> assert (count 2, treasury drained).
-# Each approval runs a REAL STARK (RISC0_DEV_MODE=0, the default via ./demo.sh; ~30 min
-# per approve on an 8-vCPU host — the v0.2.4 privacy circuit is ~4x the rc5 one).
-./scripts/lp0002-demo.sh
+# Each approval runs a REAL STARK (RISC0_DEV_MODE=0 — ~30 min per approve on an
+# 8-vCPU host; the v0.2.4 privacy circuit is ~4x the rc5 one, and the outer
+# prover needs >6 GB RAM).
+./demo.sh
 
-# Fast plumbing check with fake receipts (~3 min, no real proofs):
+# Fast plumbing check with fake receipts (minutes, no real proofs — this is what
+# CI runs; the inner script alone defaults to DEV_MODE=1 for iteration):
 RISC0_DEV_MODE=1 ./scripts/lp0002-demo.sh
 ```
 
@@ -145,8 +140,9 @@ ALL ASSERTIONS PASSED
 ```
 
 > The runners perform ON-CHAIN actions when run; a plain `cargo build` is always safe. Against the
-> local standalone sequencer, prefer `scripts/lp0002-demo.sh` (or `DEV_MODE=1 scripts/lp0002-demo.sh`
-> for a fast no-proof plumbing check), which wires all of the above together and asserts the result.
+> local standalone sequencer, prefer `./demo.sh` (real STARKs) or
+> `RISC0_DEV_MODE=1 ./scripts/lp0002-demo.sh` (fast no-proof plumbing check),
+> which wire all of the above together and assert the result.
 
 ## Basecamp module
 
@@ -189,7 +185,6 @@ The full evidence record, with transaction hashes and proving times, is in
 
 ## Further reading
 
-- Architecture map (component map + flow diagram): [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Instruction layout / IDL: [`idl/lp0002-msig.idl.json`](idl/lp0002-msig.idl.json)
 - Benchmarks (proving times): [`docs/lp0002-benchmarks.md`](docs/lp0002-benchmarks.md)
 - Reliability / failure modes: [`docs/lp0002-reliability.md`](docs/lp0002-reliability.md)

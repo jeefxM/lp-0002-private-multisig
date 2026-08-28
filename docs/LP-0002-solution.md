@@ -49,10 +49,12 @@ the approval count is public, which specific member approved is hidden.
 
 - **Repo:** `github.com/jeefxM/lp-0002-private-multisig` (the Logos LEZ v0.2.4 port), default branch `main`. Our LP-0002
   contribution lives under `programs/msig/`, the guest at
-  `test_program_methods/guest/src/bin/msig.rs`, the client runners at
+  `lee/state_machine/test_methods/guest/src/bin/msig.rs`, the client runners at
   `examples/program_deployment/src/`, and the tests in `lee/state_machine/src/state.rs` and
   `lee/state_machine/src/privacy_preserving_transaction/circuit.rs`.
-- **End-to-end demo script:** `scripts/lp0002-demo.sh`. It drives the 2-of-3
+- **End-to-end demo entrypoint:** **`./demo.sh`** (runs the full flow with REAL
+  STARKs, `RISC0_DEV_MODE=0`, by default; `RISC0_DEV_MODE=1 ./scripts/lp0002-demo.sh`
+  is the fast fake-receipt variant CI uses). It drives the 2-of-3
   threshold flow against the sequencer the wallet config points at: enroll three
   members, bootstrap the treasury, fund it (a wallet `auth-transfer` to the
   treasury PDA captured from `run_init_treasury`'s output, gated on a `PAYER`
@@ -350,7 +352,7 @@ The pieces are designed to be reused independently of the demo fixture.
   `PROPOSAL_HEADER_LEN` / `REGISTRY_HEADER_LEN` layout constants. Because the
   same crate is used in-guest and host-side, an integrator cannot accidentally
   diverge the root or nullifier computation.
-- **The guest** (`test_program_methods/guest/src/bin/msig.rs`) is the on-chain
+- **The guest** (`lee/state_machine/test_methods/guest/src/bin/msig.rs`) is the on-chain
   program. Build it the way the rest of the test programs build (the deployable
   ELF lands at the `MSIG_BIN` path the demo fixture points to), then deploy it;
   its program id equals the on-chain id. On Logos LEZ v0.2.4 the redeployed
@@ -405,7 +407,8 @@ The pieces are designed to be reused independently of the demo fixture.
   account. Execute reads only the public count; it references no member secret or
   leaf, and the treasury debit goes through `authenticated_transfer`.
 - [~] Proof generation runs client-side; a real `RISC0_DEV_MODE=0` approve proof
-  was measured at ~174s on a 16-core AMD EPYC server (the build host).
+  takes ~30 min wall on an 8-vCPU/16 GB host (inner msig guest ~4.6 min +
+  outer privacy circuit ~26-28 min; see `docs/lp0002-benchmarks.md`).
   Standard-laptop timing is not yet measured; proving is RAM/CPU-bound so a laptop
   will be materially slower.
 - [x] A reference integration: a threshold-gated treasury transfer on LEZ
@@ -427,11 +430,11 @@ The pieces are designed to be reused independently of the demo fixture.
   crate is not yet split out. Partial.
 - [x] Provide a Logos Basecamp app GUI. A native ui_qml Basecamp plugin is shipped
   under `basecamp/` (`MsigPlugin` + `qml/Main.qml` + prebuilt
-  `dist/private_multisig_lp0002/msig_plugin.so`). The packaged module is **hosted as a downloadable
+  `msig_plugin` built from `basecamp/`). The packaged module is **hosted as a downloadable
   multi-variant `.lgx`** (`darwin-arm64` + `linux-amd64` + `linux-arm64`, Ed25519-signed) at
   <https://github.com/jeefxM/logos-lp0002-msig-module/releases/latest> (source repo
   `jeefxM/logos-lp0002-msig-module`) — installable via Basecamp -> Package Manager -> Install from
-  file. It loads in Basecamp v0.1.2's
+  file. It loads in Basecamp's
   host (plugin-load verified headlessly) and drives a real anonymous vote through
   the GUI over the same client path as the CLI runners: the sidecar spawns
   `run_approve_secret`, which generates a real STARK at `RISC0_DEV_MODE=0` and

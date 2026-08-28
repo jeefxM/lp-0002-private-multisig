@@ -143,7 +143,7 @@ the ~261 KB does not grow with the number of enrolled members.
 Block-size contrast (qualitative, since no byte-cost field exists): the
 `Approve` privacy transaction carries this ~261 KB succinct proof plus the
 private rider's commitment/nullifier/ciphertext, whereas the public `Execute` tx
-(`2354ebbd` in the 2-of-3 run) carries only an
+(`ded1cec1` in the 2-of-3 run) carries only an
 instruction (`Execute { threshold, seed }`), an account-id list, and no proof,
 it is a tiny message by comparison. The privacy approve is the only "heavy" block
 contributor in the whole flow; every other op is a small public message.
@@ -153,7 +153,7 @@ contributor in the whole flow; every other op is a small public message.
 ## 5. RISC0 cycle count for the approve guest: measured (live v0.2.4 DEV_MODE=0)
 
 The RISC0 cycle count (total / user cycles, segment count) of the `approve` guest
-execution is the natural compute proxy, and the live rc5 DEV_MODE=0 run measured
+execution is the natural compute proxy, and the live v0.2.4 DEV_MODE=0 run measured
 it directly. The proving harness emits `MEASURE_INNER_GUEST` and
 `MEASURE_OUTER_CIRCUIT` `SessionStats` lines (captured in `.testnet-demo/run.log`)
 for both threshold approves:

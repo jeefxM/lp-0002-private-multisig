@@ -31,3 +31,4 @@ integration_tests/configs/debug/
 port-check.log
 port-test.log
 port-build.log
+member*.keys

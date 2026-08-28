@@ -48,7 +48,7 @@ cd "$R" || exit 1
 SEQ_PID=""
 # Stop the throwaway sequencer on ANY exit so it does not keep minting 1s blocks (its RocksDB
 # state grows unbounded and will fill the disk if left running between/after demo runs).
-cleanup() { [ -n "$SEQ_PID" ] && kill "$SEQ_PID" 2>/dev/null; pkill -f "sequencer_service.*--port $PORT" 2>/dev/null; true; }
+cleanup() { [ -n "$SEQ_PID" ] && kill "$SEQ_PID" 2>/dev/null; command -v pkill >/dev/null && pkill -f "sequencer_service.*--port $PORT" 2>/dev/null; true; }
 trap cleanup EXIT
 
 die() { echo "FATAL: $*" >&2; [ -f "$D/seq.log" ] && tail -20 "$D/seq.log" >&2; exit 1; }
@@ -138,12 +138,15 @@ cargo build --release -p test_methods 2>&1 | tail -2 || die "guest ELF build fai
 
 # ---- 2. boot local sequencer ----
 echo "=== boot local sequencer :$PORT (RISC0_DEV_MODE=$RISC0_DEV_MODE) ==="
-pkill -f "sequencer_service.*--port $PORT" 2>/dev/null || true; sleep 1
+command -v pkill >/dev/null && pkill -f "sequencer_service.*--port $PORT" 2>/dev/null; sleep 1
 RUST_LOG=info RISC0_DEV_MODE="$RISC0_DEV_MODE" nohup "$BIN/sequencer_service" "$D/sequencer_config.json" --port "$PORT" \
   > "$D/seq.log" 2>&1 &
 SEQ_PID=$!
-for _ in $(seq 1 40); do ss -ltn 2>/dev/null | grep -q ":$PORT" && break; sleep 1; done
-ss -ltn 2>/dev/null | grep -q ":$PORT" || die "sequencer did not bind :$PORT"
+# probe the RPC endpoint directly (works in minimal containers without iproute2)
+seq_up() { curl -sS -m 3 -X POST "http://127.0.0.1:$PORT" -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"getChannelId","params":[]}' 2>/dev/null | grep -q result; }
+for _ in $(seq 1 40); do seq_up && break; sleep 1; done
+seq_up || die "sequencer did not answer RPC on :$PORT"
 sleep 2
 
 # ---- 3. initialize wallet storage + import funder + voters; capture ids ----

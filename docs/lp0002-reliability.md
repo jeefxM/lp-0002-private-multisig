@@ -2,7 +2,7 @@
 
 This document covers the reliability surface of the LP-0002 anonymous M-of-N
 multisig (`msig`) as ported to **Logos LEZ v0.2.4**. It is adapted from the
-original v0.1.2 reliability note (`/root/lez-v012/docs/lp0002-reliability.md`);
+original v0.1.2 reliability note (from the v0.1.2-era submission);
 the program logic is the same ported guest, but the chain target, program id, and
 source paths differ and have been updated here so the references match v0.2.4.
 
