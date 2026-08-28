@@ -104,7 +104,7 @@ the live-testnet run in `evidence/` was produced with exactly this build path.
 # Each approval runs a REAL STARK (RISC0_DEV_MODE=0 — ~30 min per approve on an
 # 8-vCPU host; the v0.2.4 privacy circuit is ~4x the rc5 one, and the outer
 # prover needs >6 GB RAM).
-./demo.sh
+./demo.sh   # verified green from a fresh clone in 2h01m — evidence/demo-realproof-v024.txt
 
 # Fast plumbing check with fake receipts (minutes, no real proofs — this is what
 # CI runs; the inner script alone defaults to DEV_MODE=1 for iteration):

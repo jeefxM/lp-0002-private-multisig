@@ -1,0 +1,61 @@
+LP-0002 — local `./demo.sh` at RISC0_DEV_MODE=0, fresh checkout, GREEN
+=====================================================================
+This is the verbatim step/measurement trace of a REAL-STARK local run of the
+documented entrypoint `./demo.sh`, which defaults to RISC0_DEV_MODE=0.
+
+  Date        : 2026-08-28, 07:55:30 -> 09:56:39 UTC (2 h 01 m wall)
+  Host        : Hetzner Cloud, 8 vCPU (AMD), 15 GB RAM, Ubuntu 24.04
+  Checkout    : fresh `git clone` of this branch; toolchain installed from
+                scratch (rustup 1.94.0 + rzup risc0 3.0.5); no prebuilt artefacts
+  Sequencer   : the repo's own standalone sequencer, booted by the script
+                (note the line `boot local sequencer :3047 (RISC0_DEV_MODE=0)`)
+  Result      : DEMO_EXIT=0 — approval_count == 2, treasury drained,
+                recipient credited 5000
+
+Both anonymous approvals below are genuine STARKs: inner msig guest 1,048,576
+cycles (~4.2-4.4 min) plus outer privacy circuit 4,718,592 cycles / 5 segments
+(~26-31 min), each yielding a ~261 KB succinct receipt. The two shielded voter
+fundings are also real proofs (4.21-4.23 M outer cycles, ~24-26 min each), which
+is why the whole flow takes ~2 h rather than the ~2 min it takes under
+RISC0_DEV_MODE=1.
+
+This complements the live-testnet ledger in evidence/ledger.txt: that one proves
+the flow against the public chain, this one proves the documented one-command
+demo reproduces it locally end to end with real proofs.
+
+-- verbatim trace ------------------------------------------------------------
+
+=== FRESH-CHECKOUT REAL-PROOF RUN: ./demo.sh (RISC0_DEV_MODE defaults to 0) ===
+host: 8 vCPU, 15 GB RAM, start Fri Aug 28 07:55:30 AM UTC 2026
+=== build runners ===
+=== build standalone sequencer + wallet ===
+=== build msig guest ELF (embedded via test_methods) ===
+=== boot local sequencer :3047 (RISC0_DEV_MODE=0) ===
+=== init wallet storage (first-run setup; password is ignored by the wallet storage) ===
+=== setup voters (import funder + members 0,1) ===
+=== deploy msig ===
+=== enroll x3 ===
+=== create_proposal ===
+=== fund member 0 voting account (100) -> 8aayuDao8UeK6twM3VmjgUaXLSByVxAHHwFbTVpnBG19 ===
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 131072, user_cycles: 82233, paging_cycles: 33287, reserved_cycles: 15552 } prove_secs=34.248
+MEASURE_OUTER_CIRCUIT stats=SessionStats { segments: 5, total_cycles: 4210688, user_cycles: 3831926, paging_cycles: 258344, reserved_cycles: 120418 } prove_secs=1466.519
+MEASURE_PROOF_SIZE_BYTES=260759
+=== fund member 1 voting account (100) -> 9nMbr8CQJNFhghASeySLZfhYCyV6eBC61XfFWCXeciz8 ===
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 131072, user_cycles: 82248, paging_cycles: 33287, reserved_cycles: 15537 } prove_secs=31.524
+MEASURE_OUTER_CIRCUIT stats=SessionStats { segments: 5, total_cycles: 4227072, user_cycles: 3832581, paging_cycles: 258022, reserved_cycles: 136469 } prove_secs=1585.851
+MEASURE_PROOF_SIZE_BYTES=260759
+=== approve as member 0 ===
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 1048576, user_cycles: 673043, paging_cycles: 50102, reserved_cycles: 325431 } prove_secs=262.042
+MEASURE_OUTER_CIRCUIT stats=SessionStats { segments: 5, total_cycles: 4718592, user_cycles: 4287302, paging_cycles: 259147, reserved_cycles: 172143 } prove_secs=1873.190
+MEASURE_PROOF_SIZE_BYTES=261431
+=== approve as member 1 ===
+MEASURE_INNER_GUEST stats=SessionStats { segments: 1, total_cycles: 1048576, user_cycles: 687920, paging_cycles: 50424, reserved_cycles: 310232 } prove_secs=252.281
+MEASURE_OUTER_CIRCUIT stats=SessionStats { segments: 5, total_cycles: 4718592, user_cycles: 4312109, paging_cycles: 261248, reserved_cycles: 145235 } prove_secs=1586.501
+MEASURE_PROOF_SIZE_BYTES=261687
+=== init_treasury (+ recipient) ===
+=== fund treasury (5000) -> FcxK5rKuiHzAgZ4jwtcuTgnCLagKZe6B6VkzCeiViJ3u ===
+=== execute (threshold-gated treasury release) ===
+=== assert state (EXPECT_COUNT=2, treasury drained, recipient=5000) ===
+=== LP-0002 v0.2.4 2-of-3 DEMO GREEN ===
+DEMO_EXIT=0
+end Fri Aug 28 09:56:39 AM UTC 2026

@@ -63,15 +63,14 @@ the approval count is public, which specific member approved is hidden.
   privacy circuit is ~4x the rc5 one), execute at threshold 2, and assert
   the on-chain outcome via `run_assert_state` (the green/red gate). The script
   drives the 2-of-3 path, which is the M-of-N proof. The individual steps are the same
-  runners that produced the live 2-of-3 ledger below. **Verification status, stated
-  precisely:** the local standalone-sequencer flow is verified green end-to-end at
-  `RISC0_DEV_MODE=1` (fake receipts — the fast logic path CI runs); the
-  **real-STARK (`RISC0_DEV_MODE=0`) evidence for this rev is the live-testnet
-  2-of-3 run** in Supporting Materials, whose two anonymous approvals carry real
-  ~261 KB succinct receipts with the prover statistics recorded in
-  `evidence/measure-v024.txt`. `./demo.sh` runs the same flow locally at
-  `RISC0_DEV_MODE=0` by default; budget ~30 min per approve and >6 GB RAM for the
-  outer prover.
+  runners that produced the live 2-of-3 ledger below. **Verification status:**
+  `./demo.sh` is verified **green end-to-end at `RISC0_DEV_MODE=0` (real STARKs)
+  from a fresh checkout** — 2026-08-28, 8 vCPU / 15 GB host, 2 h 01 m wall,
+  `DEMO_EXIT=0`, approval_count == 2, treasury drained, recipient credited; the
+  verbatim step-and-measurement trace is committed at
+  `evidence/demo-realproof-v024.txt`. The same flow also runs green under
+  `RISC0_DEV_MODE=1` in minutes, which is the fast path CI uses. Budget ~30 min
+  per approve and >6 GB RAM for the outer prover if you run the real-proof path.
 - **Local logic tests** (fast, fake-receipt logic coverage):
 
   ```
@@ -583,11 +582,11 @@ The pieces are designed to be reused independently of the demo fixture.
 - [x] A reproducible end-to-end demo script that works with `RISC0_DEV_MODE=0`.
   **`./demo.sh`** is the entrypoint and sets `RISC0_DEV_MODE=0` (real STARKs) by
   default; the inner `scripts/lp0002-demo.sh` honours an inherited value and
-  defaults to `1` for fast iteration. The flow is verified green end-to-end
-  locally at `RISC0_DEV_MODE=1`, and the real-STARK path for this rev is
-  evidenced by the live-testnet 2-of-3 run (Supporting Materials +
-  `evidence/measure-v024.txt`) rather than by a local real-proof log. The
-  data-dir path is parameterized for clean-clone portability.
+  defaults to `1` for fast iteration. Verified **from a fresh clone on a clean
+  host**: `DEMO_EXIT=0` in 2 h 01 m, two genuine anonymous approvals
+  (~261 KB succinct receipts) — trace at `evidence/demo-realproof-v024.txt`. The
+  data-dir path is parameterized for clean-clone portability and the scripts
+  honour `CARGO_TARGET_DIR`.
 - [x] A recorded, narrated video demo showing terminal output confirming
   `RISC0_DEV_MODE=0`: https://www.youtube.com/watch?v=CXzqWLvBY0A
 
