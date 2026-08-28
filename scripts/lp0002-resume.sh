@@ -51,7 +51,7 @@ cd "$R" || exit 1
 SEQ_PID=""
 # Stop the throwaway sequencer on ANY exit so it does not keep minting 1s blocks (its RocksDB
 # state grows unbounded and will fill the disk if left running between/after runs).
-cleanup() { [ -n "$SEQ_PID" ] && kill "$SEQ_PID" 2>/dev/null; pkill -f "sequencer_service.*--port $PORT" 2>/dev/null; true; }
+cleanup() { [ -n "$SEQ_PID" ] && kill "$SEQ_PID" 2>/dev/null; command -v pkill >/dev/null && pkill -f "sequencer_service.*--port $PORT" 2>/dev/null; true; }
 trap cleanup EXIT
 
 die() {
@@ -61,6 +61,19 @@ die() {
   exit 1
 }
 w()   { RUST_LOG=error "$WALLET" "$@"; }
+
+# Direct JSON-RPC account probes (the wallet CLI's account-get can stall against a
+# fresh sequencer; checks must not depend on it).
+rpc_account() {
+  curl -sS -m 10 -X POST "http://127.0.0.1:$PORT" -H "Content-Type: application/json" \
+    -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getAccount\",\"params\":[\"$1\"]}" 2>/dev/null
+}
+rpc_account_initialized() {
+  rpc_account "$1" | python3 -c "import json,sys; r=json.load(sys.stdin)[\"result\"]; sys.exit(0 if r and any(r[\"program_owner\"]) else 1)" 2>/dev/null
+}
+rpc_account_funded() {
+  rpc_account "$1" | python3 -c "import json,sys; r=json.load(sys.stdin)[\"result\"]; sys.exit(0 if r and r[\"balance\"]>0 else 1)" 2>/dev/null
+}
 
 status_json() { RUST_LOG=error "$BIN/run_read_status" 2>/dev/null | grep -o '{.*}' | tail -1; }
 count_now()   { status_json | grep -o '"approval_count":[0-9]*' | grep -o '[0-9]*$'; }
@@ -77,7 +90,7 @@ wait_count() {
 }
 wait_treasury_init() {
   for _ in $(seq 1 40); do
-    w account get --account-id "Public/$TREASURY_ID" 2>/dev/null | grep -qi "authenticated transfer" && return 0
+    rpc_account_initialized "$TREASURY_ID" && return 0
     sleep 1
   done
   die "treasury PDA never initialized under authenticated_transfer"
@@ -89,7 +102,7 @@ wait_treasury_init() {
 #     the persisted Lee state (logs "Block cache prepared"), with NO "starting from genesis".
 boot_sequencer() {
   local log="$1"
-  pkill -f "sequencer_service.*--port $PORT" 2>/dev/null || true
+  command -v pkill >/dev/null && pkill -f "sequencer_service.*--port $PORT" 2>/dev/null || true
   for _ in $(seq 1 20); do ss -ltn 2>/dev/null | grep -q ":$PORT" || break; sleep 1; done
   RUST_LOG=info RISC0_DEV_MODE=1 nohup "$BIN/sequencer_service" "$D/sequencer_config.json" --port "$PORT" \
     > "$log" 2>&1 &
@@ -154,7 +167,7 @@ FUNDER_ID="$(printf '%s\n' "$SETUP_OUT" | sed -n 's/^FUNDER_ID=//p'         | he
 M0_VID="$(  printf '%s\n' "$SETUP_OUT" | sed -n 's/^MEMBER0_VOTING_ID=//p' | head -1)"
 M1_VID="$(  printf '%s\n' "$SETUP_OUT" | sed -n 's/^MEMBER1_VOTING_ID=//p' | head -1)"
 [ -n "$FUNDER_ID" ] && [ -n "$M0_VID" ] && [ -n "$M1_VID" ] || die "could not parse setup ids"
-w account get --account-id "Public/$FUNDER_ID" 2>/dev/null | grep -qi "authenticated transfer" \
+rpc_account_funded "$FUNDER_ID" \
   || die "funder $FUNDER_ID not funded/spendable"
 echo "funder $FUNDER_ID is funded + spendable"
 
