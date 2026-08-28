@@ -103,6 +103,67 @@ public leaf commitment in a Merkle set, an in-circuit membership proof, and a
 domain-separated nullifier bound to the action) and implemented it natively for
 the LEZ privacy-preserving transaction model and the RISC0 zkVM.
 
+### Why the Logos stack, specifically
+
+The property this primitive sells is *approver anonymity that a service operator
+cannot revoke*. On a centralised alternative — a backend that accepts votes and
+publishes a tally — the operator sees every approval as it arrives, so anonymity
+is a promise rather than a property, and the operator can also censor a specific
+member's approval or fabricate one. LEZ removes both: an approval is a
+privacy-preserving transaction whose membership witness never leaves the prover,
+the sequencer sees only a commitment/nullifier pair it cannot attribute, and the
+threshold release executes as on-chain program logic rather than operator
+discretion. Concretely, this design leans on three LEZ properties: (1) the
+privacy-preserving transaction model, which lets a single transaction mutate a
+PUBLIC account (the proposal counter) while its instruction data stays private —
+this is what makes a *public* threshold count over *anonymous* approvals possible
+at all; (2) the account/nullifier model, which gives us a native double-vote
+guard bound to a live shielded account rather than an application-level session;
+and (3) RISC0 guest execution, which lets the membership check be ordinary Rust
+compiled to a zkVM rather than a hand-written circuit. Ported to a transparent
+chain, the member set and every vote would be public; ported to a mixnet without
+shared state, there would be no canonical count to release funds against.
+
+### Alternatives considered, and what did not work
+
+- **FROST / threshold signature aggregation — rejected.** An M-of-N signature is
+  the obvious shape for a multisig, but it makes the *set of signers* the thing
+  that is aggregated, and anonymity then depends on the aggregation hiding
+  participants. We chose a public count over per-member ZK membership proofs
+  instead: each approval is independently verifiable, the count is trivially
+  auditable on-chain, and no member ever needs to coordinate with another to
+  produce a partial signature. The cost is one STARK per approval rather than one
+  aggregate signature — which is why the benchmarks section treats per-approve
+  proving cost as the headline number.
+- **Porting Semaphore or MACI directly — rejected.** Both target an EVM/circom
+  toolchain; their circuits and contracts have no meaning against a RISC0 guest
+  and LEZ's account model. We reimplemented the *pattern* (public leaf, in-circuit
+  membership proof, domain-separated action-bound nullifier) and kept the hashing
+  native (`risc0_zkvm::sha`) so in-guest and host-side derivations are
+  byte-identical.
+- **Derivation-only membership binding — tried, and it was not enough.** The
+  first-round submission derived a member's leaf from their shielded-account
+  `nsk`, which ties membership to an account *by construction* but proves nothing
+  in-circuit about that account existing. The reviewer was right to call this out.
+  The current design rides each approval on the member's live shielded voting
+  account and asserts in-guest that the rider's `AccountId` re-derives from the
+  same secret, so the binding is checked against live chain state.
+- **Encoding chained-call instruction data as a bare integer — tried, and it
+  broke.** The guest originally sent the transfer amount to
+  `authenticated_transfer` as a raw `u128`. On the current rev that program
+  expects its `Instruction` enum, and the chained call failed to deserialise with
+  a variant-index error. Fixed by encoding the typed
+  `Instruction::Transfer { amount }`; it is the kind of mismatch that only shows
+  up when the chained call actually executes on-chain.
+- **Funding the treasury with a plain transfer — tried, and it fails.** The
+  obvious bootstrap is to transfer into the treasury PDA directly. That is
+  rejected: `authenticated_transfer` would claim a fresh recipient account
+  `Authorized`, and a PDA can never sign. So `InitTreasury` first claims the
+  treasury PDA under the msig program's own PDA authorisation, and only then is
+  the PDA an ordinary transfer target. The asymmetry is not obvious from the
+  upstream docs and cost a full debugging cycle to find; it is captured as a test
+  (`msig_fund_treasury_pda_rejected`) so it cannot regress silently.
+
 **Membership is bound by derivation to a member's shielded account.** Each member's
 membership secret is their real shielded-account nullifier secret key (`nsk`), the
 same key the LEZ key tree produces for a shielded account (`SeedHolder` ->
