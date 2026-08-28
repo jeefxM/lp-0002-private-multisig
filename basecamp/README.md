@@ -14,3 +14,10 @@ https://github.com/jeefxM/logos-lp0002-msig-module
 **Prebuilt, signed, multi-variant download (`.lgx`):**
 https://github.com/jeefxM/logos-lp0002-msig-module/releases/tag/v0.1.0 — install via Basecamp →
 Package Manager → *Install from file*; verify with `lgx verify`.
+
+> **Provenance.** This module was built, Ed25519-signed, plugin-load-verified and
+> demonstrated driving a real anonymous vote during the first-round rework (review
+> item #5), against the LEZ and Basecamp revisions current at that time. The hosted
+> release is unchanged since and has **not** been re-verified against the v0.2.4
+> runners or the current Basecamp release. The v0.2.4 protocol evidence for this
+> submission is the CLI + live-testnet ledger in the main repository.

@@ -458,8 +458,10 @@ The pieces are designed to be reused independently of the demo fixture.
   module and the `run_*` bins are a worked client; a packaged stand-alone SDK
   crate is not yet split out. Partial.
 - [x] Provide a Logos Basecamp app GUI. A native ui_qml Basecamp plugin is shipped
-  under `basecamp/` (`MsigPlugin` + `qml/Main.qml` + prebuilt
-  `msig_plugin` built from `basecamp/`). The packaged module is **hosted as a downloadable
+  as a module: this repo carries the descriptor and view under `basecamp/`
+  (`module.json`, `metadata.json`, `qml/Main.qml`, icon), and the plugin source,
+  Nix flake, and localhost sidecar live in the module repo
+  `jeefxM/logos-lp0002-msig-module`. The packaged module is **hosted as a downloadable
   multi-variant `.lgx`** (`darwin-arm64` + `linux-amd64` + `linux-arm64`, Ed25519-signed) at
   <https://github.com/jeefxM/logos-lp0002-msig-module/releases/latest> (source repo
   `jeefxM/logos-lp0002-msig-module`) — installable via Basecamp -> Package Manager -> Install from

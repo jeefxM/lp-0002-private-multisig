@@ -1,3 +1,18 @@
+> ## 🔐 This repository is an **LP-0002 submission** (Logos Lambda Prize)
+>
+> It is a **fork of upstream Logos LEZ v0.2.4** that adds an **anonymous M-of-N
+> multisig** program. Everything below this banner is upstream's own README.
+>
+> **Start here → [`README-LP0002.md`](README-LP0002.md)** — what it is, how to run it,
+> and the live on-chain evidence.
+>
+> - Full write-up: [`docs/LP-0002-solution.md`](docs/LP-0002-solution.md)
+> - Run the demo (real STARKs, `RISC0_DEV_MODE=0` by default): **`./demo.sh`**
+> - On-chain evidence + raw RPC captures: [`evidence/`](evidence/)
+> - What we authored vs upstream: [`NOTICE`](NOTICE)
+
+---
+
 # Logos Execution Zone (LEZ)
 
 Logos Execution Zone (LEZ) is a programmable blockchain that cleanly separates public and private state while keeping them fully interoperable. Developers can build apps that operate across transparent and privacy-preserving accounts without changing their logic. Privacy is enforced by the protocol itself through zero-knowledge proofs (ZKPs), so it is always available and automatic.

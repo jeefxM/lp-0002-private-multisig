@@ -14,7 +14,7 @@ source paths differ and have been updated here so the references match v0.2.4.
 - **Program id (v0.2.4):** `MSIG_ID` (8 × u32 LE) =
   `[1155063609, 1918607948, 1043343914, 2266441241, 1831314946, 53341822, 1565811176, 2148869898]`,
   i.e. base58 program id `4tvD5XPFc4ofgN3YV4ymZ1nWqn3iUwB9tucesYzBKJB9` (32-byte
-  hex `8325c8b82dc3bda61fd20f936d29aeb32c6e309ca91ce7c1e4d91f32749dbe1e`).
+  hex `39dfd8444ca25b722a2a303e1926178702a6276d7eee2d03e861545d0a271580`).
 - **Guest source:** `lee/state_machine/test_methods/guest/src/bin/msig.rs` (line numbers below
   are verified against this v0.2.4 file).
 
